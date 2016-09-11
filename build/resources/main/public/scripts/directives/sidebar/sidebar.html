@@ -1,0 +1,57 @@
+<div class="navbar-default sidebar" role="navigation">
+    <div class="sidebar-nav navbar-collapse">
+        <ul class="nav in" id="side-menu">
+
+            <li ui-sref-active="active" ng-show="isAdmin">
+                <a ui-sref="dashboard.clothes.index">Clothes</a>
+            </li>
+            <li ui-sref-active="active" ng-hide="isAdmin">
+                <a ui-sref="dashboard.supervisors.clothes">Clothes</a>
+            </li>
+            <li ui-sref-active="active" ng-show="isAdmin">
+                <a ui-sref="dashboard.colors.index"> Colors</a>
+            </li>
+            <li ui-sref-active="active" ng-show="isAdmin">
+                <a ui-sref="dashboard.currencies.index"> Currencies</a>
+            </li>
+            <li ui-sref-active="active" ng-show="isAdmin">
+                <a ui-sref="dashboard.customers.index">Customers</a>
+            </li>
+            <li ui-sref-active="active" ng-show="isAdmin">
+                <a ui-sref="dashboard.designs.index">Designs</a>
+            </li>
+            <li ui-sref-active="active" ng-hide="isAdmin">
+                <a ui-sref="dashboard.supervisors.index">Enter Location</a>
+            </li>
+            <li ui-sref-active="active" ng-show="isAdmin">
+                <a ui-sref="dashboard.locations.index">Locations</a>
+            </li>
+
+            <li ui-sref-active="active" ng-show="isAdmin">
+                <a ui-sref="dashboard.prices.index">Prices</a>
+            </li>
+
+            <li ui-sref-active="active" ng-show="isAdmin">
+                <a ui-sref="dashboard.prints.index">Prints</a>
+            </li>
+
+            </li>
+            <li ui-sref-active="active" ng-show="isAdmin">
+                <a ui-sref="dashboard.sizes.index">Sizes</a>
+            </li>
+
+            <li ui-sref-active="active" ng-show="isAdmin">
+                <a ui-sref="dashboard.users.index">Users</a>
+            </li>
+
+            <li ui-sref-active="active" ng-show="isAdmin">
+                <a ui-sref="dashboard.yarns.index">Yarns</a>
+            </li>
+
+        </ul>
+    </div>
+    <!-- /.sidebar-collapse -->
+</div> 
+
+
+

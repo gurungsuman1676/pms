@@ -1,0 +1,28 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="login-panel panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Please Sign In</h3>
+                </div>
+                <div class="flash-msg" flash-message="3000"></div>
+                <div class="panel-body">
+                    <form ng-submit="ctrl.login()" class="form-group">
+                        <fieldset>
+                            <div class="form-group">
+                                <input class="form-control" ng-model="ctrl.user.username" placeholder="Username"
+                                       type="text" autofocus>
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control" ng-model="ctrl.user.password" placeholder="Password"
+                                       name="password" type="password" value="">
+                            </div>
+                            <!-- Change this to a button or input when using this as a form -->
+                            <input type="submit" class="btn btn-primary" value="Login">
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
