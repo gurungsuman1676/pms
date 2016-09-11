@@ -46,16 +46,22 @@ angular.module('sbAdminApp')
         }
 
         LocationsFactory.getLocations(function (response) {
-            self.locations = response;
+            self.locations = addAllOptions(response);
         }, function (response) {
             Flash.create('danger', response.message, 'custom-class');
         });
 
         CustomersFactory.getCustomers(function (response) {
-            self.customers = response;
+            self.customers = addAllOptions(response);
         }, function (response) {
             Flash.create('danger', response.message, 'custom-class');
         });
+
+        function addAllOptions(options){
+            options.unshift({name: 'All', id: 'All'});
+            return options;
+        }
+
         self.generateBarcode = function () {
             var noClothSelected = false;
             angular.forEach(self.clothes, function (value) {
@@ -190,8 +196,8 @@ angular.module('sbAdminApp')
                     var page = params.page();
                     ClothesFactory.getClothes({
                             orderNo: self.filterParams.orderNo,
-                            customerId: self.filterParams.customerId,
-                            locationId: self.filterParams.locationId,
+                            customerId: self.filterParams.customerId === 'All' ? undefined : self.filterParams.customerId,
+                            locationId: self.filterParams.locationId === 'All' ? undefined : self.filterParams.locationId,
                             barcode: self.filterParams.barcode,
                             deliverDateFrom: self.filterParams.deliverDateFrom ? self.filterParams.deliverDateFrom.toDateString() : undefined,
                             deliveryDateTo: self.filterParams.deliveryDateTo ? self.filterParams.deliveryDateTo.toDateString() : undefined,

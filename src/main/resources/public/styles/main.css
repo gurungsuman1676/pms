@@ -247,3 +247,17 @@ input[type=checkbox] {
 .ngdialog-content{
     width: 90% !important;
 }
+
+/*over ride bootstrap panel properties*/
+.panel {
+    margin-bottom: 0px;
+}
+
+.search-btn-wrapper {
+    margin-left: 15px;
+    display: table;
+}
+
+.search-btn-wrapper div {
+    margin-right:5px;
+}
