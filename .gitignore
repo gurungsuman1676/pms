@@ -1,0 +1,14 @@
+ld/
+out/
+gradle.properties
+
+# IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Temporary Files
+*~
+
+# QueryDSL generated classes

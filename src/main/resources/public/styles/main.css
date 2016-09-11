@@ -122,6 +122,7 @@ input[type=checkbox] {
 
 .search-container {
     margin-top: 15px;
+    display: table;
 }
 
 .input-margin {
