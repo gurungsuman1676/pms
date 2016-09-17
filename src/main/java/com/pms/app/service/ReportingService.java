@@ -1,7 +1,5 @@
 package com.pms.app.service;
 
-import org.springframework.data.domain.Pageable;
-
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 
@@ -12,4 +10,10 @@ public interface ReportingService {
                         Date deliveryDateTo, Date orderDateFrom, Date orderDateTo,
                         String role, String shippingNumber, String boxNumber, Boolean isReject,
                         HttpServletResponse httpServletResponse);
+
+    void createOrderSheet(Long orderNo, Long customerId, HttpServletResponse httpServletResponse);
+
+    void createPendingList(Long orderNo, Long customerId, HttpServletResponse httpServletResponse);
+
+    void createShippingList(String shippingNumber, HttpServletResponse httpServletResponse);
 }

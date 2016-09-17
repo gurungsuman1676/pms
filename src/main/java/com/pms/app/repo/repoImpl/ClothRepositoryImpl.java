@@ -7,10 +7,7 @@ import com.pms.app.domain.QPrints;
 import com.pms.app.domain.Status;
 import com.pms.app.repo.ClothRepository;
 import com.pms.app.repo.repoCustom.ClothRepositoryCustom;
-import com.pms.app.schema.ClothOrderResource;
-import com.pms.app.schema.ClothResource;
-import com.pms.app.schema.QClothOrderResource;
-import com.pms.app.schema.QClothResource;
+import com.pms.app.schema.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -18,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRepository> implements ClothRepositoryCustom {
     public ClothRepositoryImpl() {
@@ -96,6 +94,92 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
         BooleanBuilder where = getBooleanBuilder(customerId, locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom, orderDateTo, role, shippingNumber, boxNumber, isReject, clothes);
         return from(clothes)
                 .where(where)
+                .leftJoin(clothes.location)
+                .leftJoin(clothes.print)
+                .leftJoin(clothes.print.currency)
+                .list(new QClothResource(
+                        clothes.id,
+                        clothes.location.name,
+                        clothes.price.amount,
+                        clothes.customer.currency.name,
+                        clothes.order_no,
+                        clothes.price.design.name,
+                        clothes.price.yarn.name,
+                        clothes.color.code,
+                        clothes.price.size.name,
+                        clothes.customer.name,
+                        clothes.deliver_date,
+                        clothes.print.currency.name,
+                        clothes.print.amount,
+                        clothes.print.name,
+                        clothes.shipping,
+                        clothes.boxNumber,
+                        clothes.weight,
+                        clothes.isReturn,
+                        clothes.created
+                ));
+    }
+
+    @Override
+    public List<ClothInvoiceResource> findClothesForInvoice(int orderNo, Long customerId) {
+        QClothes clothes = QClothes.clothes;
+        return from(clothes)
+                .leftJoin(clothes.print)
+                .leftJoin(clothes.print.currency)
+                .where(clothes.order_no.eq(orderNo)
+                        .and(clothes.customer.id.eq(customerId)))
+                .groupBy(clothes.price)
+                .groupBy(clothes.color)
+                .groupBy(clothes.print)
+                .list(new QClothInvoiceResource(
+                        clothes.price.design.name,
+                        clothes.price.size.name,
+                        clothes.color.name,
+                        clothes.color.code,
+                        clothes.count(),
+                        clothes.print.name,
+                        clothes.created,
+                        clothes.deliver_date,
+                        clothes.customer.name,
+                        clothes.order_no,
+                        clothes.boxNumber,
+                        clothes.print.amount,
+                        clothes.print.currency.name,
+                        clothes.shipping,
+                        clothes.price.amount,
+                        clothes.customer.currency.name
+                ));
+    }
+
+    @Override
+    public List<ClothOrderPendingResource> findClothesPendingForOrderAndCustomer(int orderNo, Long customerId) {
+        QClothes clothes = QClothes.clothes;
+        QPrints prints = QPrints.prints;
+        return from(clothes)
+                .leftJoin(clothes.print)
+                .leftJoin(clothes.location)
+                .where(clothes.order_no.eq(orderNo)
+                        .and(clothes.customer.id.eq(customerId)))
+                .list(new QClothOrderPendingResource(
+                        clothes.price.design.name,
+                        clothes.price.size.name,
+                        clothes.color.name,
+                        clothes.color.code,
+                        clothes.count(),
+                        clothes.print.name,
+                        clothes.created,
+                        clothes.deliver_date,
+                        clothes.customer.name,
+                        clothes.order_no,
+                        clothes.location.name
+                ));
+    }
+
+    @Override
+    public List<ClothResource> findShippedCloth(String shippingNumber) {
+        QClothes clothes = QClothes.clothes;
+        return from(clothes)
+                .where(clothes.shipping.eq(shippingNumber))
                 .leftJoin(clothes.location)
                 .leftJoin(clothes.print)
                 .leftJoin(clothes.print.currency)
