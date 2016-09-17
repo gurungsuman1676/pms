@@ -138,14 +138,24 @@
         //     $window.open('file://Desktop/' + cloth.customer.name+"/"+cloth.price.designName + '.xls');
         // }
 
-        factory.getPashminaInvoice = function (orderNo,customerId) {
-            $window.open(RESOURCES.apiURL + '/clothes' +'/invoice'+'?orderNo='+orderNo+'&customerId='+customerId);
+        factory.downloadOrderSheet = function (orderNo,customerId) {
+            $window.open(RESOURCES.apiURL + '/clothes' +'/order_sheet'+'?orderNo='+orderNo+'&customerId='+customerId);
+        }
 
+        factory.downloadShippingList = function (shippingNumber) {
+            $window.open(RESOURCES.apiURL + '/clothes' +'/shipping_list'+'?shippingNumber='+shippingNumber);
+        }
+
+        factory.downloadPendingList = function (orderNo,customerId) {
+            $window.open(RESOURCES.apiURL + '/clothes' +'/pending_list'+'?orderNo='+orderNo+'&customerId='+customerId);
+        }
+
+        factory.downloadInvoice = function (orderNo,customerId) {
+            $window.open(RESOURCES.apiURL + '/clothes' +'/invoice'+'?orderNo='+orderNo+'&customerId='+customerId);
         }
 
         factory.getClothesReport = function (params) {
             $window.open(RESOURCES.apiURL + '/clothes' +'/report'+params);
-
         }
 
         return factory;

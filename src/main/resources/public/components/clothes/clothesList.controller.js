@@ -28,8 +28,20 @@ angular.module('sbAdminApp')
 
         self.statuses = [{id: 1, name: "Accepted"}, {id:2, name:"Rejected"}];
 
-        self.getPashminaInvoice = function () {
-            ClothesFactory.getPashminaInvoice(self.filterParams.orderNo, self.filterParams.customerId);
+        self.downloadOrderSheet = function () {
+            ClothesFactory.downloadOrderSheet(self.filterParams.orderNo, self.filterParams.customerId);
+        };
+
+        self.downloadShippingList = function () {
+            ClothesFactory.downloadShippingList(self.filterParams.shippingNumber);
+        };
+
+        self.downloadPendingList = function () {
+            ClothesFactory.downloadPendingList(self.filterParams.orderNo, self.filterParams.customerId);
+        };
+
+        self.downloadInvoice = function () {
+            ClothesFactory.downloadInvoice(self.filterParams.orderNo, self.filterParams.customerId);
         };
 
         self.filterParams = {

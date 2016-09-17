@@ -26,22 +26,22 @@
                     </button>
                 </div>
                 <div class="pull-left">
-                    <button class="btn btn-primary" ng-click="ctrl.getPashminaInvoice()"
+                    <button class="btn btn-primary" ng-click="ctrl.downloadOrderSheet()"
                             ng-disabled="!(ctrl.filterParams.orderNo && ctrl.filterParams.customerId)">Generate Order Sheet
                     </button>
                 </div>
                 <div class="pull-left">
-                    <button class="btn btn-primary" ng-click="ctrl.getPashminaInvoice()"
-                            ng-disabled="!(ctrl.filterParams.orderNo && ctrl.filterParams.customerId)">Generate Packing List
+                    <button class="btn btn-primary" ng-click="ctrl.downloadShippingList()"
+                            ng-disabled="!(ctrl.filterParams.orderNo && ctrl.filterParams.customerId)">Generate Shipping List
                     </button>
                 </div>
                 <div class="pull-left">
-                    <button class="btn btn-primary" ng-click="ctrl.getPashminaInvoice()"
+                    <button class="btn btn-primary" ng-click="ctrl.downloadPendingList()"
                             ng-disabled="!(ctrl.filterParams.orderNo && ctrl.filterParams.customerId)">Generate Pending List
                     </button>
                 </div>
                 <div class="pull-left">
-                    <button class="btn btn-primary" ng-click="ctrl.getPashminaInvoice()"
+                    <button class="btn btn-primary" ng-click="ctrl.downloadInvoice()"
                             ng-disabled="!(ctrl.filterParams.orderNo && ctrl.filterParams.customerId)">Generate Invoice
                     </button>
                 </div>
@@ -59,7 +59,7 @@
                 </div>
 
                 <div class="col-sm-3 input-margin">
-                    <selectize config="{maxItems:10}" placeholder="Locations" ng-model="ctrl.filterParams.locationId"
+                    <selectize placeholder="Locations" ng-model="ctrl.filterParams.locationId"
                                options="ctrl.locations"><option>All</option></selectize>
                 </div>
 
