@@ -14,7 +14,6 @@ public class ClothOrderPendingResource {
     private String sizeName;
     private String color;
     private String colorCode;
-    private Long clothCount;
     private String print;
     private Date orderDate;
     private Date deliveryDate;
@@ -28,7 +27,6 @@ public class ClothOrderPendingResource {
                                      String sizeName,
                                      String color,
                                      String colorCode,
-                                     Long clothCount,
                                      String print,
                                      Date orderDate,
                                      Date deliveryDate,
@@ -40,7 +38,6 @@ public class ClothOrderPendingResource {
         this.sizeName = sizeName;
         this.color = color;
         this.colorCode = colorCode;
-        this.clothCount = clothCount;
         this.print = print;
         this.orderDate = orderDate;
         this.deliveryDate = deliveryDate;

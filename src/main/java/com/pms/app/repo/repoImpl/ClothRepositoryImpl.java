@@ -126,6 +126,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
         return from(clothes)
                 .leftJoin(clothes.print)
                 .leftJoin(clothes.print.currency)
+                .innerJoin(clothes.price)
                 .where(clothes.order_no.eq(orderNo)
                         .and(clothes.customer.id.eq(customerId)))
                 .groupBy(clothes.price)
@@ -154,18 +155,16 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
     @Override
     public List<ClothOrderPendingResource> findClothesPendingForOrderAndCustomer(int orderNo, Long customerId) {
         QClothes clothes = QClothes.clothes;
-        QPrints prints = QPrints.prints;
         return from(clothes)
                 .leftJoin(clothes.print)
                 .leftJoin(clothes.location)
                 .where(clothes.order_no.eq(orderNo)
-                        .and(clothes.customer.id.eq(customerId)))
+                        .and(clothes.customer.id.eq(customerId)).and((clothes.location.isNull().or(clothes.location.name.ne("SHIPPING")))))
                 .list(new QClothOrderPendingResource(
                         clothes.price.design.name,
                         clothes.price.size.name,
                         clothes.color.name,
                         clothes.color.code,
-                        clothes.count(),
                         clothes.print.name,
                         clothes.created,
                         clothes.deliver_date,

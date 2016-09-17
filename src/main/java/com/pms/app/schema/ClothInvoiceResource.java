@@ -60,6 +60,12 @@ public class ClothInvoiceResource {
         this.deliveryDate = deliveryDate;
         this.customerName = customerName;
         this.orderNo = orderNo;
+        this.boxNumber = boxNumber;
+        this.printAmount = printAmount;
+        this.printCurrency = printCurrency;
+        this.shippingNumber = shippingNumber;
+        this.price = price;
+        this.currency = currency;
     }
 }
 

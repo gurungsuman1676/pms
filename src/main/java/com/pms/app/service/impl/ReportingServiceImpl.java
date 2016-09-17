@@ -192,18 +192,21 @@ public class ReportingServiceImpl implements ReportingService {
 
                 printCell.setCellStyle(isOdd ? style : newStyle);
 
-                Cell printAmount = row.createCell(7);
+                Cell priceCell = row.createCell(7);
+                priceCell.setCellValue(cloth.getCurrency() + cloth.getPrice());
+
+
+                priceCell.setCellStyle(isOdd ? style : newStyle);
+
+
+                Cell printAmount = row.createCell(8);
                 printAmount.setCellValue(cloth.getPrint() != null ? cloth.getPrintCurrency() + cloth.getPrintAmount() : "");
 
 
                 printAmount.setCellStyle(isOdd ? style : newStyle);
 
 
-                Cell priceCell = row.createCell(8);
-                priceCell.setCellValue(cloth.getCurrency() + cloth.getPrice());
 
-
-                priceCell.setCellStyle(isOdd ? style : newStyle);
 
 
                 Cell emptyCell = row.createCell(9);
@@ -221,8 +224,8 @@ public class ReportingServiceImpl implements ReportingService {
             Cell totalValueCell = lastRow.createCell(5);
             totalValueCell.setCellValue(totalCount);
 
-            Cell totalPriceCell = lastRow.createCell(8);
-            totalPriceCell.setCellValue(totalPrice);
+            Cell totalPriceCell = lastRow.createCell(7);
+            totalPriceCell.setCellValue(resources.get(0).getCurrency()+ totalPrice);
         }
 
 
@@ -656,7 +659,7 @@ public class ReportingServiceImpl implements ReportingService {
         HSSFSheet sheet = workbook.createSheet("Clothes Data");
 
 
-        List<ClothOrderPendingResource> resources = clothRepository.findClothesPendingForOrderAndCustomer(orderNo.intValue(), customerId);
+        List<ClothOrderPendingResource> resources =     clothRepository.findClothesPendingForOrderAndCustomer(orderNo.intValue(), customerId);
         if (resources == null || resources.isEmpty()) {
             Row headerRow = sheet.createRow(0);
             Cell snHeadCell = headerRow.createCell(0);
@@ -798,7 +801,7 @@ public class ReportingServiceImpl implements ReportingService {
 
                 Cell emptyCell = row.createCell(7);
                 emptyCell.setCellStyle(isOdd ? style : newStyle);
-                totalCount += cloth.getClothCount();
+                totalCount ++;
 
             }
 
