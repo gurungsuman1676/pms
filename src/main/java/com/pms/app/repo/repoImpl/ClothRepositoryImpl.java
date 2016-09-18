@@ -203,12 +203,14 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
         if(orderNumber != null && orderNumber != 0){
             builder.and(clothes.order_no.eq(orderNumber.intValue()));
         }
+        if(customerId != null && customerId != 0){
+            builder.and(clothes.customer.id.eq(customerId));
+        }
         return from(clothes)
                 .leftJoin(clothes.print)
                 .leftJoin(clothes.print.currency)
                 .innerJoin(clothes.price)
-                .where(builder.and(clothes.shipping.eq(shippingNumber)
-                        .and(clothes.customer.id.eq(customerId))))
+                .where(builder.and(clothes.shipping.eq(shippingNumber)))
                 .groupBy(clothes.boxNumber)
                 .groupBy(clothes.price)
                 .groupBy(clothes.color)

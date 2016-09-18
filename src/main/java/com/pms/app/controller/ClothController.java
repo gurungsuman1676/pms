@@ -111,7 +111,7 @@ public class ClothController {
     }
 
     @RequestMapping(value = CLOTHS_INVOICE, method = RequestMethod.GET)
-    public void getInvoice(@RequestParam(required = false,value = "orderNo") Long orderNo, @RequestParam(value = "customerId") Long customerId,
+    public void getInvoice(@RequestParam(required = false,value = "orderNo") Long orderNo, @RequestParam(required = false,value = "customerId") Long customerId,
                            @RequestParam(value = "shippingNumber") String shippingNumber
             , HttpServletResponse httpServletResponse) {
         reportingService.createInvoice(orderNo, customerId, shippingNumber,httpServletResponse);
