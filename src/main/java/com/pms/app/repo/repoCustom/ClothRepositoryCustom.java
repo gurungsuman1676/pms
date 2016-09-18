@@ -28,5 +28,5 @@ public interface ClothRepositoryCustom extends AbstractRepositoryCustom<Clothes>
 
     List<ClothShippingResource> findShippedCloth(String shippingNumber);
 
-    List<ClothInvoiceResource> findInvoice(int orderNumber, Long customerId);
+    List<ClothInvoiceResource> findInvoice(Long orderNumber, Long customerId, String shippingNumber);
 }

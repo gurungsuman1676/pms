@@ -97,7 +97,7 @@ public class ClothController {
     }
 
     @RequestMapping(value = CLOTHS_ORDER_SHEET, method = RequestMethod.GET)
-    public void createOrderSheet(@RequestParam Long orderNo, @RequestParam Long customerId
+    public void createOrderSheet(@RequestParam(value = "orderNo") Long orderNo, @RequestParam(value = "customerId") Long customerId
             , HttpServletResponse httpServletResponse) {
         reportingService.createOrderSheet(orderNo, customerId, httpServletResponse);
     }
@@ -105,26 +105,27 @@ public class ClothController {
 
 
     @RequestMapping(value = CLOTHS_PROFORMA_INVOICE, method = RequestMethod.GET)
-    public void createOrderInvoice(@RequestParam Long orderNo, @RequestParam Long customerId
+    public void createOrderInvoice(@RequestParam(value = "orderNo") Long orderNo, @RequestParam(value = "customerId") Long customerId
             , HttpServletResponse httpServletResponse) {
         reportingService.createProformaInvoice(orderNo, customerId, httpServletResponse);
     }
 
     @RequestMapping(value = CLOTHS_INVOICE, method = RequestMethod.GET)
-    public void getInvoice(@RequestParam Long orderNo, @RequestParam Long customerId
+    public void getInvoice(@RequestParam(required = false,value = "orderNo") Long orderNo, @RequestParam(value = "customerId") Long customerId,
+                           @RequestParam(value = "shippingNumber") String shippingNumber
             , HttpServletResponse httpServletResponse) {
-        reportingService.createInvoice(orderNo, customerId, httpServletResponse);
+        reportingService.createInvoice(orderNo, customerId, shippingNumber,httpServletResponse);
     }
 
 
     @RequestMapping(value = CLOTHS_PENDING_LIST, method = RequestMethod.GET)
-    public void createPendingList(@RequestParam Long orderNo, @RequestParam Long customerId
+    public void createPendingList(@RequestParam(value = "orderNo") Long orderNo, @RequestParam(value = "customerId") Long customerId
             , HttpServletResponse httpServletResponse) {
         reportingService.createPendingList(orderNo, customerId, httpServletResponse);
     }
 
     @RequestMapping(value = CLOTHS_SHIPPING, method = RequestMethod.GET)
-    public void createShippingList(@RequestParam String shippingNumber,HttpServletResponse httpServletResponse) {
+    public void createShippingList(@RequestParam( value = "shippingNumber") String shippingNumber,HttpServletResponse httpServletResponse) {
         reportingService.createShippingList(shippingNumber, httpServletResponse);
     }
 

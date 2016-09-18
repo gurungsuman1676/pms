@@ -814,7 +814,7 @@ public class ReportingServiceImpl implements ReportingService {
 
         HSSFWorkbook workbook = new HSSFWorkbook();
 
-        HSSFSheet sheet = getWithHeaderImage(workbook, "/resources/pms-logo-1.png");
+        HSSFSheet sheet = getWithHeaderImage(workbook, "/images/pms-logo-1.png");
 
 
         if (clothResources == null || clothResources.isEmpty()) {
@@ -1010,13 +1010,13 @@ public class ReportingServiceImpl implements ReportingService {
     }
 
     @Override
-    public void createInvoice(Long orderNo, Long customerId, HttpServletResponse httpServletResponse) {
+    public void createInvoice(Long orderNo, Long customerId, String shippingNumber, HttpServletResponse httpServletResponse) {
 
         HSSFWorkbook workbook = new HSSFWorkbook();
 
         HSSFSheet sheet = getWithHeaderImage(workbook, "/images/pms-logo-1.png");
 
-        List<ClothInvoiceResource> resources = clothRepository.findInvoice(orderNo.intValue(), customerId);
+        List<ClothInvoiceResource> resources = clothRepository.findInvoice(orderNo, customerId,shippingNumber);
         if (resources == null || resources.isEmpty()) {
             Row headerRow = sheet.createRow(12);
             Cell snHeadCell = headerRow.createCell(12);
@@ -1149,46 +1149,79 @@ public class ReportingServiceImpl implements ReportingService {
 
                 Row boxRow = sheet.createRow(rownum);
                 Cell boxCell = boxRow.createCell(1);
-                boxCell.setCellValue("BOX-"+boxNumber);
+                boxCell.setCellValue("BOX-" + boxNumber);
                 boxCell.setCellStyle(boxNumberStyle);
 
-                for (ClothInvoiceResource cloth : orderAndResourceMap.get(boxNumber)) {
+                Map<Integer, List<ClothInvoiceResource>> orderNoAndResourceMap = new HashMap<Integer, List<ClothInvoiceResource>>();
+                orderAndResourceMap.get(boxNumber).forEach(r -> {
+
+                    List<ClothInvoiceResource> clothShippingResources = orderNoAndResourceMap.get(r.getOrderNo());
+                    if (clothShippingResources == null) {
+                        clothShippingResources = new ArrayList<ClothInvoiceResource>();
+                        clothShippingResources.add(r);
+                        orderNoAndResourceMap.put(r.getOrderNo(), clothShippingResources);
+                    } else {
+                        clothShippingResources.add(r);
+                    }
+
+                });
+
+
+                for (Integer iOrderNo : orderNoAndResourceMap.keySet()) {
+
                     rownum++;
 
-                    Row row = sheet.createRow(rownum);
-                    Cell snCell = row.createCell(0);
-                    snCell.setCellValue("");
+                    HSSFCellStyle orderNumberStyle = workbook.createCellStyle();
+                    orderNumberStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+                    orderNumberStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
+                    orderNumberStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
+                    orderNumberStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+                    orderNumberStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+                    orderNumberStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
 
-                    Cell designCell = row.createCell(1);
-                    designCell.setCellValue(cloth.getDesignName());
+                    Row orderRow = sheet.createRow(rownum);
+                    Cell orderCell = orderRow.createCell(1);
+                    orderCell.setCellValue("PO-" + iOrderNo);
+                    orderCell.setCellStyle(orderNumberStyle);
+                    for (ClothInvoiceResource cloth : orderNoAndResourceMap.get(iOrderNo)) {
+                        rownum++;
 
+                        Row row = sheet.createRow(rownum);
+                        Cell snCell = row.createCell(0);
+                        snCell.setCellValue("");
 
-                    Cell sizeCell = row.createCell(2);
-                    sizeCell.setCellValue(cloth.getSizeName());
-
-
-                    Cell quantityCell = row.createCell(3);
-                    quantityCell.setCellValue(cloth.getClothCount());
-
-
-                    Cell priceCell = row.createCell(4);
-                    priceCell.setCellValue(cloth.getCurrency() + cloth.getPrice());
-
-
-                    Cell printAmount = row.createCell(5);
-                    printAmount.setCellValue(cloth.getPrint() != null ? cloth.getPrintCurrency() + cloth.getPrintAmount() : "");
-
-
-                    Cell amountCell = row.createCell(6);
-                    amountCell.setCellValue(cloth.getCurrency() + (cloth.getClothCount() * cloth.getPrice()));
+                        Cell designCell = row.createCell(1);
+                        designCell.setCellValue(cloth.getDesignName());
 
 
-                    Cell emptyCell = row.createCell(7);
+                        Cell sizeCell = row.createCell(2);
+                        sizeCell.setCellValue(cloth.getSizeName());
 
-                    totalCount += cloth.getClothCount();
-                    totalPrice += cloth.getPrice() * cloth.getClothCount();
 
+                        Cell quantityCell = row.createCell(3);
+                        quantityCell.setCellValue(cloth.getClothCount());
+
+
+                        Cell priceCell = row.createCell(4);
+                        priceCell.setCellValue(cloth.getCurrency() + cloth.getPrice());
+
+
+                        Cell printAmount = row.createCell(5);
+                        printAmount.setCellValue(cloth.getPrint() != null ? cloth.getPrintCurrency() + cloth.getPrintAmount() : "");
+
+
+                        Cell amountCell = row.createCell(6);
+                        amountCell.setCellValue(cloth.getCurrency() + (cloth.getClothCount() * cloth.getPrice()));
+
+
+                        Cell emptyCell = row.createCell(7);
+
+                        totalCount += cloth.getClothCount();
+                        totalPrice += cloth.getPrice() * cloth.getClothCount();
+
+                    }
                 }
+
             }
 
             rownum++;

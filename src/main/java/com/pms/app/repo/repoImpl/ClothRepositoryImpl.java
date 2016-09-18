@@ -195,13 +195,19 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
     }
 
     @Override
-    public List<ClothInvoiceResource> findInvoice(int orderNumber, Long customerId) {
+    public List<ClothInvoiceResource> findInvoice(Long orderNumber, Long customerId, String shippingNumber) {
         QClothes clothes = QClothes.clothes;
+
+
+        BooleanBuilder builder = new BooleanBuilder();
+        if(orderNumber != null && orderNumber != 0){
+            builder.and(clothes.order_no.eq(orderNumber.intValue()));
+        }
         return from(clothes)
                 .leftJoin(clothes.print)
                 .leftJoin(clothes.print.currency)
                 .innerJoin(clothes.price)
-                .where(clothes.order_no.eq(orderNumber).and(clothes.location.name.eq("SHIPPING"))
+                .where(builder.and(clothes.location.name.eq("SHIPPING"))
                         .and(clothes.customer.id.eq(customerId)))
                 .groupBy(clothes.boxNumber)
                 .groupBy(clothes.price)

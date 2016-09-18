@@ -17,5 +17,5 @@ public interface ReportingService {
 
     void createShippingList(String shippingNumber, HttpServletResponse httpServletResponse);
 
-    void createInvoice(Long orderNo, Long customerId, HttpServletResponse httpServletResponse);
+    void createInvoice(Long orderNo, Long customerId, String shippingNumber, HttpServletResponse httpServletResponse);
 }
