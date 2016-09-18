@@ -36,11 +36,11 @@ public class ReportingServiceImpl implements ReportingService {
 
         List<ClothInvoiceResource> resources = clothRepository.findClothesForProformaInvoice(orderNo.intValue(), customerId);
         if (resources == null || resources.isEmpty()) {
-            Row headerRow = sheet.createRow(12);
-            Cell snHeadCell = headerRow.createCell(12);
+            Row headerRow = sheet.createRow(8);
+            Cell snHeadCell = headerRow.createCell(8);
             snHeadCell.setCellValue("No cloth available");
         } else {
-            int rownum = 12;
+            int rownum = 8;
 
             HSSFCellStyle style = workbook.createCellStyle();
             style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
@@ -49,7 +49,7 @@ public class ReportingServiceImpl implements ReportingService {
             style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 
 
-            Row topHeaderRow = sheet.createRow(11);
+            Row topHeaderRow = sheet.createRow(7);
 
 
             Cell headerNameCell = topHeaderRow.createCell(2);
@@ -818,8 +818,8 @@ public class ReportingServiceImpl implements ReportingService {
 
 
         if (clothResources == null || clothResources.isEmpty()) {
-            Row headerRow = sheet.createRow(12);
-            Cell snHeadCell = headerRow.createCell(12);
+            Row headerRow = sheet.createRow(7);
+            Cell snHeadCell = headerRow.createCell(7);
             snHeadCell.setCellValue("No cloth available");
         } else {
 
@@ -831,14 +831,14 @@ public class ReportingServiceImpl implements ReportingService {
             mainStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 
 
-            Row topRow = sheet.createRow(12);
+            Row topRow = sheet.createRow(7);
 
             Cell cell = topRow.createCell(2);
             cell.setCellStyle(mainStyle);
             cell.setCellValue("Packing List -" + shippingNumber);
 
 
-            int rownum = 13;
+            int rownum = 8;
 
             HSSFCellStyle style = workbook.createCellStyle();
             style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
@@ -1018,11 +1018,11 @@ public class ReportingServiceImpl implements ReportingService {
 
         List<ClothInvoiceResource> resources = clothRepository.findInvoice(orderNo, customerId,shippingNumber);
         if (resources == null || resources.isEmpty()) {
-            Row headerRow = sheet.createRow(12);
-            Cell snHeadCell = headerRow.createCell(12);
+            Row headerRow = sheet.createRow(7);
+            Cell snHeadCell = headerRow.createCell(7);
             snHeadCell.setCellValue("No cloth available");
         } else {
-            int rownum = 12;
+            int rownum = 8;
 
             HSSFCellStyle style = workbook.createCellStyle();
             style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
@@ -1031,7 +1031,7 @@ public class ReportingServiceImpl implements ReportingService {
             style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 
 
-            Row topHeaderRow = sheet.createRow(11);
+            Row topHeaderRow = sheet.createRow(7);
 
 
             Cell headerNameCell = topHeaderRow.createCell(2);
