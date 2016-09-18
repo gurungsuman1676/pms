@@ -818,8 +818,8 @@ public class ReportingServiceImpl implements ReportingService {
 
 
         if (clothResources == null || clothResources.isEmpty()) {
-            Row headerRow = sheet.createRow(7);
-            Cell snHeadCell = headerRow.createCell(7);
+            Row headerRow = sheet.createRow(12);
+            Cell snHeadCell = headerRow.createCell(12);
             snHeadCell.setCellValue("No cloth available");
         } else {
 
@@ -831,14 +831,14 @@ public class ReportingServiceImpl implements ReportingService {
             mainStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 
 
-            Row topRow = sheet.createRow(6);
+            Row topRow = sheet.createRow(12);
 
             Cell cell = topRow.createCell(2);
             cell.setCellStyle(mainStyle);
             cell.setCellValue("Packing List -" + shippingNumber);
 
 
-            int rownum = 7;
+            int rownum = 13;
 
             HSSFCellStyle style = workbook.createCellStyle();
             style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
@@ -1022,7 +1022,7 @@ public class ReportingServiceImpl implements ReportingService {
             Cell snHeadCell = headerRow.createCell(12);
             snHeadCell.setCellValue("No cloth available");
         } else {
-            int rownum = 7;
+            int rownum = 12;
 
             HSSFCellStyle style = workbook.createCellStyle();
             style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
@@ -1031,7 +1031,7 @@ public class ReportingServiceImpl implements ReportingService {
             style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 
 
-            Row topHeaderRow = sheet.createRow(6);
+            Row topHeaderRow = sheet.createRow(11);
 
 
             Cell headerNameCell = topHeaderRow.createCell(2);
