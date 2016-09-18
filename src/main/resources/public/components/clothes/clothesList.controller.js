@@ -41,7 +41,7 @@ angular.module('sbAdminApp')
         };
 
         self.downloadInvoice = function () {
-            ClothesFactory.downloadInvoice(self.filterParams.orderNo, self.filterParams.customerId);
+            ClothesFactory.downloadInvoice(self.filterParams.orderNo, self.filterParams.customerId, self.filterParams.shippingNumber);
         };
 
         self.downloadProformaInvoice = function () {

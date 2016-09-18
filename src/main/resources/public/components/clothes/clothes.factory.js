@@ -138,7 +138,7 @@
         //     $window.open('file://Desktop/' + cloth.customer.name+"/"+cloth.price.designName + '.xls');
         // }
 
-        factory.downloadOrderSheet = function (orderNo,customerId) {
+        factory.downloadOrderSheet = function (orderNo, customerId) {
             $window.open(RESOURCES.apiURL + '/clothes' +'/order_sheet'+'?orderNo='+orderNo+'&customerId='+customerId);
         }
 
@@ -146,15 +146,15 @@
             $window.open(RESOURCES.apiURL + '/clothes' +'/shipping_list'+'?shippingNumber='+shippingNumber);
         }
 
-        factory.downloadPendingList = function (orderNo,customerId) {
+        factory.downloadPendingList = function (orderNo, customerId) {
             $window.open(RESOURCES.apiURL + '/clothes' +'/pending_list'+'?orderNo='+orderNo+'&customerId='+customerId);
         }
 
-        factory.downloadInvoice = function (orderNo,customerId) {
-            $window.open(RESOURCES.apiURL + '/clothes' +'/invoice'+'?orderNo='+orderNo+'&customerId='+customerId);
+        factory.downloadInvoice = function (orderNo, customerId, shippingNumber) {
+            $window.open(RESOURCES.apiURL + '/clothes' +'/invoice'+'?orderNo='+orderNo+'&customerId='+customerId+'&shippingNumber='+shippingNumber);
         }
 
-        factory.downloadProformaInvoice = function (orderNo,customerId) {
+        factory.downloadProformaInvoice = function (orderNo, customerId) {
             $window.open(RESOURCES.apiURL + '/clothes' +'/proforma_invoice'+'?orderNo='+orderNo+'&customerId='+customerId);
         }
 
