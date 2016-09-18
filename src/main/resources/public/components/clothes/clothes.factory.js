@@ -150,8 +150,8 @@
             $window.open(RESOURCES.apiURL + '/clothes' +'/pending_list'+'?orderNo='+orderNo+'&customerId='+customerId);
         }
 
-        factory.downloadInvoice = function (orderNo, customerId, shippingNumber) {
-            $window.open(RESOURCES.apiURL + '/clothes' +'/invoice'+'?orderNo='+orderNo+'&customerId='+customerId+'&shippingNumber='+shippingNumber);
+        factory.downloadInvoice = function (customerId, shippingNumber) {
+            $window.open(RESOURCES.apiURL + '/clothes' +'/invoice'+'?customerId='+customerId+'&shippingNumber='+shippingNumber);
         }
 
         factory.downloadProformaInvoice = function (orderNo, customerId) {
