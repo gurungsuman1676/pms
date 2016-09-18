@@ -21,15 +21,15 @@
                                autocomplete="off" required>
                     </div>
 
-                    <div class="form-group">
-                        <label> BarCode:</label>
-                        <input id="barcode" class="form-control" ng-model="ctrl.clothId" type="text" required
+                    <div class="form-group" ng-show="ctrl.isShippingUser">
+                        <label> Weight:</label>
+                        <input id="weight" class="form-control" ng-model="ctrl.clothWeight" type="text"
                                autocomplete="off" autofocus>
                     </div>
 
-                    <div class="form-group" ng-show="ctrl.isShippingUser">
-                        <label> Weight:</label>
-                        <input id="weight" class="form-control" ng-model="ctrl.clothWeight" type="text" required
+                    <div class="form-group">
+                        <label> BarCode:</label>
+                        <input id="barcode" class="form-control" ng-model="ctrl.clothId" type="text" required
                                autocomplete="off" autofocus>
                     </div>
 

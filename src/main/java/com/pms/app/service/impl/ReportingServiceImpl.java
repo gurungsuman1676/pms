@@ -32,7 +32,7 @@ public class ReportingServiceImpl implements ReportingService {
     public void createProformaInvoice(Long orderNo, Long customerId, HttpServletResponse httpServletResponse) {
         HSSFWorkbook workbook = new HSSFWorkbook();
 
-        HSSFSheet sheet = getWithHeaderImage(workbook, "/images/pms-logo-2.png");
+        HSSFSheet sheet = getWithHeaderImage(workbook, "/images/pms-logo.png");
 
         List<ClothInvoiceResource> resources = clothRepository.findClothesForProformaInvoice(orderNo.intValue(), customerId);
         if (resources == null || resources.isEmpty()) {
@@ -814,7 +814,7 @@ public class ReportingServiceImpl implements ReportingService {
 
         HSSFWorkbook workbook = new HSSFWorkbook();
 
-        HSSFSheet sheet = getWithHeaderImage(workbook, "/images/pms-logo-1.png");
+        HSSFSheet sheet = getWithHeaderImage(workbook, "/images/pms-logo.png");
 
 
         if (clothResources == null || clothResources.isEmpty()) {
@@ -1014,7 +1014,7 @@ public class ReportingServiceImpl implements ReportingService {
 
         HSSFWorkbook workbook = new HSSFWorkbook();
 
-        HSSFSheet sheet = getWithHeaderImage(workbook, "/images/pms-logo-1.png");
+        HSSFSheet sheet = getWithHeaderImage(workbook, "/images/pms-logo.png");
 
         List<ClothInvoiceResource> resources = clothRepository.findInvoice(orderNo, customerId,shippingNumber);
         if (resources == null || resources.isEmpty()) {
