@@ -130,7 +130,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .groupBy(clothes.price)
                 .groupBy(clothes.color)
                 .groupBy(clothes.print)
-                .orderBy(clothes.price.design.id.asc())
+                .orderBy(clothes.price.design.name.asc())
                 .orderBy(clothes.color.code.asc())
                 .orderBy(clothes.price.size.id.asc())
                 .list(new QClothInvoiceResource(
@@ -163,10 +163,10 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .groupBy(clothes.price)
                 .groupBy(clothes.color)
                 .groupBy(clothes.print)
-                .orderBy(clothes.price.design.id.asc())
+                .orderBy(clothes.price.design.name.asc())
                 .orderBy(clothes.price.size.id.asc())
                 .orderBy(clothes.color.code.asc())
-                .orderBy(clothes.location.id.asc())
+                .orderBy(clothes.location.name.asc())
                 .where(clothes.order_no.eq(orderNo)
                         .and(clothes.customer.id.eq(customerId)).and((clothes.location.isNull().or(clothes.location.name.ne("SHIPPING")))))
                 .list(new QClothOrderPendingResource(
@@ -196,7 +196,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .groupBy(clothes.print)
                 .orderBy(clothes.boxNumber.asc())
                 .orderBy(clothes.order_no.asc())
-                .orderBy(clothes.price.design.id.asc())
+                .orderBy(clothes.price.design.name.asc())
                 .orderBy(clothes.color.code.asc())
                 .orderBy(clothes.price.size.id.asc())
                 .list(new QClothShippingResource(
@@ -235,7 +235,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .groupBy(clothes.print)
                 .orderBy(clothes.boxNumber.asc())
                 .orderBy(clothes.order_no.asc())
-                .orderBy(clothes.price.design.id.asc())
+                .orderBy(clothes.price.design.name.asc())
                 .orderBy(clothes.color.code.asc())
                 .orderBy(clothes.price.size.id.asc())
                 .list(new QClothInvoiceResource(
