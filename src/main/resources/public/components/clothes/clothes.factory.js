@@ -154,6 +154,10 @@
             $window.open(RESOURCES.apiURL + '/clothes' +'/invoice'+'?orderNo='+orderNo+'&customerId='+customerId);
         }
 
+        factory.downloadProformaInvoice = function (orderNo,customerId) {
+            $window.open(RESOURCES.apiURL + '/clothes' +'/proforma_invoice'+'?orderNo='+orderNo+'&customerId='+customerId);
+        }
+
         factory.getClothesReport = function (params) {
             $window.open(RESOURCES.apiURL + '/clothes' +'/report'+params);
         }

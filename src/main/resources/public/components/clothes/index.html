@@ -27,22 +27,29 @@
                 </div>
                 <div class="pull-left">
                     <button class="btn btn-primary" ng-click="ctrl.downloadOrderSheet()"
-                            ng-disabled="!(ctrl.filterParams.orderNo && ctrl.filterParams.customerId)">Generate Order Sheet
+                            ng-disabled="!(ctrl.filterParams.orderNo && ctrl.filterParams.customerId)">Order Sheet
                     </button>
                 </div>
                 <div class="pull-left">
                     <button class="btn btn-primary" ng-click="ctrl.downloadShippingList()"
-                            ng-disabled="!(ctrl.filterParams.orderNo && ctrl.filterParams.customerId)">Generate Shipping List
+                            ng-disabled="!(ctrl.filterParams.shippingNumber)">Shipping List
                     </button>
                 </div>
                 <div class="pull-left">
                     <button class="btn btn-primary" ng-click="ctrl.downloadPendingList()"
-                            ng-disabled="!(ctrl.filterParams.orderNo && ctrl.filterParams.customerId)">Generate Pending List
+                            ng-disabled="!(ctrl.filterParams.orderNo && ctrl.filterParams.customerId)">Pending List
                     </button>
                 </div>
+
+                <div class="pull-left">
+                    <button class="btn btn-primary" ng-click="ctrl.downloadProformaInvoice()"
+                            ng-disabled="!(ctrl.filterParams.orderNo && ctrl.filterParams.customerId)">Proforma Invoice
+                    </button>
+                </div>
+
                 <div class="pull-left">
                     <button class="btn btn-primary" ng-click="ctrl.downloadInvoice()"
-                            ng-disabled="!(ctrl.filterParams.orderNo && ctrl.filterParams.customerId)">Generate Invoice
+                            ng-disabled="!(ctrl.filterParams.orderNo && ctrl.filterParams.customerId)">Invoice
                     </button>
                 </div>
             </div>
