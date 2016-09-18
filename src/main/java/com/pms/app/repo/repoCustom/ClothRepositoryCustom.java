@@ -1,10 +1,7 @@
 package com.pms.app.repo.repoCustom;
 
 import com.pms.app.domain.Clothes;
-import com.pms.app.schema.ClothInvoiceResource;
-import com.pms.app.schema.ClothOrderPendingResource;
-import com.pms.app.schema.ClothOrderResource;
-import com.pms.app.schema.ClothResource;
+import com.pms.app.schema.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -25,9 +22,11 @@ public interface ClothRepositoryCustom extends AbstractRepositoryCustom<Clothes>
                                           Date orderDateFrom, Date orderDateTo,
                                           String role, String shippingNumber, String boxNumber, Boolean isReject);
 
-    List<ClothInvoiceResource> findClothesForInvoice(int orderNo, Long customerId);
+    List<ClothInvoiceResource> findClothesForProformaInvoice(int orderNo, Long customerId);
 
     List<ClothOrderPendingResource> findClothesPendingForOrderAndCustomer(int orderNo, Long customerId);
 
-    List<ClothResource> findShippedCloth(String shippingNumber);
+    List<ClothShippingResource> findShippedCloth(String shippingNumber);
+
+    List<ClothInvoiceResource> findInvoice(int orderNumber, Long customerId);
 }

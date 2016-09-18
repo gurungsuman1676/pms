@@ -32,6 +32,8 @@ public class ClothController {
     private static final String CLOTHS_PENDING_LIST = "/pending_list";
     private static final String CLOTHS_SHIPPING = "/shipping_list";
     private static final String CLOTHS_ORDER_SHEET = "/order_sheet";
+    private static final String CLOTHS_PROFORMA_INVOICE = "/proforma_invoice";
+
 
 
     private static final String CLOTHS_REPORT = "/report";
@@ -102,11 +104,18 @@ public class ClothController {
 
 
 
-    @RequestMapping(value = CLOTHS_INVOICE, method = RequestMethod.GET)
+    @RequestMapping(value = CLOTHS_PROFORMA_INVOICE, method = RequestMethod.GET)
     public void createOrderInvoice(@RequestParam Long orderNo, @RequestParam Long customerId
             , HttpServletResponse httpServletResponse) {
-        reportingService.createOrderInvoice(orderNo, customerId, httpServletResponse);
+        reportingService.createProformaInvoice(orderNo, customerId, httpServletResponse);
     }
+
+    @RequestMapping(value = CLOTHS_INVOICE, method = RequestMethod.GET)
+    public void getInvoice(@RequestParam Long orderNo, @RequestParam Long customerId
+            , HttpServletResponse httpServletResponse) {
+        reportingService.createInvoice(orderNo, customerId, httpServletResponse);
+    }
+
 
     @RequestMapping(value = CLOTHS_PENDING_LIST, method = RequestMethod.GET)
     public void createPendingList(@RequestParam Long orderNo, @RequestParam Long customerId

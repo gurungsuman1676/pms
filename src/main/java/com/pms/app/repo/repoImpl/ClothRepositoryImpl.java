@@ -15,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRepository> implements ClothRepositoryCustom {
     public ClothRepositoryImpl() {
@@ -48,7 +47,6 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
         BooleanBuilder where = getBooleanBuilder(customerId, locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom, orderDateTo, role, shippingNumber, boxNumber, isRejected, clothes);
         return repository.findAll(where, pageable);
     }
-
 
 
     @Override
@@ -121,7 +119,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
     }
 
     @Override
-    public List<ClothInvoiceResource> findClothesForInvoice(int orderNo, Long customerId) {
+    public List<ClothInvoiceResource> findClothesForProformaInvoice(int orderNo, Long customerId) {
         QClothes clothes = QClothes.clothes;
         return from(clothes)
                 .leftJoin(clothes.print)
@@ -175,33 +173,57 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
     }
 
     @Override
-    public List<ClothResource> findShippedCloth(String shippingNumber) {
+    public List<ClothShippingResource> findShippedCloth(String shippingNumber) {
         QClothes clothes = QClothes.clothes;
         return from(clothes)
                 .where(clothes.shipping.eq(shippingNumber))
-                .leftJoin(clothes.location)
+                .leftJoin(clothes.print)
+                .groupBy(clothes.boxNumber)
+                .groupBy(clothes.price)
+                .groupBy(clothes.color)
+                .groupBy(clothes.print)
+                .list(new QClothShippingResource(
+                        clothes.id,
+                        clothes.price.design.name,
+                        clothes.price.size.name,
+                        clothes.color.name,
+                        clothes.order_no,
+                        clothes.count(),
+                        clothes.boxNumber
+
+                ));
+    }
+
+    @Override
+    public List<ClothInvoiceResource> findInvoice(int orderNumber, Long customerId) {
+        QClothes clothes = QClothes.clothes;
+        return from(clothes)
                 .leftJoin(clothes.print)
                 .leftJoin(clothes.print.currency)
-                .list(new QClothResource(
-                        clothes.id,
-                        clothes.location.name,
-                        clothes.price.amount,
-                        clothes.customer.currency.name,
-                        clothes.order_no,
+                .innerJoin(clothes.price)
+                .where(clothes.order_no.eq(orderNumber).and(clothes.location.name.eq("SHIPPING"))
+                        .and(clothes.customer.id.eq(customerId)))
+                .groupBy(clothes.boxNumber)
+                .groupBy(clothes.price)
+                .groupBy(clothes.color)
+                .groupBy(clothes.print)
+                .list(new QClothInvoiceResource(
                         clothes.price.design.name,
-                        clothes.price.yarn.name,
-                        clothes.color.code,
                         clothes.price.size.name,
-                        clothes.customer.name,
-                        clothes.deliver_date,
-                        clothes.print.currency.name,
-                        clothes.print.amount,
+                        clothes.color.name,
+                        clothes.color.code,
+                        clothes.count(),
                         clothes.print.name,
-                        clothes.shipping,
+                        clothes.created,
+                        clothes.deliver_date,
+                        clothes.customer.name,
+                        clothes.order_no,
                         clothes.boxNumber,
-                        clothes.weight,
-                        clothes.isReturn,
-                        clothes.created
+                        clothes.print.amount,
+                        clothes.print.currency.name,
+                        clothes.shipping,
+                        clothes.price.amount,
+                        clothes.customer.currency.name
                 ));
     }
 
@@ -210,19 +232,19 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                                              Date orderDateTo, String role, String shippingNumber,
                                              String boxNumber, Boolean isReject, QClothes clothes) {
         BooleanBuilder where = new BooleanBuilder();
-        if(role != null){
+        if (role != null) {
             where.and(clothes.location.name.eq(role));
         }
 
         if (barcode != null && barcode != 0L) {
             where.and(clothes.id.eq(barcode));
-        } else if(isReject != null  && isReject){
+        } else if (isReject != null && isReject) {
             where.and(clothes.isReturn.isTrue());
-            if(orderDateFrom != null && orderDateTo != null){
-                where.and(clothes.created.between(orderDateFrom,orderDateTo));
+            if (orderDateFrom != null && orderDateTo != null) {
+                where.and(clothes.created.between(orderDateFrom, orderDateTo));
 
             }
-        }else  {
+        } else {
             if (orderNo != null) {
                 where.and(clothes.order_no.eq(orderNo));
             }
@@ -238,22 +260,22 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
             if (deliveryDateTo != null) {
                 where.and(clothes.deliver_date.before(deliveryDateTo));
             }
-            if (    orderDateFrom != null) {
+            if (orderDateFrom != null) {
                 where.and(clothes.created.after(orderDateFrom));
             }
             if (orderDateTo != null) {
                 where.and(clothes.created.before(orderDateTo));
             }
 
-            if(shippingNumber != null){
+            if (shippingNumber != null) {
                 where.and(clothes.shipping.eq(shippingNumber));
             }
 
-            if(boxNumber != null){
+            if (boxNumber != null) {
                 where.and(clothes.boxNumber.eq(boxNumber));
             }
 
-            if(isReject != null) {
+            if (isReject != null) {
                 where.and(clothes.isReturn.isFalse());
             }
         }
