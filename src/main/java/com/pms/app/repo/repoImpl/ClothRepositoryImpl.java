@@ -130,6 +130,9 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .groupBy(clothes.price)
                 .groupBy(clothes.color)
                 .groupBy(clothes.print)
+                .orderBy(clothes.price.design.id.asc())
+                .orderBy(clothes.color.code.asc())
+                .orderBy(clothes.price.size.id.asc())
                 .list(new QClothInvoiceResource(
                         clothes.price.design.name,
                         clothes.price.size.name,
@@ -156,6 +159,14 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
         return from(clothes)
                 .leftJoin(clothes.print)
                 .leftJoin(clothes.location)
+                .groupBy(clothes.location)
+                .groupBy(clothes.price)
+                .groupBy(clothes.color)
+                .groupBy(clothes.print)
+                .orderBy(clothes.price.design.id.asc())
+                .orderBy(clothes.price.size.id.asc())
+                .orderBy(clothes.color.code.asc())
+                .orderBy(clothes.location.id.asc())
                 .where(clothes.order_no.eq(orderNo)
                         .and(clothes.customer.id.eq(customerId)).and((clothes.location.isNull().or(clothes.location.name.ne("SHIPPING")))))
                 .list(new QClothOrderPendingResource(
@@ -168,7 +179,8 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                         clothes.deliver_date,
                         clothes.customer.name,
                         clothes.order_no,
-                        clothes.location.name
+                        clothes.location.name,
+                        clothes.count()
                 ));
     }
 
@@ -182,6 +194,11 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .groupBy(clothes.price)
                 .groupBy(clothes.color)
                 .groupBy(clothes.print)
+                .orderBy(clothes.boxNumber.asc())
+                .orderBy(clothes.order_no.asc())
+                .orderBy(clothes.price.design.id.asc())
+                .orderBy(clothes.color.code.asc())
+                .orderBy(clothes.price.size.id.asc())
                 .list(new QClothShippingResource(
                         clothes.id,
                         clothes.price.design.name,
@@ -189,7 +206,8 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                         clothes.color.name,
                         clothes.order_no,
                         clothes.count(),
-                        clothes.boxNumber
+                        clothes.boxNumber,
+                        clothes.color.code
 
                 ));
     }
@@ -215,6 +233,11 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .groupBy(clothes.price)
                 .groupBy(clothes.color)
                 .groupBy(clothes.print)
+                .orderBy(clothes.boxNumber.asc())
+                .orderBy(clothes.order_no.asc())
+                .orderBy(clothes.price.design.id.asc())
+                .orderBy(clothes.color.code.asc())
+                .orderBy(clothes.price.size.id.asc())
                 .list(new QClothInvoiceResource(
                         clothes.price.design.name,
                         clothes.price.size.name,

@@ -20,6 +20,7 @@ public class ClothOrderPendingResource {
     private String customerName;
     private Integer orderNo;
     private String location;
+    private Long count;
 
 
     @QueryProjection
@@ -32,7 +33,8 @@ public class ClothOrderPendingResource {
                                      Date deliveryDate,
                                      String customerName,
                                      Integer orderNo,
-                                     String location) {
+                                     String location,
+                                     Long count) {
 
         this.designName = designName;
         this.sizeName = sizeName;
@@ -44,6 +46,7 @@ public class ClothOrderPendingResource {
         this.customerName = customerName;
         this.orderNo = orderNo;
         this.location = location;
+        this.count = count;
     }
 }
 

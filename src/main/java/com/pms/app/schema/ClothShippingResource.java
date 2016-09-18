@@ -26,6 +26,7 @@ public class ClothShippingResource {
     private Integer order_no;
     private Long count;
     private String boxNumber;
+    private String colorCode;
 
 
     @QueryProjection
@@ -36,7 +37,8 @@ public class ClothShippingResource {
             String colorName,
             Integer order_no,
             Long count,
-            String boxNumber) {
+            String boxNumber,
+            String colorCode) {
 
         this.id = id;
         this.designName = designName;
@@ -45,5 +47,6 @@ public class ClothShippingResource {
         this.order_no = order_no;
         this.count = count;
         this.boxNumber = boxNumber;
+        this.colorCode = colorCode;
     }
 }

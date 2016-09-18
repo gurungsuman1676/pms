@@ -113,27 +113,39 @@ public class ReportingServiceImpl implements ReportingService {
             sizHeadCell.setCellValue("Size");
             sizHeadCell.setCellStyle(style);
 
-            Cell quantityHeadCell = headerRow.createCell(3);
+
+
+            Cell colorHeadCell = headerRow.createCell(3);
+            colorHeadCell.setCellValue("Colour Name");
+            colorHeadCell.setCellStyle(style);
+
+            Cell colorCodeHeadCell = headerRow.createCell(4);
+            colorCodeHeadCell.setCellValue("Colour Code");
+            colorCodeHeadCell.setCellStyle(style);
+
+            Cell quantityHeadCell = headerRow.createCell(5);
             quantityHeadCell.setCellValue("Qty");
             quantityHeadCell.setCellStyle(style);
 
 
-            Cell priceHeader = headerRow.createCell(4);
+            Cell priceHeader = headerRow.createCell(6);
             priceHeader.setCellValue("Rate");
             priceHeader.setCellStyle(style);
 
 
-            Cell printAmountHeader = headerRow.createCell(5);
+            Cell printAmountHeader = headerRow.createCell(7);
             printAmountHeader.setCellValue("Print Rate");
             printAmountHeader.setCellStyle(style);
 
 
-            Cell amountHeadCell = headerRow.createCell(6);
+            Cell amountHeadCell = headerRow.createCell(8);
             amountHeadCell.setCellValue("Amount");
             amountHeadCell.setCellStyle(style);
 
 
-            Cell emptyHeadCell = headerRow.createCell(7);
+
+
+            Cell emptyHeadCell = headerRow.createCell(9);
             emptyHeadCell.setCellStyle(style);
             Long totalCount = 0L;
 
@@ -154,23 +166,31 @@ public class ReportingServiceImpl implements ReportingService {
                 sizeCell.setCellValue(cloth.getSizeName());
 
 
-                Cell quantityCell = row.createCell(3);
+                Cell colorNameCell = row.createCell(3);
+                colorNameCell.setCellValue(cloth.getColor());
+
+
+                Cell colorCodeCell = row.createCell(4);
+                colorCodeCell.setCellValue(cloth.getColorCode());
+
+
+                Cell quantityCell = row.createCell(5);
                 quantityCell.setCellValue(cloth.getClothCount());
 
 
-                Cell priceCell = row.createCell(4);
+                Cell priceCell = row.createCell(6);
                 priceCell.setCellValue(cloth.getCurrency() + cloth.getPrice());
 
 
-                Cell printAmount = row.createCell(5);
+                Cell printAmount = row.createCell(7);
                 printAmount.setCellValue(cloth.getPrint() != null ? cloth.getPrintCurrency() + cloth.getPrintAmount() : "");
 
 
-                Cell amountCell = row.createCell(6);
+                Cell amountCell = row.createCell(8);
                 amountCell.setCellValue(cloth.getCurrency() + (cloth.getClothCount() * cloth.getPrice()));
 
 
-                Cell emptyCell = row.createCell(7);
+                Cell emptyCell = row.createCell(9);
 
                 totalCount += cloth.getClothCount();
                 totalPrice += cloth.getPrice() * cloth.getClothCount();
@@ -183,10 +203,10 @@ public class ReportingServiceImpl implements ReportingService {
             Cell totalValueTextCell = lastRow.createCell(1);
             totalValueTextCell.setCellStyle(style);
             totalValueTextCell.setCellValue("Total");
-            Cell totalValueCell = lastRow.createCell(3);
+            Cell totalValueCell = lastRow.createCell(5);
             totalValueCell.setCellValue(totalCount);
             totalValueCell.setCellStyle(style);
-            Cell totalPriceCell = lastRow.createCell(6);
+            Cell totalPriceCell = lastRow.createCell(8);
             totalPriceCell.setCellValue(resources.get(0).getCurrency() + totalPrice);
             totalPriceCell.setCellStyle(style);
         }
@@ -735,11 +755,15 @@ public class ReportingServiceImpl implements ReportingService {
             printHeadCell.setCellValue("Print");
             printHeadCell.setCellStyle(style);
 
-            Cell locationHeadCell = headerRow.createCell(6);
+            Cell qtyHeadCell = headerRow.createCell(6);
+            qtyHeadCell.setCellValue("QTY");
+            qtyHeadCell.setCellStyle(style);
+
+            Cell locationHeadCell = headerRow.createCell(7);
             locationHeadCell.setCellValue("Location");
             locationHeadCell.setCellStyle(style);
 
-            Cell emptyHeadCell = headerRow.createCell(7);
+            Cell emptyHeadCell = headerRow.createCell(8);
             emptyHeadCell.setCellStyle(style);
             Long totalCount = 0L;
             for (ClothOrderPendingResource cloth : resources) {
@@ -789,19 +813,24 @@ public class ReportingServiceImpl implements ReportingService {
                 printCell.setCellStyle(isOdd ? style : newStyle);
 
 
-                Cell locationCell = row.createCell(6);
+                Cell qtyCell = row.createCell(6);
+                qtyCell.setCellValue(cloth.getCount());
+                qtyCell.setCellStyle(isOdd ? style : newStyle);
+
+
+                Cell locationCell = row.createCell(7);
                 locationCell.setCellValue(cloth.getLocation() == null ? "N/A" : cloth.getLocation());
                 locationCell.setCellStyle(isOdd ? style : newStyle);
 
 
-                Cell emptyCell = row.createCell(7);
+                Cell emptyCell = row.createCell(8);
                 emptyCell.setCellStyle(isOdd ? style : newStyle);
                 totalCount++;
 
             }
 
         }
-        for (int i = 0; i <= 7; i++) {
+        for (int i = 0; i <= 8; i++) {
             sheet.autoSizeColumn(i);
         }
         exportToExcel(httpServletResponse, workbook);
@@ -847,6 +876,9 @@ public class ReportingServiceImpl implements ReportingService {
             style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 
 
+
+
+
             Row headerRow = sheet.createRow(rownum);
 
 
@@ -860,11 +892,15 @@ public class ReportingServiceImpl implements ReportingService {
             sizeHeader.setCellStyle(style);
 
             Cell colorCodeHeader = headerRow.createCell(2);
-            colorCodeHeader.setCellValue("Color");
+            colorCodeHeader.setCellValue("Color Name");
             colorCodeHeader.setCellStyle(style);
 
+            Cell color = headerRow.createCell(3);
+            color.setCellValue("Color Code");
+            color.setCellStyle(style);
 
-            Cell rejectHeader = headerRow.createCell(3);
+
+            Cell rejectHeader = headerRow.createCell(4);
             rejectHeader.setCellValue("QTY");
             rejectHeader.setCellStyle(style);
 
@@ -954,6 +990,10 @@ public class ReportingServiceImpl implements ReportingService {
 
                         Cell colorCell = clothRow.createCell(2);
                         colorCell.setCellValue(res.getColorName());
+
+
+                        Cell colorCodeCell = clothRow.createCell(2);
+                        colorCell.setCellValue(res.getColorCode());
 
                         Cell snCell = clothRow.createCell(3);
                         snCell.setCellValue(res.getCount());
@@ -1095,27 +1135,36 @@ public class ReportingServiceImpl implements ReportingService {
             sizHeadCell.setCellValue("Size");
             sizHeadCell.setCellStyle(style);
 
-            Cell quantityHeadCell = headerRow.createCell(3);
+
+            Cell colorHeadCell = headerRow.createCell(3);
+            colorHeadCell.setCellValue("Colour Name");
+            colorHeadCell.setCellStyle(style);
+
+            Cell colorCodeHeadCell = headerRow.createCell(4);
+            colorCodeHeadCell.setCellValue("Colour Code");
+            colorCodeHeadCell.setCellStyle(style);
+
+            Cell quantityHeadCell = headerRow.createCell(5);
             quantityHeadCell.setCellValue("Qty");
             quantityHeadCell.setCellStyle(style);
 
 
-            Cell priceHeader = headerRow.createCell(4);
+            Cell priceHeader = headerRow.createCell(6);
             priceHeader.setCellValue("Rate");
             priceHeader.setCellStyle(style);
 
 
-            Cell printAmountHeader = headerRow.createCell(5);
+            Cell printAmountHeader = headerRow.createCell(7);
             printAmountHeader.setCellValue("Print Rate");
             printAmountHeader.setCellStyle(style);
 
 
-            Cell amountHeadCell = headerRow.createCell(6);
+            Cell amountHeadCell = headerRow.createCell(8);
             amountHeadCell.setCellValue("Amount");
             amountHeadCell.setCellStyle(style);
 
 
-            Cell emptyHeadCell = headerRow.createCell(7);
+            Cell emptyHeadCell = headerRow.createCell(9);
             emptyHeadCell.setCellStyle(style);
             Long totalCount = 0L;
 
@@ -1197,24 +1246,31 @@ public class ReportingServiceImpl implements ReportingService {
                         Cell sizeCell = row.createCell(2);
                         sizeCell.setCellValue(cloth.getSizeName());
 
+                        Cell colorNameCell = row.createCell(3);
+                        colorNameCell.setCellValue(cloth.getColor());
 
-                        Cell quantityCell = row.createCell(3);
+
+                        Cell colorCodeCell = row.createCell(4);
+                        colorCodeCell.setCellValue(cloth.getColorCode());
+
+
+
+                        Cell quantityCell = row.createCell(5);
                         quantityCell.setCellValue(cloth.getClothCount());
 
 
-                        Cell priceCell = row.createCell(4);
+                        Cell priceCell = row.createCell(6);
                         priceCell.setCellValue(cloth.getCurrency() + cloth.getPrice());
 
-
-                        Cell printAmount = row.createCell(5);
+                        Cell printAmount = row.createCell(7);
                         printAmount.setCellValue(cloth.getPrint() != null ? cloth.getPrintCurrency() + cloth.getPrintAmount() : "");
 
 
-                        Cell amountCell = row.createCell(6);
+                        Cell amountCell = row.createCell(8);
                         amountCell.setCellValue(cloth.getCurrency() + (cloth.getClothCount() * cloth.getPrice()));
 
 
-                        Cell emptyCell = row.createCell(7);
+                        Cell emptyCell = row.createCell(9);
 
                         totalCount += cloth.getClothCount();
                         totalPrice += cloth.getPrice() * cloth.getClothCount();
@@ -1230,10 +1286,10 @@ public class ReportingServiceImpl implements ReportingService {
             Cell totalValueTextCell = lastRow.createCell(1);
             totalValueTextCell.setCellStyle(style);
             totalValueTextCell.setCellValue("Total");
-            Cell totalValueCell = lastRow.createCell(3);
+            Cell totalValueCell = lastRow.createCell(5);
             totalValueCell.setCellValue(totalCount);
             totalValueCell.setCellStyle(style);
-            Cell totalPriceCell = lastRow.createCell(6);
+            Cell totalPriceCell = lastRow.createCell(8);
             totalPriceCell.setCellValue(resources.get(0).getCurrency() + totalPrice);
             totalPriceCell.setCellStyle(style);
 
