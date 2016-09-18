@@ -941,7 +941,7 @@ public class ReportingServiceImpl implements ReportingService {
                 barcodeCell.setCellStyle(boxNumberStyle);
 
                 Map<Integer, List<ClothShippingResource>> orderNoAndResourceMap = new HashMap<Integer, List<ClothShippingResource>>();
-                clothResources.forEach(r -> {
+                orderAndResourceMap.get(boxNumber).forEach(r -> {
 
                     List<ClothShippingResource> clothShippingResources = orderNoAndResourceMap.get(r.getOrder_no());
                     if (clothShippingResources == null) {
@@ -992,10 +992,10 @@ public class ReportingServiceImpl implements ReportingService {
                         colorCell.setCellValue(res.getColorName());
 
 
-                        Cell colorCodeCell = clothRow.createCell(2);
-                        colorCell.setCellValue(res.getColorCode());
+                        Cell colorCodeCell = clothRow.createCell(3);
+                        colorCodeCell.setCellValue(res.getColorCode());
 
-                        Cell snCell = clothRow.createCell(3);
+                        Cell snCell = clothRow.createCell(4);
                         snCell.setCellValue(res.getCount());
                         subTotal += res.getCount();
 
@@ -1023,7 +1023,9 @@ public class ReportingServiceImpl implements ReportingService {
                 colorCell.setCellStyle(subTotalRowStyle);
                 Cell sizeCell = subTotalRow.createCell(2);
                 sizeCell.setCellStyle(subTotalRowStyle);
-                Cell subTotalCell = subTotalRow.createCell(3);
+                Cell colorCodeCell = subTotalRow.createCell(3);
+                colorCodeCell.setCellStyle(subTotalRowStyle);
+                Cell subTotalCell = subTotalRow.createCell(4);
                 subTotalCell.setCellStyle(subTotalRowStyle);
                 subTotalCell.setCellValue(subTotal);
                 total += subTotal;
