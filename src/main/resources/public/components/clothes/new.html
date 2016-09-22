@@ -1,12 +1,12 @@
-<div class="row">
+<div class="row form-wrapper">
     <div class="flash-msg" flash-message="3000"></div>
     <div class="col-md-6 col-md-offset-3">
-        <div class="panel panel-default valign">
+        <div class="panel panel-default">
             <div class="panel-heading">
                 Please enter the cloth details.
             </div>
             <div class="panel-body">
-                <form ng-submit="ctrl.submitCloth()" class="form-group">
+                <form ng-submit="ctrl.submitCloth()">
                     <div class="form-group">
                         <label for="orderNo">Order No</label>
                         <input class="form-control" type="text" ng-model="ctrl.cloth.orderNo" id="orderNo" autocomplete="off" required>
@@ -14,27 +14,27 @@
 
                     <div class="form-group">
                         <label>Customer</label>
-                        <selectize ng-model="ctrl.cloth.customerId" ng-change="customerSelected(ctrl.cloth.customerId)" options="options.customers"></selectize>
+                        <selectize ng-model="ctrl.cloth.customerId" config="{maxOptions: 100}" ng-change="customerSelected(ctrl.cloth.customerId)" options="options.customers"></selectize>
                     </div>
 
                     <div class="form-group">
                         <label>Yarn</label>
-                        <selectize ng-model="ctrl.cloth.yarnId" ng-change="yarnSelected(ctrl.cloth.yarnId)" options="options.yarns" required></selectize>
+                        <selectize ng-model="ctrl.cloth.yarnId" config="{maxOptions: 100}" ng-change="yarnSelected(ctrl.cloth.yarnId)" options="options.yarns" required></selectize>
                     </div>
 
                     <div class="form-group">
                         <label>Design</label>
-                        <selectize class="design-input" ng-change="fetchSize()" ng-model="ctrl.cloth.designId" options="options.designs" required></selectize>
+                        <selectize class="design-input" config="{maxOptions: 100}" ng-change="fetchSize()" ng-model="ctrl.cloth.designId" options="options.designs" required></selectize>
                     </div>
 
                     <div class="form-group">
                         <label>Size</label>
-                        <selectize ng-model="ctrl.cloth.sizeId" options="options.sizes" required></selectize>
+                        <selectize ng-model="ctrl.cloth.sizeId" config="{maxOptions: 100}" options="options.sizes" required></selectize>
                     </div>
 
                     <div class="form-group">
                         <label>Color</label>
-                        <selectize ng-model="ctrl.cloth.colorId" options="options.colors" ng-change="colorSelected(ctrl.cloth.colorId)"required></selectize>
+                        <selectize ng-model="ctrl.cloth.colorId" config="{maxOptions: 100}" options="options.colors" ng-change="colorSelected(ctrl.cloth.colorId)"required></selectize>
                     </div>
 
                     <div class="form-group">
@@ -50,7 +50,7 @@
 
                     <div class="form-group">
                         <label>Print</label>
-                        <selectize ng-model="ctrl.cloth.printId" options="options.prints" required></selectize>
+                        <selectize ng-model="ctrl.cloth.printId" config="{maxOptions: 100}" options="options.prints" required></selectize>
                     </div>
 
                     <div class="form-group">
@@ -58,7 +58,7 @@
                         <input class="form-control" type="text" ng-model="ctrl.cloth.quantity" id="quantity" autocomplete="off" required>
                     </div>
 
-                    <div class="form-group">
+                    <div>
                         <input type="submit" class="btn btn-primary" value="Add">
                     </div>
                 </form>

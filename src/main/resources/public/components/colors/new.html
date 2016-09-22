@@ -6,11 +6,11 @@
                 Please enter the color details.
             </div>
             <div class="panel-body">
-                <form ng-submit="ctrl.submitColor()" class="form-group">
+                <form ng-submit="ctrl.submitColor()">
 
                     <div class="form-group">
                         <label>Yarn</label>
-                        <selectize ng-model="ctrl.color.yarnId" options="ctrl.options.yarns" required></selectize>
+                        <selectize ng-model="ctrl.color.yarnId" config="{maxOptions: 100}" options="ctrl.options.yarns" required></selectize>
                     </div>
 
 
@@ -24,7 +24,7 @@
                         <input class="form-control" ng-model="ctrl.color.code" type="text" id="code" autocomplete="off" required>
                     </div>
 
-                    <div class="form-group">
+                    <div>
                         <input type="submit" class="btn btn-primary" value="Submit">
                     </div>
                 </form>

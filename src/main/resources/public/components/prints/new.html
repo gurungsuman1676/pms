@@ -6,7 +6,7 @@
                 Please enter the print details.
             </div>
             <div class="panel-body">
-                <form ng-submit="ctrl.submitPrint()" class="form-group">
+                <form ng-submit="ctrl.submitPrint()">
                     <div class="form-group">
                         <label for="name">Name:</label>
                         <input class="form-control" ng-model="ctrl.print.name" type="text" id="name" autocomplete="off" required>
@@ -27,7 +27,7 @@
                         <input class="form-control" ng-model="ctrl.print.amount" type="text" id="amount" autocomplete="off" required>
                     </div>
 
-                    <div class="form-group">
+                    <div>
                         <input type="submit" class="btn btn-primary" value="Submit">
                     </div>
                 </form>

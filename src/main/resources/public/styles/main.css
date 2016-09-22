@@ -123,6 +123,7 @@ input[type=checkbox] {
 .search-container {
     margin-top: 15px;
     display: table;
+    width: 100%;
 }
 
 .input-margin {
@@ -248,6 +249,10 @@ input[type=checkbox] {
     width: 90% !important;
 }
 
+.form-wrapper {
+    padding: 15px 0;
+}
+
 /*over ride bootstrap panel properties*/
 .panel {
     margin-bottom: 0px;
@@ -261,3 +266,4 @@ input[type=checkbox] {
 .search-btn-wrapper div {
     margin-right:5px;
 }
+

@@ -6,7 +6,7 @@
                 Please enter the design details.
             </div>
             <div class="panel-body">
-                <form ng-submit="ctrl.submitDesign()" class="form-group">
+                <form ng-submit="ctrl.submitDesign()">
                     <div class="form-group">
                         <label for="name">Design Name:</label>
                         <input class="form-control" ng-model="ctrl.design.name" type="text" id="name" autocomplete="off" required>
@@ -21,16 +21,16 @@
 
                     <div class="form-group" ng-show="ctrl.design.parentName">
                         <label>Design Parent</label>
-                        <selectize ng-disabled="ctrl.disableEdit" ng-model="ctrl.design.parentId" options="ctrl.options.designParents"></selectize>
+                        <selectize config="{maxOptions: 100}" ng-disabled="ctrl.disableEdit" ng-model="ctrl.design.parentId" options="ctrl.options.designParents"></selectize>
 
                     </div>
 
 
                     <div class="form-group">
                         <label>Customer Name</label>
-                        <selectize ng-disabled="ctrl.disableEdit" ng-model="ctrl.design.customerId" options="ctrl.options.customers"></selectize>
+                        <selectize config="{maxOptions: 100}" ng-disabled="ctrl.disableEdit" ng-model="ctrl.design.customerId" options="ctrl.options.customers"></selectize>
                     </div>
-                    <div class="form-group">
+                    <div>
                         <input type="submit" class="btn btn-primary" value="Submit">
                     </div>
                 </form>
