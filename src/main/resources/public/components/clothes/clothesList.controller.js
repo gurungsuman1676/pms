@@ -122,9 +122,17 @@ angular.module('sbAdminApp')
         }
 
         self.viewDetails = function (cloth) {
-            var url = 'http://localhost/customers/' + cloth.customer.name + '/' + cloth.price.designName + '.xls';
+            var url1 = 'http://localhost/customers/' + cloth.customer.name + '/' + cloth.price.designName + '.xls';
+            var url2 = 'http://localhost/customers/' + cloth.customer.name + '/' + cloth.price.designName + '.xlsx';
 
-            $window.open(url);
+            var request = new XMLHttpRequest();
+            request.open('HEAD', url1, false);
+            request.send();
+            if(request.status == 200) {
+                $window.open(url1);
+            } else {
+                $window.open(url2);
+            }
             // Papa.parse(url, {
             //     download: true,
             //     complete: function(results, file) {
