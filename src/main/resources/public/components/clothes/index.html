@@ -126,6 +126,12 @@
                     </selectize>
                 </div>
 
+                <div class="col-sm-3 input-margin">
+                    <selectize placeholder="Type" ng-model="ctrl.filterParams.typeId"
+                               options="ctrl.types">
+                    </selectize>
+                </div>
+
                 <div class="col-sm-12"></div>
 
             </div>
@@ -140,6 +146,10 @@
                     <button class="btn btn btn-primary" ng-click="ctrl.generateCSV()">Generate CSV</button>
                 </div>
 
+                <div class="pull-left">
+                    <button class="btn btn btn-primary" ng-click="ctrl.generateWeavingInvoice()">Weaving Invoice</button>
+                </div>
+
             </div>
 
             <div class="panel-body">
@@ -150,22 +160,23 @@
                            id="dataTables-example">
                         <thead>
                         <tr>
-                            <th>Barcode</th>
-                            <th>Location</th>
-                            <th>ONo</th>
+                            <th ng-if="!ctrl.weavingSelected">Barcode</th>
+                            <th ng-if="!ctrl.weavingSelected">Location</th>
+                            <th ng-if="!ctrl.weavingSelected">ONo</th>
+                            <th ng-if="ctrl.weavingSelected">Invoice No</th>
                             <th>Design Name</th>
                             <th>Yarn Name</th>
                             <th>Color Code</th>
                             <th>Size</th>
                             <th>Customer</th>
-                            <th>Delivery Date</th>
+                            <th ng-if="!ctrl.weavingSelected">Delivery Date</th>
                             <th>Print</th>
                             <th>Print Amount</th>
                             <th>Price</th>
-                            <th>Shipping No</th>
-                            <th>Box Number</th>
-                            <th style="width:165px">Actions</th>
-                            <th>Select <input type="checkbox" ng-model="ctrl.selectAll"
+                            <th ng-if="!ctrl.weavingSelected">Shipping No</th>
+                            <th ng-if="!ctrl.weavingSelected">Box Number</th>
+                            <th ng-if="!ctrl.weavingSelected" style="width:165px">Actions</th>
+                            <th ng-if="!ctrl.weavingSelected">Select <input type="checkbox" ng-model="ctrl.selectAll"
                                               ng-change="ctrl.allSelected()"></th>
                         </tr>
                         </thead>
@@ -174,21 +185,21 @@
 
 
 
-                            <td ng-class="{'cloth-warning': cloth.isReturn}">{{cloth.id}}</td>
-                            <td>{{cloth.locationName}}</td>
+                            <td ng-if="!ctrl.weavingSelected" ng-class="{'cloth-warning': cloth.isReturn}">{{cloth.id}}</td>
+                            <td ng-if="!ctrl.weavingSelected">{{cloth.locationName}}</td>
                             <td>{{cloth.order_no}}</td>
                             <td>{{cloth.price.designName}}</td>
                             <td>{{cloth.price.yarnName}}</td>
                             <td>{{cloth.colorCode}}</td>
                             <td>{{cloth.price.sizeName}}</td>
                             <td>{{cloth.customer.name}}</td>
-                            <td ng-class="{'cloth-warning': cloth.delivery_date < warningDate}">{{cloth.delivery_date | date: 'dd/MM/yyyy'}}</td>
+                            <td ng-if="!ctrl.weavingSelected" ng-class="{'cloth-warning': cloth.delivery_date < warningDate}">{{cloth.delivery_date | date: 'dd/MM/yyyy'}}</td>
                             <td><span ng-if="!cloth.print.name">N/A</span><span>{{cloth.print.name}}</span></td>
                             <td><span ng-if="!cloth.print.amount">N/A</span>{{cloth.print.amount | currency: cloth.customer.currencyName}}</td>
                             <td>{{cloth.price.amount | currency: cloth.customer.currencyName}}</td>
-                            <td>{{cloth.shippingNumber}}</td>
-                            <td>{{cloth.boxNumber}}</td>
-                            <td style="width:165px">
+                            <td ng-if="!ctrl.weavingSelected">{{cloth.shippingNumber}}</td>
+                            <td ng-if="!ctrl.weavingSelected">{{cloth.boxNumber}}</td>
+                            <td ng-if="!ctrl.weavingSelected" style="width:165px">
 
                                 <!--<button type="button" class="btn btn-xs btn-primary" ui-sref="dashboard.clothes.edit({clothId: cloth.id})">-->
                                 <!--Edit-->
@@ -204,7 +215,7 @@
                                 </button>
 
                             </td>
-                            <td>
+                            <td ng-if="!ctrl.weavingSelected">
                                 <input type="checkbox" ng-model="cloth.isChecked">
                             </td>
 

@@ -36,4 +36,6 @@ public class Clothes extends AbstractEntity {
     private Boolean isReturn = false;
 
      private String weight;
+
+    private Integer type;
 }

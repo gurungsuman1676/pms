@@ -161,6 +161,9 @@
         factory.getClothesReport = function (params) {
             $window.open(RESOURCES.apiURL + '/clothes' +'/report'+params);
         }
+        factory.getWeavingReport = function (id) {
+            $window.open(RESOURCES.apiURL + '/clothes' +'/weaving/'+id);
+        }
 
         return factory;
     };

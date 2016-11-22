@@ -7,8 +7,14 @@
             </div>
             <div class="panel-body">
                 <form ng-submit="ctrl.submitCloth()">
+
                     <div class="form-group">
-                        <label for="orderNo">Order No</label>
+                        <label for="orderNo">Type</label>
+                        <selectize ng-model="ctrl.cloth.typeId" ng-change="typeSelected(ctrl.cloth.typeId)" options="ctrl.types"></selectize>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="orderNo">{{selectedType}}</label>
                         <input class="form-control" type="text" ng-model="ctrl.cloth.orderNo" id="orderNo" autocomplete="off" required>
                     </div>
 
@@ -42,7 +48,7 @@
                         <input class="form-control" type="text" ng-model="ctrl.cloth.colorCode" ng-disabled="true">
                     </div>
 
-                    <div class="form-group">
+                    <div ng-if="ctrl.cloth.typeId == 0N" class="form-group">
                         <label for="deliveryDate">Delivery Date</label>
                         <input type="text" id='deliveryDate' class="form-control date-picker-new datepopup" name="date" data-ng-click="open($event,'adddate')" data-datepicker-popup="{{format}}" data-ng-model="ctrl.cloth.delivery_date" data-is-open="datepickers.adddate" data-min-date="self.minimum_date" data-close-text="Close" ng-change="ctrl.deliveryDateSet()" required/>
                     </div>

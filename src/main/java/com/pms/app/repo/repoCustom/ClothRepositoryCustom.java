@@ -5,6 +5,7 @@ import com.pms.app.schema.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.Date;
 import java.util.List;
 
@@ -12,15 +13,25 @@ public interface ClothRepositoryCustom extends AbstractRepositoryCustom<Clothes>
 
     Page<Clothes> findAllClothes(Long customerId, Long locationId, Integer orderNo, Long barcode, Date deliverDateFrom,
                                  Date deliveryDateTo, Date orderDateFrom, Date orderDateTo, Pageable pageable,
-                                 String number, String shippingNumber, String boxNumber, Boolean isReject);
+                                 String number, String shippingNumber, String boxNumber, Boolean isReject, Integer type);
 
 
     List<ClothOrderResource> findClothesForOrderAndCustomer(Integer orderNo, Long customerId);
 
-    List<ClothResource> findClothResource(Long customerId, Long locationId, Integer orderNo,
-                                          Long barcode, Date deliverDateFrom, Date deliveryDateTo,
-                                          Date orderDateFrom, Date orderDateTo,
-                                          String role, String shippingNumber, String boxNumber, Boolean isReject);
+
+    List<ClothResource> findClothResource(Long customerId,
+                                          Long locationId,
+                                          Integer orderNo,
+                                          Long barcode,
+                                          Date deliverDateFrom,
+                                          Date deliveryDateTo,
+                                          Date orderDateFrom,
+                                          Date orderDateTo,
+                                          String role,
+                                          String shippingNumber,
+                                          String boxNumber,
+                                          Boolean isReject,
+                                          Integer type);
 
     List<ClothInvoiceResource> findClothesForProformaInvoice(int orderNo, Long customerId);
 
@@ -29,4 +40,6 @@ public interface ClothRepositoryCustom extends AbstractRepositoryCustom<Clothes>
     List<ClothShippingResource> findShippedCloth(String shippingNumber);
 
     List<ClothInvoiceResource> findInvoice(Long orderNumber, Long customerId, String shippingNumber);
+
+    List<ClothWeavingResource> findClothesForOrder(Long id);
 }

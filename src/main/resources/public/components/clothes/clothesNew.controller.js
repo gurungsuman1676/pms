@@ -21,6 +21,8 @@ angular.module('sbAdminApp')
 
         self.cloth.delivery_date = ClothesFactory.getDate() || '';
 
+        self.types = [{ id: 0, name: "Knitting"}, {id:1, name: "Weaving"}];
+
         console.log(self.cloth.delivery_date);
 
         CustomersFactory.getCustomers(function (response) {
@@ -35,6 +37,20 @@ angular.module('sbAdminApp')
             Flash.create('danger', response.message, 'custom-class');
         });
 
+        $scope.selectedType = 'Order No';
+
+        $scope.typeSelected = function(id) {
+            if(id == 1) {
+                $scope.$apply(function() {
+                    $scope.selectedType = 'Invoice No';
+                });
+            }
+            else {
+                $scope.$apply(function() {
+                    $scope.selectedType = 'Order No';
+                });
+            }
+        }
         $scope.customerSelected = function (customerId) {
             if (customerId) {
                 //self.cloth.designId = {};

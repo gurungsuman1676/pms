@@ -12,7 +12,7 @@ import java.util.List;
 public interface ClothService {
     Page<Clothes> getClothes(Long customerId, Long locationId, Integer orderNo, Long barcode, Date deliverDateFrom,
                              Date deliveryDateTo, Date orderDateFrom, Date orderDateTo,
-                             Pageable pageable, String number, String shippingNumber, String boxNumber, Boolean isReject);
+                             Pageable pageable, String number, String shippingNumber, String boxNumber, Boolean isReject, Integer type);
 
     List<Clothes> addCloth(ClothDto clothDto);
 

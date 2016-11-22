@@ -26,4 +26,7 @@ public class ClothDto {
     private Integer quantity;
 
     private Long yarnId;
+
+    @NotNull
+    private Integer typeId;
 }

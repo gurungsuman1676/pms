@@ -41,10 +41,23 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                                         String role,
                                         String shippingNumber,
                                         String boxNumber,
-                                        Boolean isRejected) {
+                                        Boolean isRejected, Integer type) {
 
         QClothes clothes = QClothes.clothes;
-        BooleanBuilder where = getBooleanBuilder(customerId, locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom, orderDateTo, role, shippingNumber, boxNumber, isRejected, clothes);
+        BooleanBuilder where = getBooleanBuilder(customerId,
+                locationId,
+                orderNo,
+                barcode,
+                deliverDateFrom,
+                deliveryDateTo,
+                orderDateFrom,
+                orderDateTo,
+                role,
+                shippingNumber,
+                boxNumber,
+                isRejected,
+                clothes,
+                type);
         return repository.findAll(where, pageable);
     }
 
@@ -56,6 +69,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
         return from(clothes)
                 .leftJoin(clothes.print)
                 .where(clothes.order_no.eq(orderNo)
+                        .and(clothes.type.eq(0))
                         .and(clothes.customer.id.eq(customerId)))
                 .groupBy(clothes.price)
                 .groupBy(clothes.color)
@@ -86,10 +100,13 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                                                  String role,
                                                  String shippingNumber,
                                                  String boxNumber,
-                                                 Boolean isReject) {
+                                                 Boolean isReject,
+                                                 Integer type) {
 
         QClothes clothes = QClothes.clothes;
-        BooleanBuilder where = getBooleanBuilder(customerId, locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom, orderDateTo, role, shippingNumber, boxNumber, isReject, clothes);
+        BooleanBuilder where = getBooleanBuilder(customerId,
+                locationId, orderNo, barcode, deliverDateFrom,
+                deliveryDateTo, orderDateFrom, orderDateTo, role, shippingNumber, boxNumber, isReject, clothes, 0);
         return from(clothes)
                 .where(where)
                 .leftJoin(clothes.location)
@@ -114,7 +131,8 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                         clothes.boxNumber,
                         clothes.weight,
                         clothes.isReturn,
-                        clothes.created
+                        clothes.created,
+                        clothes.type
                 ));
     }
 
@@ -126,6 +144,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .leftJoin(clothes.print.currency)
                 .innerJoin(clothes.price)
                 .where(clothes.order_no.eq(orderNo)
+                        .and(clothes.type.eq(0))
                         .and(clothes.customer.id.eq(customerId)))
                 .groupBy(clothes.price)
                 .groupBy(clothes.color)
@@ -168,6 +187,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .orderBy(clothes.color.code.asc())
                 .orderBy(clothes.location.name.asc())
                 .where(clothes.order_no.eq(orderNo)
+                        .and(clothes.type.eq(0))
                         .and(clothes.customer.id.eq(customerId)).and((clothes.location.isNull().or(clothes.location.name.ne("SHIPPING")))))
                 .list(new QClothOrderPendingResource(
                         clothes.price.design.name,
@@ -188,7 +208,8 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
     public List<ClothShippingResource> findShippedCloth(String shippingNumber) {
         QClothes clothes = QClothes.clothes;
         return from(clothes)
-                .where(clothes.shipping.eq(shippingNumber))
+                .where(clothes.shipping.eq(shippingNumber)
+                        .and(clothes.type.eq(0)))
                 .leftJoin(clothes.print)
                 .groupBy(clothes.boxNumber)
                 .groupBy(clothes.price)
@@ -228,7 +249,8 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .leftJoin(clothes.print)
                 .leftJoin(clothes.print.currency)
                 .innerJoin(clothes.price)
-                .where(builder.and(clothes.shipping.eq(shippingNumber)))
+                .where(builder.and(clothes.shipping.eq(shippingNumber))
+                        .and(clothes.type.eq(1)))
                 .groupBy(clothes.boxNumber)
                 .groupBy(clothes.price)
                 .groupBy(clothes.color)
@@ -258,10 +280,35 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 ));
     }
 
+    @Override
+    public List<ClothWeavingResource> findClothesForOrder(Long id) {
+        QClothes clothes = QClothes.clothes;
+        QPrints prints = QPrints.prints;
+        return from(clothes)
+                .leftJoin(clothes.print)
+                .where(clothes.order_no.eq(id.intValue())
+                .and(clothes.type.eq(1)))
+                .groupBy(clothes.price)
+                .groupBy(clothes.color)
+                .groupBy(clothes.print)
+                .list(new QClothWeavingResource(
+                        clothes.price.design.name,
+                        clothes.price.size.name,
+                        clothes.color.name,
+                        clothes.color.code,
+                        clothes.count(),
+                        clothes.print.name,
+                        clothes.customer.name,
+                        clothes.order_no,
+                        clothes.print.amount,
+                        clothes.price.amount
+                ));
+    }
+
     private BooleanBuilder getBooleanBuilder(Long customerId, Long locationId, Integer orderNo, Long barcode,
                                              Date deliverDateFrom, Date deliveryDateTo, Date orderDateFrom,
                                              Date orderDateTo, String role, String shippingNumber,
-                                             String boxNumber, Boolean isReject, QClothes clothes) {
+                                             String boxNumber, Boolean isReject, QClothes clothes, Integer type) {
         BooleanBuilder where = new BooleanBuilder();
         if (role != null) {
             where.and(clothes.location.name.eq(role));
@@ -308,6 +355,9 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
 
             if (isReject != null) {
                 where.and(clothes.isReturn.isFalse());
+            }
+            if(type != null){
+                where.and(clothes.type.eq(type));
             }
         }
 

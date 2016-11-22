@@ -41,10 +41,10 @@ public class ClothServiceImpl implements ClothService {
 
     @Override
     public Page<Clothes> getClothes(Long customerId, Long locationId, Integer orderNo, Long barcode, Date deliverDateFrom, Date deliveryDateTo, Date orderDateFrom,
-                                    Date orderDateTo, Pageable pageable, String role, String shippingNumber, String boxNumber, Boolean isReject) {
+                                    Date orderDateTo, Pageable pageable, String role, String shippingNumber, String boxNumber, Boolean isReject, Integer type) {
         return clothRepository.findAllClothes(customerId,
                 locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom, orderDateTo, pageable,
-                role, shippingNumber, boxNumber,isReject);
+                role, shippingNumber, boxNumber,isReject,type);
     }
 
     @Override
@@ -98,6 +98,7 @@ public class ClothServiceImpl implements ClothService {
             cloth.setOrder_no(clothDto.getOrderNo());
             cloth.setCustomer(customers);
             clothes.add(cloth);
+            cloth.setType(clothDto.getTypeId());
             cloth.setStatus(Status.ACTIVE.toString());
             cloth.setColor(color);
         }

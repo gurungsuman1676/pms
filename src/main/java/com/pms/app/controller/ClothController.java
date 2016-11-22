@@ -33,6 +33,8 @@ public class ClothController {
     private static final String CLOTHS_SHIPPING = "/shipping_list";
     private static final String CLOTHS_ORDER_SHEET = "/order_sheet";
     private static final String CLOTHS_PROFORMA_INVOICE = "/proforma_invoice";
+    private static final String CLOTHS_WEAVING_ID = "/weaving"+"/{id}";
+
 
 
 
@@ -59,6 +61,7 @@ public class ClothController {
                                                 @RequestParam(required = false, value = "boxNumber") String boxNumber,
                                                 @RequestParam(required = false, value = "roles") List<String> roles,
                                                 @RequestParam(required = false, value = "isReject") Boolean isReject,
+                                                @RequestParam(required = false, value = "type") Integer type,
                                                 Pageable pageable) {
         String role = null;
         if (roles != null && !roles.isEmpty()) {
@@ -71,7 +74,7 @@ public class ClothController {
         }
 
         Page<Clothes> page = clothService.getClothes(customerId, locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom,
-                orderDateTo, pageable, role, shippingNumber, boxNumber, isReject);
+                orderDateTo, pageable, role, shippingNumber, boxNumber, isReject,type);
         return new PageResult<>(page.getTotalElements(), page.getSize(), page.getNumber(), clothConvert.convert(page.getContent()));
     }
 
@@ -143,6 +146,7 @@ public class ClothController {
                           @RequestParam(required = false, value = "boxNumber") String boxNumber,
                           @RequestParam(required = false, value = "roles") List<String> roles,
                           @RequestParam(required = false, value = "isReject") Boolean isReject,
+                          @RequestParam(required = false, value = "type") Integer type,
                           HttpServletResponse httpServletResponse) {
         String role = null;
         if (roles != null && !roles.isEmpty()) {
@@ -155,7 +159,11 @@ public class ClothController {
         }
 
         reportingService.getClothReport(customerId, locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom,
-                orderDateTo, role, shippingNumber, boxNumber, isReject, httpServletResponse);
+                orderDateTo, role, shippingNumber, boxNumber, isReject, type,httpServletResponse);
+    }
+    @RequestMapping(value = CLOTHS_WEAVING_ID, method = RequestMethod.GET)
+    public void getWeavingReport(@PathVariable Long id,HttpServletResponse httpServletResponse) {
+        reportingService.createWeaving(id, httpServletResponse);
     }
 
 }

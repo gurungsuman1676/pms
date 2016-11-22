@@ -1,5 +1,7 @@
 package com.pms.app.service.impl;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.pms.app.repo.ClothRepository;
 import com.pms.app.schema.*;
 import com.pms.app.service.ReportingService;
@@ -263,6 +265,7 @@ public class ReportingServiceImpl implements ReportingService {
                                String shippingNumber,
                                String boxNumber,
                                Boolean isReject,
+                               Integer type,
                                HttpServletResponse httpServletResponse) {
         List<ClothResource> clothResources = clothRepository.findClothResource(customerId,
                 locationId,
@@ -275,7 +278,8 @@ public class ReportingServiceImpl implements ReportingService {
                 role,
                 shippingNumber,
                 boxNumber,
-                isReject);
+                isReject,
+                type);
 
 
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -484,6 +488,8 @@ public class ReportingServiceImpl implements ReportingService {
             httpServletResponse.setHeader("Content-Disposition", "attachment; filename=MyExcel.xls");
             OutputStream out = httpServletResponse.getOutputStream();
             workbook.write(out);
+            Document iText_xls_2_pdf = new Document();
+            PdfWriter.getInstance(iText_xls_2_pdf, new FileOutputStream("Excel2PDF_Output.pdf"));
             out.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -1301,6 +1307,218 @@ public class ReportingServiceImpl implements ReportingService {
             exportToExcel(httpServletResponse, workbook);
 
         }
+    }
+
+    private HSSFSheet getWithWeavingHeaderImage(HSSFWorkbook workbook, String logo) {
+        HSSFSheet sheet = workbook.createSheet("Clothes Data");
+
+        try {
+
+            Resource resource = new ClassPathResource(logo);
+            InputStream resourceInputStream = resource.getInputStream();
+            final CreationHelper helper = workbook.getCreationHelper();
+            final Drawing drawing = sheet.createDrawingPatriarch();
+
+            final ClientAnchor anchor = helper.createClientAnchor();
+            anchor.setAnchorType(ClientAnchor.MOVE_AND_RESIZE);
+
+
+            final int pictureIndex =
+                    workbook.addPicture(IOUtils.toByteArray(resourceInputStream), Workbook.PICTURE_TYPE_PNG);
+
+
+            anchor.setCol1(0);
+            anchor.setRow1(0); // same row is okay
+            anchor.setRow2(6);
+            anchor.setCol2(9);
+            final Picture pict = drawing.createPicture(anchor, pictureIndex);
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getStackTrace());
+        } catch (IOException aa) {
+            System.out.println(aa.getStackTrace());
+        }
+        return sheet;
+    }
+
+    @Override
+    public void createWeaving(Long id, HttpServletResponse httpServletResponse) {
+        HSSFWorkbook workbook = new HSSFWorkbook();
+
+        HSSFSheet sheet = getWithWeavingHeaderImage(workbook, "/images/pms-logo.png");
+
+
+        List<ClothWeavingResource> resources = clothRepository.findClothesForOrder(id);
+        if (resources == null || resources.isEmpty()) {
+            Row headerRow = sheet.createRow(0);
+            Cell snHeadCell = headerRow.createCell(0);
+            snHeadCell.setCellValue("No cloth available");
+        } else {
+            int rownum = 8;
+
+            HSSFCellStyle style = workbook.createCellStyle();
+            style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+            style.setBorderTop(HSSFCellStyle.BORDER_THIN);
+            style.setBorderRight(HSSFCellStyle.BORDER_THIN);
+            style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+
+
+            Row startRow = sheet.createRow(rownum);
+
+            Cell startCustomerName = startRow.createCell(0);
+            startCustomerName.setCellValue("Customer Name");
+            startCustomerName.setCellStyle(style);
+
+
+
+            Cell startOrderNo = startRow.createCell(1);
+            startOrderNo.setCellValue("Invoice No");
+            startOrderNo.setCellStyle(style);
+
+
+            rownum++;
+            Row startValueRow = sheet.createRow(rownum);
+
+
+            Cell startValueCustomerName = startValueRow.createCell(0);
+            startValueCustomerName.setCellValue(resources.get(0).getCustomerName());
+            startValueCustomerName.setCellStyle(style);
+
+
+
+            Cell startValueOrderNo = startValueRow.createCell(1);
+            startValueOrderNo.setCellValue(resources.get(0).getOrderNo());
+            startValueOrderNo.setCellStyle(style);
+
+            rownum++;
+            rownum++;
+            Row headerRow = sheet.createRow(rownum);
+            Cell snHeadCell = headerRow.createCell(0);
+            snHeadCell.setCellValue("SN");
+            snHeadCell.setCellStyle(style);
+            Cell designHeadCell = headerRow.createCell(1);
+            designHeadCell.setCellValue("Design");
+            designHeadCell.setCellStyle(style);
+            Cell sizHeadCell = headerRow.createCell(2);
+            sizHeadCell.setCellValue("Size");
+            sizHeadCell.setCellStyle(style);
+            Cell colorHeadCell = headerRow.createCell(3);
+            colorHeadCell.setCellValue("Color");
+            colorHeadCell.setCellStyle(style);
+
+            Cell colorCodeHeadCell = headerRow.createCell(4);
+            colorCodeHeadCell.setCellValue("Color Code");
+            colorCodeHeadCell.setCellStyle(style);
+
+            Cell quantityHeadCell = headerRow.createCell(5);
+            quantityHeadCell.setCellValue("Quantity");
+            quantityHeadCell.setCellStyle(style);
+
+            Cell printHeadCell = headerRow.createCell(6);
+            printHeadCell.setCellValue("Print");
+            printHeadCell.setCellStyle(style);
+
+            Cell printAmountHeadCell = headerRow.createCell(7);
+            printAmountHeadCell.setCellValue("Print Amount");
+            printAmountHeadCell.setCellStyle(style);
+
+
+            Cell priceHeadCell = headerRow.createCell(8);
+            priceHeadCell.setCellValue("Price");
+            priceHeadCell.setCellStyle(style);
+
+            Long totalCount = 0L;
+            Double totalPrice = 0D;
+            for (ClothWeavingResource cloth : resources) {
+                rownum++;
+                Boolean isOdd = rownum % 2 != 0;
+                HSSFCellStyle newStyle = workbook.createCellStyle();
+                newStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+                newStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
+                newStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
+                newStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+                newStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+                newStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+
+
+                Row row = sheet.createRow(rownum);
+                Cell snCell = row.createCell(0);
+                snCell.setCellValue(rownum - 12);
+
+                snCell.setCellStyle(isOdd ? style : newStyle);
+                Cell designCell = row.createCell(1);
+                designCell.setCellValue(cloth.getDesignName());
+
+                designCell.setCellStyle(isOdd ? style : newStyle);
+
+                Cell sizeCell = row.createCell(2);
+                sizeCell.setCellValue(cloth.getSizeName());
+
+                sizeCell.setCellStyle(isOdd ? style : newStyle);
+
+
+                Cell colorCell = row.createCell(3);
+                colorCell.setCellValue(cloth.getColor());
+
+
+                colorCell.setCellStyle(isOdd ? style : newStyle);
+
+
+                Cell colorCodeCell = row.createCell(4);
+                colorCodeCell.setCellValue(cloth.getColorCode());
+
+
+                colorCodeCell.setCellStyle(isOdd ? style : newStyle);
+
+
+                Cell quantityCell = row.createCell(5);
+                quantityCell.setCellValue(cloth.getClothCount());
+
+
+                quantityCell.setCellStyle(isOdd ? style : newStyle);
+
+
+                Cell printCell = row.createCell(6);
+                printCell.setCellValue(cloth.getPrint());
+
+
+                printCell.setCellStyle(isOdd ? style : newStyle);
+
+
+                Cell printAmountCell = row.createCell(7);
+                if(cloth.getPrint() != null) {
+                    printAmountCell.setCellValue(cloth.getPrintAmount());
+                }
+
+                printAmountCell.setCellStyle(isOdd ? style : newStyle);
+
+                Cell priceCell = row.createCell(8);
+                priceCell.setCellValue(cloth.getAmount());
+                priceCell.setCellStyle(isOdd ? style : newStyle);
+
+
+                totalCount += cloth.getClothCount();
+                totalPrice += cloth.getAmount() * cloth.getClothCount();
+
+
+            }
+
+            rownum++;
+            Row lastRow = sheet.createRow(rownum);
+            Cell totalValueTextCell = lastRow.createCell(4);
+            totalValueTextCell.setCellValue("Total");
+            Cell totalValueCell = lastRow.createCell(5);
+            totalValueCell.setCellValue(totalCount);
+
+            Cell totalPriceTextCell = lastRow.createCell(7);
+            totalPriceTextCell.setCellValue("Total Price");
+            Cell totalPriceValueCell = lastRow.createCell(8);
+            totalPriceValueCell.setCellValue(totalPrice);
+        }
+
+        for (int i = 0; i <= 7; i++) {
+            sheet.autoSizeColumn(i);
+        }
+        exportToExcel(httpServletResponse, workbook);
     }
 
 }

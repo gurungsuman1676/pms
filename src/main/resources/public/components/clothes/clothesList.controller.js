@@ -28,6 +28,8 @@ angular.module('sbAdminApp')
 
         self.statuses = [{id: 1, name: "Accepted"}, {id:2, name:"Rejected"}];
 
+        self.types = [{ id: 0, name: "Knitting"}, {id:1, name: "Weaving"} ,{id:2 , name: "All"}];
+
         self.downloadOrderSheet = function () {
             ClothesFactory.downloadOrderSheet(self.filterParams.orderNo, self.filterParams.customerId);
         };
@@ -121,6 +123,10 @@ angular.module('sbAdminApp')
             });
         }
 
+        self.generateWeavingInvoice = function () {
+            ClothesFactory.getWeavingReport(self.filterParams.orderNo);
+        }
+
         self.viewDetails = function (cloth) {
             var url1 = 'http://localhost/customers/' + cloth.customer.name + '/' + cloth.price.designName + '.xls';
             var url2 = 'http://localhost/customers/' + cloth.customer.name + '/' + cloth.price.designName + '.xlsx';
@@ -151,6 +157,13 @@ angular.module('sbAdminApp')
         }
 
         self.reloadTable = function () {
+
+            if (self.filterParams.typeId == 1) {
+                self.weavingSelected = true;
+            }
+            else {
+                self.weavingSelected = false;
+            }
 
             self.clothTable.reload();
         }
@@ -230,6 +243,7 @@ angular.module('sbAdminApp')
                             shippingNumber: self.filterParams.shippingNumber,
                             boxNumber: self.filterParams.boxNumber,
                             isReject: angular.isDefined(self.filterParams.statusId) ? (Number(self.filterParams.statusId) === 1 ? false : true) : null,
+                            type: self.filterParams.typeId == 2 ? undefined : self.filterParams.typeId,
                             sort: 'id,desc',
                             page: page - 1,
                             size: params.count()
