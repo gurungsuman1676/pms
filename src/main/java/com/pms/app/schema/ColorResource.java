@@ -11,7 +11,8 @@ public class ColorResource {
     private Long id;
     private String code;
     private Long yarnId;
-    private String name;
+    private String name_company;
+    private String name_supplier;
     private String yarnName;
     private String customerName;
     private Long customerId;

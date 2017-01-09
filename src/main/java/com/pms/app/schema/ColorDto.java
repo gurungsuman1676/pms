@@ -13,5 +13,8 @@ public class ColorDto {
     @NotNull
     private Long yarnId;
     @NotNull
-    private String name;
+    private String name_company;
+    @NotNull
+    private String name_supplier ;
+
 }

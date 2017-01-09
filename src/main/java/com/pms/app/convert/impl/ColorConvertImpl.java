@@ -20,7 +20,8 @@ public class ColorConvertImpl implements ColorConvert {
     public ColorResource convert(Colors colors) {
         return ColorResource.builder()
                 .id(colors.getId())
-                .name(colors.getName())
+                .name_supplier(colors.getName_supplier())
+                .name_company(colors.getName_company())
                 .code(colors.getCode())
                 .yarnId( colors.getYarn() != null ? colors.getYarn().getId() : 0L)
                 .yarnName( colors.getYarn() !=null? colors.getYarn().getName():"N/A")

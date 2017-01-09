@@ -41,13 +41,14 @@ public class ColorServiceImpl implements ColorService {
         if(yarns == null){
             throw new RuntimeException("No such yarns available");
         }
-        Colors duplicateColors = colorRepository.findByNameAndYarnAndCode(colorDto.getName(), colorDto.getYarnId(), colorDto.getCode());
+        Colors duplicateColors = colorRepository.findByName_companyAndYarnAndCode(colorDto.getName_company(), colorDto.getYarnId(), colorDto.getCode());
         if(duplicateColors != null){
             throw new RuntimeException("Color name already set for yarn");
         }
 
         Colors newColors = new Colors();
-        newColors.setName(colorDto.getName());
+        newColors.setName_supplier(colorDto.getName_supplier());
+        newColors.setName_company(colorDto.getName_company());
         newColors.setCode(colorDto.getCode());
         newColors.setYarn(yarns);
         return colorRepository.save(newColors);
@@ -76,13 +77,15 @@ public class ColorServiceImpl implements ColorService {
         if(yarns == null){
             throw new RuntimeException("No such yarns available");
         }
-        Colors duplicateColors = colorRepository.findByNameAndYarnAndCode(colorDto.getName(), colorDto.getYarnId(), colorDto.getCode());
+        Colors duplicateColors = colorRepository.findByName_companyAndYarnAndCode(colorDto.getName_company(), colorDto.getYarnId(), colorDto.getCode());
 
         if(duplicateColors != null){
             throw new RuntimeException("Color name already set for customer");
         }
 
-        existingColor.setName(colorDto.getName());
+//        existingColor.setName(colorDto.getName());
+        existingColor.setName_supplier(colorDto.getName_supplier());
+        existingColor.setName_company(colorDto.getName_company());
         existingColor.setCode(colorDto.getCode());
         existingColor.setYarn(yarns);
         return colorRepository.save(existingColor);
