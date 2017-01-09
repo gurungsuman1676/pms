@@ -35,12 +35,17 @@
 
                     <div class="form-group">
                         <label>Size</label>
-                        <selectize ng-model="ctrl.cloth.sizeId" config="{maxOptions: 100}" options="options.sizes" required></selectize>
+                        <selectize ng-model="ctrl.cloth.sizeId" options="options.sizes" required></selectize>
                     </div>
 
                     <div class="form-group">
-                        <label>Color</label>
-                        <selectize ng-model="ctrl.cloth.colorId" config="{maxOptions: 100}" options="options.colors" ng-change="colorSelected(ctrl.cloth.colorId)"required></selectize>
+                        <label>Company Color Name</label>
+                        <selectize ng-model="ctrl.cloth.colorId" config="{labelField: 'name_company'}" options="options.colors" ng-change="colorSelected(ctrl.cloth.colorId)"required></selectize>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Supplier Color Name</label>
+                        <input class="form-control" type="text" ng-model="ctrl.cloth.color.name_supplier" ng-disabled="true">
                     </div>
 
                     <div class="form-group">
@@ -48,7 +53,7 @@
                         <input class="form-control" type="text" ng-model="ctrl.cloth.colorCode" ng-disabled="true">
                     </div>
 
-                    <div ng-if="ctrl.cloth.typeId == 0N" class="form-group">
+                    <div ng-if="ctrl.cloth.typeId == 0" class="form-group">
                         <label for="deliveryDate">Delivery Date</label>
                         <input type="text" id='deliveryDate' class="form-control date-picker-new datepopup" name="date" data-ng-click="open($event,'adddate')" data-datepicker-popup="{{format}}" data-ng-model="ctrl.cloth.delivery_date" data-is-open="datepickers.adddate" data-min-date="self.minimum_date" data-close-text="Close" ng-change="ctrl.deliveryDateSet()" required/>
                     </div>
@@ -56,7 +61,7 @@
 
                     <div class="form-group">
                         <label>Print</label>
-                        <selectize ng-model="ctrl.cloth.printId" config="{maxOptions: 100}" options="options.prints" required></selectize>
+                        <selectize ng-model="ctrl.cloth.printId" config="{maxOptions: 100}" options="options.prints"></selectize>
                     </div>
 
                     <div class="form-group">

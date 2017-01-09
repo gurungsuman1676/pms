@@ -13,6 +13,22 @@ angular.module('sbAdminApp')
         self.orderNo = ''
         self.clothes = [];
         self.showContents = true;
+
+        $scope.selectedType = 'Order No';
+
+        $scope.typeSelected = function(id) {
+            if(id == 1) {
+                $scope.$apply(function() {
+                    $scope.selectedType = 'Invoice No';
+                });
+            }
+            else {
+                $scope.$apply(function() {
+                    $scope.selectedType = 'Order No';
+                });
+            }
+        }
+
         self.allSelected = function () {
             if (self.selectAll == true) {
                 angular.forEach(self.clothes, function (value) {
