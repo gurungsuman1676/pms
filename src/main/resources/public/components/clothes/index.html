@@ -61,14 +61,16 @@
                     </selectize>
                 </div>
 
-                <div class="col-sm-3 input-margin">
-                    <input type="text" class="form-control" ng-model="ctrl.filterParams.orderNo"
-                           placeholder={{selectedType}}>
-                </div>
+
 
                 <div class="col-sm-3 input-margin">
                     <selectize placeholder="Customer" ng-model="ctrl.filterParams.customerId"
                                config="{maxOptions: 100}" options="ctrl.customers"></selectize>
+                </div>
+
+                <div class="col-sm-3 input-margin">
+                    <input type="text" class="form-control" ng-model="ctrl.filterParams.orderNo"
+                           placeholder={{selectedType}}>
                 </div>
 
                 <div class="col-sm-3 input-margin">

@@ -79,7 +79,7 @@ public class ColorServiceImpl implements ColorService {
         }
         Colors duplicateColors = colorRepository.findByName_companyAndYarnAndCode(colorDto.getName_company(), colorDto.getYarnId(), colorDto.getCode());
 
-        if(duplicateColors != null){
+        if(duplicateColors != null && !duplicateColors.getId().equals(id)){
             throw new RuntimeException("Color name already set for customer");
         }
 
