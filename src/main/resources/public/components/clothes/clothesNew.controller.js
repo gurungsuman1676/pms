@@ -23,8 +23,6 @@ angular.module('sbAdminApp')
 
         self.types = [{ id: 0, name: "Knitting"}, {id:1, name: "Weaving"}];
 
-        console.log(self.cloth.delivery_date);
-
         CustomersFactory.getCustomers(function (response) {
             $scope.options.customers = response;
         }, function (response) {
@@ -78,8 +76,10 @@ angular.module('sbAdminApp')
         }
 
         $scope.colorSelected = function (colorId) {
-            $scope.$apply(self.cloth.colorCode = (lookup[colorId].code)
-            );
+            $scope.$apply(function () {
+                self.cloth.colorCode = (lookup[colorId].code);
+                self.cloth.coloName_supplier = (lookup[colorId].name_supplier);
+            });
         }
 
         $scope.fetchSize = function () {

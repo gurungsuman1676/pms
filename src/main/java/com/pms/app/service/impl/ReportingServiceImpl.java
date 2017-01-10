@@ -1442,7 +1442,7 @@ public class ReportingServiceImpl implements ReportingService {
 
                 Row row = sheet.createRow(rownum);
                 Cell snCell = row.createCell(0);
-                snCell.setCellValue(rownum - 12);
+                snCell.setCellValue(rownum - 11);
 
                 snCell.setCellStyle(isOdd ? style : newStyle);
                 Cell designCell = row.createCell(1);

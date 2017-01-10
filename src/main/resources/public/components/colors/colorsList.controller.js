@@ -42,7 +42,7 @@ angular.module('sbAdminApp')
 
         var getFilterParams = function () {
             var filterParams = {};
-            filterParams.name = self.filterParams.name;
+            filterParams.name_company = self.filterParams.name;
             if (angular.isDefined(self.filterParams.yarnId) && self.filterParams.yarnId != null) {
                 filterParams.yarnId = self.filterParams.yarnId;
             }

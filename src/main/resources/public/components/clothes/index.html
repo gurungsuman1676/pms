@@ -56,13 +56,19 @@
             <div class="search-container" ng-show="showFilter">
 
                 <div class="col-sm-3 input-margin">
-                    <selectize placeholder="Customer" ng-model="ctrl.filterParams.customerId"
-                               config="{maxOptions: 100}" options="ctrl.customers"></selectize>
+                    <selectize placeholder="Type" ng-change="typeSelected(ctrl.filterParams.typeId)" ng-model="ctrl.filterParams.typeId"
+                               options="ctrl.types">
+                    </selectize>
                 </div>
 
                 <div class="col-sm-3 input-margin">
                     <input type="text" class="form-control" ng-model="ctrl.filterParams.orderNo"
-                           placeholder="Order No">
+                           placeholder={{selectedType}}>
+                </div>
+
+                <div class="col-sm-3 input-margin">
+                    <selectize placeholder="Customer" ng-model="ctrl.filterParams.customerId"
+                               config="{maxOptions: 100}" options="ctrl.customers"></selectize>
                 </div>
 
                 <div class="col-sm-3 input-margin">
@@ -126,12 +132,6 @@
                     </selectize>
                 </div>
 
-                <div class="col-sm-3 input-margin">
-                    <selectize placeholder="Type" ng-model="ctrl.filterParams.typeId"
-                               options="ctrl.types">
-                    </selectize>
-                </div>
-
                 <div class="col-sm-12"></div>
 
             </div>
@@ -147,7 +147,7 @@
                 </div>
 
                 <div class="pull-left">
-                    <button class="btn btn btn-primary" ng-click="ctrl.generateWeavingInvoice()">Weaving Invoice</button>
+                    <button ng-disabled= "ctrl.filterParams.typeId != 1" class="btn btn btn-primary" ng-click="ctrl.generateWeavingInvoice()">Generate Weaving Invoice</button>
                 </div>
 
             </div>

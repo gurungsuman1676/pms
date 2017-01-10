@@ -250,7 +250,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .leftJoin(clothes.print.currency)
                 .innerJoin(clothes.price)
                 .where(builder.and(clothes.shipping.eq(shippingNumber))
-                        .and(clothes.type.eq(1)))
+                        .and(clothes.type.eq(0)))
                 .groupBy(clothes.boxNumber)
                 .groupBy(clothes.price)
                 .groupBy(clothes.color)

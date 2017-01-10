@@ -11,7 +11,7 @@ angular
         labelField: 'name',
         searchField: ['name'],
         maxItems: 1,
-        maxOptions: 10,
+        maxOptions: 1000,
     })
     .directive('coreSelectize', [
         '$timeout', function ($timeout) {
