@@ -82,7 +82,7 @@ angular.module('sbAdminApp')
 
         $scope.onCodeSelected = function (id) {
             $scope.$apply(function () {
-                self.search.id = id;
+                self.search.code =lookup[id].code;
             });
         }
 
