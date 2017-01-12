@@ -10,27 +10,59 @@
 
                     <div class="form-group">
                         <label for="orderNo">Type</label>
-                        <selectize ng-model="ctrl.cloth.typeId" ng-change="typeSelected(ctrl.cloth.typeId)" options="ctrl.types"></selectize>
+                        <selectize ng-model="ctrl.cloth.typeId" ng-change="typeSelected(ctrl.cloth.typeId)"
+                                   options="ctrl.types"></selectize>
                     </div>
 
                     <div class="form-group">
                         <label for="orderNo">{{selectedType}}</label>
-                        <input class="form-control" type="text" ng-model="ctrl.cloth.orderNo" id="orderNo" autocomplete="off" required>
+                        <input class="form-control" type="text" ng-model="ctrl.cloth.orderNo" id="orderNo"
+                               autocomplete="off" required>
                     </div>
 
                     <div class="form-group">
                         <label>Customer</label>
-                        <selectize ng-model="ctrl.cloth.customerId" config="{maxOptions: 100}" ng-change="customerSelected(ctrl.cloth.customerId)" options="options.customers"></selectize>
+                        <selectize ng-model="ctrl.cloth.customerId" config="{maxOptions: 100}"
+                                   ng-change="customerSelected(ctrl.cloth.customerId)"
+                                   options="options.customers"></selectize>
                     </div>
 
-                    <div class="form-group">
-                        <label>Yarn</label>
-                        <selectize ng-model="ctrl.cloth.yarnId" config="{maxOptions: 100}" ng-change="yarnSelected(ctrl.cloth.yarnId)" options="options.yarns" required></selectize>
-                    </div>
+                    <!--<div class="form-group">-->
+                        <!--<label>Yarn</label>-->
+                        <!--<selectize ng-model="ctrl.cloth.yarnId" config="{maxOptions: 100}"-->
+                                   <!--ng-change="yarnSelected(ctrl.cloth.yarnId)" options="options.yarns"-->
+                                   <!--required></selectize>-->
+                    <!--</div>-->
 
                     <div class="form-group">
                         <label>Design</label>
-                        <selectize class="design-input" config="{maxOptions: 100}" ng-change="fetchSize()" ng-model="ctrl.cloth.designId" options="options.designs" required></selectize>
+                        <selectize class="design-input" config="{maxOptions: 100}" ng-change="fetchSize(ctrl.cloth.colorId)"
+                                   ng-model="ctrl.cloth.designId" options="options.designs" required></selectize>
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <label>Color Code </label>
+                        <selectize ng-model="ctrl.colorId" config="{labelField: 'code'}"
+                                   options="options.colors"
+                                   ng-change="onCodeSelected(ctrl.colorId)"
+                                   required></selectize>
+                    </div>
+
+                    <div class="form-group" ng-if="ctrl.search.id">
+                        <label>Supplier Color Name</label>
+                        <selectize ng-model="ctrl.cloth.colorId"
+                                   config="{labelField: 'name_supplier'}"
+                                   options="options.colors| filter : ctrl.search"
+                                   ng-change="colorSelected(ctrl.cloth.colorId)"
+                                   required></selectize>
+                    </div>
+
+                    <div class="form-group" ng-if="ctrl.search.id">
+                        <label>Company Color Name </label>
+                        <input class="form-control" type="text" ng-model="ctrl.colorName_company"
+                              ng-disabled="true">
                     </div>
 
                     <div class="form-group">
@@ -39,34 +71,25 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Company Color Name {{ctrl.cloth.colorId}}</label>
-                        <selectize ng-model="ctrl.cloth.colorId" config="{labelField: 'name_company'}" options="options.colors" ng-change="colorSelected(ctrl.cloth.colorId)"required></selectize>
-                    </div>
-
-                    <div class="form-group" >
-                        <label>Supplier Color Name</label>
-                        <input class="form-control" type="text" ng-model="ctrl.cloth.coloName_supplier" ng-disabled="true">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Color Code</label>
-                        <input class="form-control" type="text" ng-model="ctrl.cloth.colorCode" ng-disabled="true">
-                    </div>
-
-                    <div class="form-group">
                         <label for="deliveryDate">Delivery Date</label>
-                        <input type="text" id='deliveryDate' class="form-control date-picker-new datepopup" name="date" data-ng-click="open($event,'adddate')" data-datepicker-popup="{{format}}" data-ng-model="ctrl.cloth.delivery_date" data-is-open="datepickers.adddate" data-min-date="self.minimum_date" data-close-text="Close" ng-change="ctrl.deliveryDateSet()" required/>
+                        <input type="text" id='deliveryDate' class="form-control date-picker-new datepopup" name="date"
+                               data-ng-click="open($event,'adddate')" data-datepicker-popup="{{format}}"
+                               data-ng-model="ctrl.cloth.delivery_date" data-is-open="datepickers.adddate"
+                               data-min-date="self.minimum_date" data-close-text="Close"
+                               ng-change="ctrl.deliveryDateSet()" required/>
                     </div>
 
 
                     <div class="form-group">
                         <label>Print</label>
-                        <selectize ng-model="ctrl.cloth.printId" config="{maxOptions: 100}" options="options.prints"></selectize>
+                        <selectize ng-model="ctrl.cloth.printId" config="{maxOptions: 100}"
+                                   options="options.prints"></selectize>
                     </div>
 
                     <div class="form-group">
                         <label for="quantity">Quantity</label>
-                        <input class="form-control" type="text" ng-model="ctrl.cloth.quantity" id="quantity" autocomplete="off" required>
+                        <input class="form-control" type="text" ng-model="ctrl.cloth.quantity" id="quantity"
+                               autocomplete="off" required>
                     </div>
 
                     <div>

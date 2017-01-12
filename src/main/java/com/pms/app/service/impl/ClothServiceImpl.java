@@ -57,10 +57,6 @@ public class ClothServiceImpl implements ClothService {
             throw new RuntimeException("Color is required");
 
         }
-        if (clothDto.getYarnId() == null) {
-            throw new RuntimeException("Yarn is required");
-
-        }
         if (clothDto.getSizeId() == null) {
             throw new RuntimeException("Size is required");
         }
@@ -74,7 +70,11 @@ public class ClothServiceImpl implements ClothService {
         if (customers == null) {
             throw new RuntimeException("No customer available");
         }
-        Prices price = priceRepository.findByDesignAndSizeAndYarn(clothDto.getDesignId(), clothDto.getSizeId(), clothDto.getYarnId());
+
+        Colors color = colorRepository.findOne(clothDto.getColorId());
+
+
+        Prices price = priceRepository.findByDesignAndSizeAndYarn(clothDto.getDesignId(), clothDto.getSizeId(), color.getYarn().getId());
         if (price == null) {
             throw new RuntimeException("No appropriate price set");
         }
@@ -86,7 +86,6 @@ public class ClothServiceImpl implements ClothService {
             }
         }
 
-        Colors color = colorRepository.findOne(clothDto.getColorId());
         List<Clothes> clothes = new ArrayList<>();
 
         for (int i = 0; i < clothDto.getQuantity(); i++) {

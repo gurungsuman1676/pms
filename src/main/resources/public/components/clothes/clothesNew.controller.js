@@ -13,6 +13,8 @@ angular.module('sbAdminApp')
         $scope.options = {};
         var lookup = {};
         self.cloth = {};
+
+        self.search = {};
         //SizesFactory.getSizes(function (response) {
         //    $scope.options.sizes = response;
         //}, function (response) {
@@ -21,7 +23,7 @@ angular.module('sbAdminApp')
 
         self.cloth.delivery_date = ClothesFactory.getDate() || '';
 
-        self.types = [{ id: 0, name: "Knitting"}, {id:1, name: "Weaving"}];
+        self.types = [{id: 0, name: "Knitting"}, {id: 1, name: "Weaving"}];
 
         CustomersFactory.getCustomers(function (response) {
             $scope.options.customers = response;
@@ -37,14 +39,14 @@ angular.module('sbAdminApp')
 
         $scope.selectedType = 'Order No';
 
-        $scope.typeSelected = function(id) {
-            if(id == 1) {
-                $scope.$apply(function() {
+        $scope.typeSelected = function (id) {
+            if (id == 1) {
+                $scope.$apply(function () {
                     $scope.selectedType = 'Invoice No';
                 });
             }
             else {
-                $scope.$apply(function() {
+                $scope.$apply(function () {
                     $scope.selectedType = 'Order No';
                 });
             }
@@ -60,31 +62,34 @@ angular.module('sbAdminApp')
             }
         }
 
-        $scope.yarnSelected = function (yarnId) {
-            if (yarnId) {
-                self.cloth.colorCode = '';
-                $scope.fetchSize();
-                ColorsFactory.getCustomerColors(yarnId, function (response) {
-                    $scope.options.colors = response;
-                    for (var i = 0, len = $scope.options.colors.length; i < len; i++) {
-                        lookup[$scope.options.colors[i].id] = $scope.options.colors[i];
-                    }
-                }, function (response) {
-                    Flash.create('danger', response.message, 'custom-class');
-                })
+
+        ColorsFactory.getColors( function (response) {
+            $scope.options.colors = response;
+            for (var i = 0, len = $scope.options.colors.length; i < len; i++) {
+                lookup[$scope.options.colors[i].id] = $scope.options.colors[i];
             }
-        }
+        }, function (response) {
+            Flash.create('danger', response.message, 'custom-class');
+        })
 
         $scope.colorSelected = function (colorId) {
+            $scope.fetchSize(colorId);
             $scope.$apply(function () {
-                self.cloth.colorCode = (lookup[colorId].code);
-                self.cloth.coloName_supplier = (lookup[colorId].name_supplier);
+                self.colorName_company = (lookup[colorId].name_company);
+            });
+
+        }
+
+        $scope.onCodeSelected = function (id) {
+            $scope.$apply(function () {
+                self.search.id = id;
             });
         }
 
-        $scope.fetchSize = function () {
-            if (self.cloth.yarnId && self.cloth.designId) {
-                SizesFactory.getSizesbyYarns(self.cloth.designId, self.cloth.yarnId, function (response) {
+        $scope.fetchSize = function (colorId) {
+            if (colorId && self.cloth.designId) {
+               var yarnId = lookup[colorId].yarnId;
+                SizesFactory.getSizesbyYarns(self.cloth.designId, yarnId, function (response) {
                     $scope.options.sizes = response;
                 }, function (response) {
                     Flash.create('danger', response.message, 'custom-class');

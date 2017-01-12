@@ -53,6 +53,7 @@ angular.module('sbAdminApp')
                 getData: function ($defer, params) {
                     var orderedData = self.designs;
                     orderedData = $filter('filter')(orderedData, getFilterParams());
+                    params.total(orderedData.length);
                     $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
                 }
             });
