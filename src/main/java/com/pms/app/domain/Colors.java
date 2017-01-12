@@ -14,9 +14,6 @@ public class Colors extends AbstractEntity{
     @ManyToOne
     private Yarns yarn;
 
-    @Deprecated
-    private String name;
-
     private String name_company;
 
     private String name_supplier ;

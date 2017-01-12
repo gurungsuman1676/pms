@@ -27,7 +27,7 @@ public class ColorServiceImpl implements ColorService {
 
     @Override
     public List<Colors> getColors() {
-        return colorRepository.findAllByOrderByNameAsc();
+        return colorRepository.findAllByOrderByName_companyAsc();
     }
 
     @Override

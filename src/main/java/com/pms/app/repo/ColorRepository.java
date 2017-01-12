@@ -12,12 +12,13 @@ import java.util.List;
 public interface ColorRepository extends AbstractRepository<Colors> {
 
 
-    @Query("SELECT c FROM Colors c WHERE c.name_supplier=:name AND c.yarn.id =:yarnId AND c.code =:code")
-    Colors findByName_companyAndYarnAndCode(@Param("name") String name, @Param("yarnId") Long yarnId, @Param("code") String code);
+    @Query("SELECT c FROM Colors c WHERE c.name_supplier=:name_supplier AND c.yarn.id =:yarnId AND c.code =:code")
+    Colors findByName_companyAndYarnAndCode(@Param("name_supplier") String name, @Param("yarnId") Long yarnId, @Param("code") String code);
 
-    @Query("SELECT c FROM Colors c WHERE c.yarn.id =:yarnId ORDER BY c.name ASC")
+    @Query("SELECT c FROM Colors c WHERE c.yarn.id =:yarnId ORDER BY c.name_company ASC")
     List<Colors> findByYarn(@Param("yarnId") Long yarnId);
 
-    List<Colors> findAllByOrderByNameAsc();
+    @Query("SELECT c FROM Colors c  ORDER BY c.name_company ASC")
+    List<Colors> findAllByOrderByName_companyAsc();
 
 }
