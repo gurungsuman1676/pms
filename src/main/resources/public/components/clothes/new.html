@@ -44,24 +44,16 @@
 
                     <div class="form-group">
                         <label>Color Code </label>
-                        <selectize ng-model="ctrl.colorId"
+                        <selectize ng-model="ctrl.cloth.colorId"
                                    config="{maxOptions: 100}"
                                    options="options.colors"
-                                   ng-change="onCodeSelected(ctrl.colorId)"
-                                   required></selectize>
-                    </div>
-
-                    <div class="form-group" ng-if="ctrl.search.code">
-                        <label>Supplier Color Name</label>
-                        <selectize ng-model="ctrl.cloth.colorId"
-                                   config="{labelField: 'name_supplier'}"
-                                   options="options.colors| filter : ctrl.search"
                                    ng-change="colorSelected(ctrl.cloth.colorId)"
                                    required></selectize>
                     </div>
 
-                    <div class="form-group" ng-if="ctrl.search.code">
-                        <label>Company Color Name </label>
+
+                    <div class="form-group" ng-if="ctrl.cloth.colorId">
+                        <label> Color Name </label>
                         <input class="form-control" type="text" ng-model="ctrl.colorName_company"
                               ng-disabled="true">
                     </div>

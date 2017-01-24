@@ -76,16 +76,12 @@ angular.module('sbAdminApp')
         $scope.colorSelected = function (colorId) {
             $scope.fetchSize(colorId);
             $scope.$apply(function () {
-                self.colorName_company = (lookup[colorId].name_company);
+                self.colorName_company = colorId == undefined ? undefined :(lookup[colorId].name_company);
             });
 
         }
 
-        $scope.onCodeSelected = function (id) {
-            $scope.$apply(function () {
-                self.search.code =lookup[id].code;
-            });
-        }
+
 
         $scope.fetchSize = function (colorId) {
             if (colorId && self.cloth.designId) {
@@ -107,8 +103,10 @@ angular.module('sbAdminApp')
 
         self.submitCloth = function () {
             ClothesFactory.createCloth(self.cloth, function (response) {
-                $state.go('dashboard.clothes.index');
                 Flash.create('success', 'New Cloth added successfully', 'custom-class');
+                self.cloth.quantity = undefined;
+                self.cloth.sizeId = undefined;
+
             }, function (response) {
                 Flash.create('danger', response.message, 'custom-class');
             });

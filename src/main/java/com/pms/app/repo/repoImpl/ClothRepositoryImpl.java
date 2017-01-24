@@ -155,7 +155,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .list(new QClothInvoiceResource(
                         clothes.price.design.name,
                         clothes.price.size.name,
-                        clothes.color.name_supplier,
+                        clothes.color.name_company,
                         clothes.color.code,
                         clothes.count(),
                         clothes.print.name,
@@ -224,7 +224,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                         clothes.id,
                         clothes.price.design.name,
                         clothes.price.size.name,
-                        clothes.color.name_supplier,
+                        clothes.color.name_company,
                         clothes.order_no,
                         clothes.count(),
                         clothes.boxNumber,

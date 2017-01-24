@@ -1,7 +1,6 @@
 package com.pms.app.service.impl;
 
 import com.pms.app.domain.Colors;
-import com.pms.app.domain.Customers;
 import com.pms.app.domain.Yarns;
 import com.pms.app.repo.ColorRepository;
 import com.pms.app.repo.YarnRepository;
@@ -41,13 +40,12 @@ public class ColorServiceImpl implements ColorService {
         if(yarns == null){
             throw new RuntimeException("No such yarns available");
         }
-        Colors duplicateColors = colorRepository.findByName_companyAndYarnAndCode(colorDto.getName_company(), colorDto.getYarnId(), colorDto.getCode());
+        Colors duplicateColors = colorRepository.findByCode(colorDto.getCode());
         if(duplicateColors != null){
-            throw new RuntimeException("Color name already set for yarn");
+            throw new RuntimeException("Color code already exist");
         }
 
         Colors newColors = new Colors();
-        newColors.setName_supplier(colorDto.getName_supplier());
         newColors.setName_company(colorDto.getName_company());
         newColors.setCode(colorDto.getCode());
         newColors.setYarn(yarns);
@@ -77,14 +75,13 @@ public class ColorServiceImpl implements ColorService {
         if(yarns == null){
             throw new RuntimeException("No such yarns available");
         }
-        Colors duplicateColors = colorRepository.findByName_companyAndYarnAndCode(colorDto.getName_company(), colorDto.getYarnId(), colorDto.getCode());
+        Colors duplicateColors = colorRepository.findByCode(colorDto.getCode());
 
         if(duplicateColors != null && !duplicateColors.getId().equals(id)){
-            throw new RuntimeException("Color name already set for customer");
+            throw new RuntimeException("Color code already exist");
         }
 
 //        existingColor.setName(colorDto.getName());
-        existingColor.setName_supplier(colorDto.getName_supplier());
         existingColor.setName_company(colorDto.getName_company());
         existingColor.setCode(colorDto.getCode());
         existingColor.setYarn(yarns);

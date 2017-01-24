@@ -45,8 +45,7 @@
                         <tr>
                             <th>S.N.</th>
                             <th>Yarn</th>
-                            <th>Supplier Color Name</th>
-                            <th> Company Color Name</th>
+                            <th>Color Name</th>
                             <th>Color Code</th>
                             <th>Actions</th>
                         </tr>
@@ -55,7 +54,6 @@
                         <tr class="odd gradeX" ng-repeat="color in $data">
                             <td class="center">{{$index + 1}}</td>
                             <td>{{color.yarnName}}</td>
-                            <td>{{color.name_supplier}}</td>
                             <td>{{color.name_company}}</td>
                             <td>{{color.code}}</td>
                             <td>
