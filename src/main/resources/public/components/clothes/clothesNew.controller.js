@@ -67,6 +67,7 @@ angular.module('sbAdminApp')
             $scope.options.colors = response;
             for (var i = 0, len = $scope.options.colors.length; i < len; i++) {
                 lookup[$scope.options.colors[i].id] = $scope.options.colors[i];
+                $scope.options.colors[i].name =  $scope.options.colors[i].code;
             }
         }, function (response) {
             Flash.create('danger', response.message, 'custom-class');

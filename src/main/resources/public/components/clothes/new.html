@@ -44,7 +44,8 @@
 
                     <div class="form-group">
                         <label>Color Code </label>
-                        <selectize ng-model="ctrl.colorId" config="{labelField: 'code'}"
+                        <selectize ng-model="ctrl.colorId"
+                                   config="{maxOptions: 100}"
                                    options="options.colors"
                                    ng-change="onCodeSelected(ctrl.colorId)"
                                    required></selectize>
