@@ -2,15 +2,15 @@
 (function () {
     'use strict';
 
-    var ClothesFactory = function ($http, RESOURCES,$window) {
+    var ClothesFactory = function ($http, RESOURCES, $window, $timeout, Upload) {
         var factory = {};
         var deliverDate;
 
-        factory.setDate = function(date) {
+        factory.setDate = function (date) {
             deliverDate = date;
         }
 
-        factory.getDate = function() {
+        factory.getDate = function () {
             return deliverDate;
         }
 
@@ -18,7 +18,7 @@
             data: [{name: 132}]
         }
 
-        factory.getClothes = function (params,successCallback, errorCallback) {
+        factory.getClothes = function (params, successCallback, errorCallback) {
             $http({
                 method: 'GET',
                 url: RESOURCES.apiURL + '/clothes',
@@ -30,7 +30,7 @@
             })
         };
 
-        factory.getClothesByLocation = function (params,successCallback, errorCallback) {
+        factory.getClothesByLocation = function (params, successCallback, errorCallback) {
             $http({
                 method: 'GET',
                 url: RESOURCES.apiURL + '/clothes',
@@ -41,7 +41,6 @@
                 errorCallback(response);
             })
         };
-
 
 
         factory.getCloth = function (clothId, successCallback, errorCallback) {
@@ -111,8 +110,8 @@
         factory.deleteCloth = function (cloth, successCallback, errorCallback) {
             $http({
                 method: 'PUT',
-                url: RESOURCES.apiURL + '/clothes/' + cloth.id +'/delete'
-            }).success(function (response){
+                url: RESOURCES.apiURL + '/clothes/' + cloth.id + '/delete'
+            }).success(function (response) {
                 successCallback(response);
             }).error(function (response) {
                 errorCallback(response);
@@ -139,36 +138,120 @@
         // }
 
         factory.downloadOrderSheet = function (orderNo, customerId) {
-            $window.open(RESOURCES.apiURL + '/clothes' +'/order_sheet'+'?orderNo='+orderNo+'&customerId='+customerId);
+            $window.open(RESOURCES.apiURL + '/clothes' + '/order_sheet' + '?orderNo=' + orderNo + '&customerId=' + customerId);
         }
 
         factory.downloadShippingList = function (shippingNumber) {
-            $window.open(RESOURCES.apiURL + '/clothes' +'/shipping_list'+'?shippingNumber='+shippingNumber);
+            $window.open(RESOURCES.apiURL + '/clothes' + '/shipping_list' + '?shippingNumber=' + shippingNumber);
         }
 
         factory.downloadPendingList = function (orderNo, customerId) {
-            $window.open(RESOURCES.apiURL + '/clothes' +'/pending_list'+'?orderNo='+orderNo+'&customerId='+customerId);
+            $window.open(RESOURCES.apiURL + '/clothes' + '/pending_list' + '?orderNo=' + orderNo + '&customerId=' + customerId);
         }
 
         factory.downloadInvoice = function (customerId, shippingNumber) {
-            $window.open(RESOURCES.apiURL + '/clothes' +'/invoice'+'?customerId='+customerId+'&shippingNumber='+shippingNumber);
+            $window.open(RESOURCES.apiURL + '/clothes' + '/invoice' + '?customerId=' + customerId + '&shippingNumber=' + shippingNumber);
         }
 
         factory.downloadProformaInvoice = function (orderNo, customerId) {
-            $window.open(RESOURCES.apiURL + '/clothes' +'/proforma_invoice'+'?orderNo='+orderNo+'&customerId='+customerId);
+            $window.open(RESOURCES.apiURL + '/clothes' + '/proforma_invoice' + '?orderNo=' + orderNo + '&customerId=' + customerId);
         }
 
         factory.getClothesReport = function (params) {
-            $window.open(RESOURCES.apiURL + '/clothes' +'/report'+params);
+            $window.open(RESOURCES.apiURL + '/clothes' + '/report' + params);
         }
         factory.getWeavingReport = function (id) {
-            $window.open(RESOURCES.apiURL + '/clothes' +'/weaving/'+id);
+            $window.open(RESOURCES.apiURL + '/clothes' + '/weaving/' + id);
+        }
+
+        factory.uploadExcel = function (excel, successCallback, errorCallback) {
+            var file = excel;
+            if (file) {
+
+                $http({
+                    method: 'POST',
+                    url: RESOURCES.apiURL + '/clothes' + '/excel-upload/knitting',
+                    data: {file: file},
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    },
+                    transformRequest: function (data, headersGetter) {
+                        var formData = new FormData();
+                        angular.forEach(data, function (value, key) {
+                            formData.append(key, value);
+                        });
+                        var headers = headersGetter();
+                        delete headers['Content-Type'];
+                        return formData;
+                    }
+                }).success(function (response) {
+                    successCallback(response);
+                }).error(function (error) {
+                    errorCallback(error);
+                })
+            }
+        };
+        factory.getCustomerByOrder = function (orderNumber, successCallback, errorCallback) {
+            $http({
+                method: 'GET',
+                url: RESOURCES.apiURL + '/clothes/customers',
+                params: {orderNumber: orderNumber}
+            }).success(function (response) {
+                successCallback(response);
+            }).error(function (response) {
+                errorCallback(response);
+            })
+        };
+        factory.getDesignsForWeaving = function (orderNumber, customerId, successCallback, errorCallback) {
+            $http({
+                method: 'GET',
+                url: RESOURCES.apiURL + '/clothes/designs',
+                params: {orderNumber: orderNumber, customerId: customerId}
+            }).success(function (response) {
+                successCallback(response);
+            }).error(function (response) {
+                errorCallback(response);
+            })
+        };
+        factory.getSizeForWeaving = function (orderNumber, customerId, designId, successCallback, errorCallback) {
+            $http({
+                method: 'GET',
+                url: RESOURCES.apiURL + '/clothes/sizes',
+                params: {orderNumber: orderNumber, customerId: customerId, designId: designId}
+            }).success(function (response) {
+                successCallback(response);
+            }).error(function (response) {
+                errorCallback(response);
+            })
+        };
+        factory.getPrintForWeaving = function (orderNumber, customerId, designId, sizeId, successCallback, errorCallback) {
+            $http({
+                method: 'GET',
+                url: RESOURCES.apiURL + '/clothes/prints',
+                params: {orderNumber: orderNumber, customerId: customerId, designId: designId, sizeId: sizeId}
+            }).success(function (response) {
+                successCallback(response);
+            }).error(function (response) {
+                errorCallback(response);
+            })
+        };
+
+        factory.updateWeavingShipping = function (cloth, successCallback, errorCallback) {
+            $http({
+                method: 'PUT',
+                url: RESOURCES.apiURL + '/clothes/shipping',
+                data: cloth
+            }).success(function (response) {
+                successCallback(response);
+            }).error(function (response) {
+                errorCallback(response);
+            });
         }
 
         return factory;
     };
 
-    ClothesFactory.$inject = ['$http', 'RESOURCES','$window'];
+    ClothesFactory.$inject = ['$http', 'RESOURCES', '$window'];
     angular.module('sbAdminApp')
         .factory('ClothesFactory', ClothesFactory);
 

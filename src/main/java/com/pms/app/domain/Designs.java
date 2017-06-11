@@ -17,5 +17,7 @@ public class Designs extends AbstractEntity{
     @ManyToOne
     private Designs parent;
     private String name;
+
+    private Double gauge;
     
 }

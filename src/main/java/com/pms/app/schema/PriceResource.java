@@ -18,4 +18,5 @@ public class PriceResource {
     private String yarnName;
     private Double amount;
     private CustomerResource customer;
+    private Double gauge;
 }

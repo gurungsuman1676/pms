@@ -7,7 +7,7 @@
  * Controller of the sbAdminApp
  */
 angular.module('sbAdminApp')
-    .controller('ClothesListCtrl', function ($window, $scope, ClothesFactory, CustomersFactory, Flash, ngTableParams, LocationsFactory, ngDialog) {
+    .controller('ClothesListCtrl', function ($window, $scope, ClothesFactory, CustomersFactory, Flash, ngTableParams, LocationsFactory, ngDialog, DesignsFactory, $localStorage) {
 
         var self = this;
         self.orderNo = ''
@@ -16,14 +16,14 @@ angular.module('sbAdminApp')
 
         $scope.selectedType = 'Order No';
 
-        $scope.typeSelected = function(id) {
-            if(id == 1) {
-                $scope.$apply(function() {
+        $scope.typeSelected = function (id) {
+            if (id == 1) {
+                $scope.$apply(function () {
                     $scope.selectedType = 'Invoice No';
                 });
             }
             else {
-                $scope.$apply(function() {
+                $scope.$apply(function () {
                     $scope.selectedType = 'Order No';
                 });
             }
@@ -42,9 +42,9 @@ angular.module('sbAdminApp')
             }
         };
 
-        self.statuses = [{id: 1, name: "Accepted"}, {id:2, name:"Rejected"}];
+        self.statuses = [{id: 1, name: "Accepted"}, {id: 2, name: "Rejected"}];
 
-        self.types = [{ id: 0, name: "Knitting"}, {id:1, name: "Weaving"} ,{id:2 , name: "All"}];
+        self.types = [{id: 0, name: "Knitting"}, {id: 1, name: "Weaving"}, {id: 2, name: "All"}];
 
         self.downloadOrderSheet = function () {
             ClothesFactory.downloadOrderSheet(self.filterParams.orderNo, self.filterParams.customerId);
@@ -76,11 +76,20 @@ angular.module('sbAdminApp')
             orderDateFrom: undefined,
             orderDateTo: undefined,
             shippingNumber: undefined,
-            boxNumber: undefined
-        }
+            boxNumber: undefined,
+            designId: undefined,
+            gauge: undefined
+        };
 
+        DesignsFactory.getDesigns(function (response) {
+            self.designs = addAllOptions(response)
+        }, function (response) {
+            Flash.create('danger', response.message, 'custom-class');
+        });
         LocationsFactory.getLocations(function (response) {
             self.locations = addAllOptions(response);
+            self.locations.unshift({name: 'Empty', id: '-1'});
+
         }, function (response) {
             Flash.create('danger', response.message, 'custom-class');
         });
@@ -91,7 +100,7 @@ angular.module('sbAdminApp')
             Flash.create('danger', response.message, 'custom-class');
         });
 
-        function addAllOptions(options){
+        function addAllOptions(options) {
             options.unshift({name: 'All', id: 'All'});
             return options;
         }
@@ -133,7 +142,7 @@ angular.module('sbAdminApp')
             ClothesFactory.getHistory(cloth, function (response) {
                 console.log(response);
                 history = response;
-                ngDialog.open({ template: '/components/clothes/history.html', data: history });
+                ngDialog.open({template: '/components/clothes/history.html', data: history});
             }, function (error) {
                 history = error;
             });
@@ -150,7 +159,7 @@ angular.module('sbAdminApp')
             var request = new XMLHttpRequest();
             request.open('HEAD', url1, false);
             request.send();
-            if(request.status == 200) {
+            if (request.status == 200) {
                 $window.open(url1);
             } else {
                 $window.open(url2);
@@ -180,23 +189,28 @@ angular.module('sbAdminApp')
             else {
                 self.weavingSelected = false;
             }
-
+            self.clothTable.$params.page = 1;
             self.clothTable.reload();
         }
 
         self.generateCSV = function () {
             ClothesFactory.getClothesReport("?" +
-                 (angular.isDefined(self.filterParams.orderNo)?"&orderNo=" + self.filterParams.orderNo : "") +
-                 (angular.isDefined(self.filterParams.customerId)?"&customerId="+self.filterParams.customerId : "")+
-                 (angular.isDefined(self.filterParams.locationId)? "&locationId= "+self.filterParams.locationId : "")+
-                 (angular.isDefined(self.filterParams.barcode)? "&barcode=" +self.filterParams.barcode : "")+
-                 (angular.isDefined(self.filterParams.deliverDateFrom )? "&deliverDateFrom="+self.filterParams.deliverDateFrom.toDateString() : "")+
-                 (angular.isDefined(self.filterParams.deliveryDateTo) ? "&deliveryDateTo="+self.filterParams.deliveryDateTo.toDateString() : "")+
-                 (angular.isDefined(self.filterParams.orderDateFrom) ? "&orderDateFrom="+self.filterParams.orderDateFrom.toDateString() : "")+
-                 (angular.isDefined(self.filterParams.orderDateTo) ? "&orderDateTo="+self.filterParams.orderDateTo.toDateString() : "")+
-                 (angular.isDefined(self.filterParams.shippingNumber) ?"&shippingNumber="+self.filterParams.shippingNumber : "")+
-               (angular.isDefined(self.filterParams.boxNumber)? "&boxNumber="+ self.filterParams.boxNumber: "")+
-                 (angular.isDefined(self.filterParams.statusId) ? "&isReject="+ (Number(self.filterParams.statusId) === 1 ?false : true) : ""));
+                (angular.isDefined(self.filterParams.orderNo) ? "&orderNo=" + self.filterParams.orderNo : "") +
+                (angular.isDefined(self.filterParams.customerId) && self.filterParams.customerId != 'All' ? "&customerId=" + self.filterParams.customerId : "") +
+                (angular.isDefined(self.filterParams.designId) && self.filterParams.designId != 'All' ? "&customerId=" + self.filterParams.designId : "") +
+                (angular.isDefined(self.filterParams.locationId) && self.filterParams.locationId != 'All' ? "&locationId= " + self.filterParams.locationId : "") +
+                (angular.isDefined(self.filterParams.barcode) ? "&barcode=" + self.filterParams.barcode : "") +
+                (angular.isDefined(self.filterParams.deliverDateFrom) ? "&deliverDateFrom=" + self.filterParams.deliverDateFrom.toDateString() : "") +
+                (angular.isDefined(self.filterParams.deliveryDateTo) ? "&deliveryDateTo=" + self.filterParams.deliveryDateTo.toDateString() : "") +
+                (angular.isDefined(self.filterParams.orderDateFrom) ? "&orderDateFrom=" + self.filterParams.orderDateFrom.toDateString() : "") +
+                (angular.isDefined(self.filterParams.orderDateTo) ? "&orderDateTo=" + self.filterParams.orderDateTo.toDateString() : "") +
+                (angular.isDefined(self.filterParams.shippingNumber) ? "&shippingNumber=" + self.filterParams.shippingNumber : "") +
+                (angular.isDefined(self.filterParams.boxNumber) ? "&boxNumber=" + self.filterParams.boxNumber : "") +
+                (angular.isDefined(self.filterParams.locationDate) ? "&locationDate=" + self.filterParams.locationDate.toDateString() : "") +
+                (angular.isDefined(self.filterParams.typeId) && self.filterParams.typeId != 'All' && Number(self.filterParams.typeId) !== 2 ? "&type=" + self.filterParams.typeId : "") +
+                (angular.isDefined(self.filterParams.statusId) ? "&isReject=" + (Number(self.filterParams.statusId) === 1 ? false : true) : "") +
+                (angular.isDefined(self.filterParams.gauge) ? "&gauge=" + self.filterParams.gauge : "") +
+                "&roles=" + $localStorage.user.roles);
         }
 
         self.minimum_date = new Date();
@@ -250,6 +264,7 @@ angular.module('sbAdminApp')
                     ClothesFactory.getClothes({
                             orderNo: self.filterParams.orderNo,
                             customerId: self.filterParams.customerId === 'All' ? undefined : self.filterParams.customerId,
+                            designId: self.filterParams.designId === 'All' ? undefined : self.filterParams.designId,
                             locationId: self.filterParams.locationId === 'All' ? undefined : self.filterParams.locationId,
                             barcode: self.filterParams.barcode,
                             deliverDateFrom: self.filterParams.deliverDateFrom ? self.filterParams.deliverDateFrom.toDateString() : undefined,
@@ -259,9 +274,12 @@ angular.module('sbAdminApp')
                             shippingNumber: self.filterParams.shippingNumber,
                             boxNumber: self.filterParams.boxNumber,
                             isReject: angular.isDefined(self.filterParams.statusId) ? (Number(self.filterParams.statusId) === 1 ? false : true) : null,
-                            type: self.filterParams.typeId == 2 ? undefined : self.filterParams.typeId,
+                            type: angular.isDefined(self.filterParams.typeId) && self.filterParams.typeId != 'All' && Number(self.filterParams.typeId) != 2 ? Number(self.filterParams.typeId) : null,
+                            locationDate: self.filterParams.locationDate ? self.filterParams.locationDate.toDateString() : undefined,
+                            gauge: self.filterParams.gauge,
                             sort: 'id,desc',
                             page: page - 1,
+                            roles: $localStorage.user.roles,
                             size: params.count()
                         },
                         function (response) {
@@ -270,7 +288,9 @@ angular.module('sbAdminApp')
                                 self.noResults = true;
                             else
                                 self.noResults = false;
+
                             self.clothTable.total(response.totalElements);
+
                             $defer.resolve(response.data);
                         }, function (response) {
                             Flash.create('danger', response.message, 'custom-class');
@@ -278,5 +298,19 @@ angular.module('sbAdminApp')
                 }
             }
         );
+        self.importFromExcel = function (file) {
+            if (file) {
+                console.log(file);
+                ClothesFactory.uploadExcel(file, function (success) {
+                        Flash.create('success', 'Cloth added successfully', 'custom-class');
+                        self.reloadTable();
+                    }, function (error) {
+                        Flash.create('danger', error.message, 'custom-class');
+                    }
+                )
+
+            }
+
+        }
 
     });

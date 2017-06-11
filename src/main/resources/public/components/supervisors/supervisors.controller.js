@@ -17,11 +17,10 @@ angular.module('sbAdminApp')
             customerId: undefined,
             locationId: undefined,
             orderNo: undefined,
-            barcode: undefined,
             deliveryDateFrom: undefined,
             deliveryDateTo: undefined,
-            orderDateFrom: undefined,
-            orderDateTo: undefined
+            orderDateTo: undefined,
+            gauge: undefined
         }
 
         // To check the delivery date
@@ -84,11 +83,10 @@ angular.module('sbAdminApp')
                             orderNo: self.filterParams.orderNo,
                             customerId: self.filterParams.customerId,
                             locationId: self.filterParams.locationId,
-                            barcode: self.filterParams.barcode,
-                            deliverDateFrom: self.filterParams.deliverDateFrom ? self.filterParams.deliverDateFrom.toDateString() : undefined,
+                            designId: self.filterParams.designId === 'All' ? undefined : self.filterParams.designId,
                             deliveryDateTo: self.filterParams.deliveryDateTo ? self.filterParams.deliveryDateTo.toDateString() : undefined,
-                            orderDateFrom: self.filterParams.orderDateFrom ? self.filterParams.orderDateFrom.toDateString() : undefined,
-                            orderDateTo: self.filterParams.orderDateTo ? self.filterParams.orderDateTo.toDateString() : undefined,
+                            gauge: self.filterParams.gauge,
+
                             //orderNo: self.orderNo,
                             order: 'id,desc',
                             page: page - 1,

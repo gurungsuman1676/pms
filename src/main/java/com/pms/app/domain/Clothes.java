@@ -22,6 +22,7 @@ public class Clothes extends AbstractEntity {
     private Prints print;
     @ManyToOne
     private Customers customer;
+
     @Column(name = "shipping_number")
     private String shipping;
 

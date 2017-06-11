@@ -8,13 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class PriceServiceImpl implements PriceService {
     private final PriceRepository priceRepository;
     private final SizeRepository sizeRepository;
     private final DesignRepository designRepository;
-private final YarnRepository yarnRepository;
+    private final YarnRepository yarnRepository;
+
     @Autowired
     public PriceServiceImpl(PriceRepository priceRepository, SizeRepository sizeRepository, DesignRepository designRepository, YarnRepository yarnRepository) {
         this.priceRepository = priceRepository;
@@ -32,40 +34,37 @@ private final YarnRepository yarnRepository;
     @Override
     public Prices addPrice(PriceDto priceDto) {
 
-        if(priceDto.getSizeId() == null){
+        if (priceDto.getSizeId() == null) {
             throw new RuntimeException("Size is required");
         }
 
-        if(priceDto.getYarnId() == null){
-            throw new RuntimeException("Color is required");
 
-        }
-
-        if(priceDto.getDesignId() == null){
+        if (priceDto.getDesignId() == null) {
             throw new RuntimeException("Design is required");
 
         }
 
         Sizes sizes = sizeRepository.findOne(priceDto.getSizeId());
-        if(sizes == null){
+        if (sizes == null) {
             throw new RuntimeException("No such price found");
         }
         Designs designs = designRepository.findOne(priceDto.getDesignId());
-        if(sizes == null){
+        if (sizes == null) {
             throw new RuntimeException("No such design found");
         }
-        Yarns yarns = yarnRepository.findOne(priceDto.getYarnId());
-        if(yarns == null){
-            throw new RuntimeException("No such yarns available");
-        }
-
         Prices duplicatePrices = priceRepository.findByDesignAndSizeAndYarn(priceDto.getDesignId(), priceDto.getSizeId(), priceDto.getYarnId());
-        if(duplicatePrices != null){
+        if (duplicatePrices != null) {
             throw new RuntimeException("Price already exists for design ,size and color");
         }
         Prices prices = new Prices();
         prices.setAmount(priceDto.getAmount());
-        prices.setYarn(yarns);
+        if (priceDto.getYarnId() != null) {
+            Yarns yarns = yarnRepository.findOne(priceDto.getYarnId());
+            if (yarns == null) {
+                throw new RuntimeException("No such yarn found");
+            }
+            prices.setYarn(yarns);
+        }
         prices.setDesign(designs);
         prices.setSize(sizes);
         return priceRepository.save(prices);
@@ -89,24 +88,28 @@ private final YarnRepository yarnRepository;
         }
 
         Sizes sizes = sizeRepository.findOne(priceDto.getSizeId());
-        if(sizes == null){
+        if (sizes == null) {
             throw new RuntimeException("No such price found");
         }
         Designs designs = designRepository.findOne(priceDto.getDesignId());
-        if(sizes == null){
+        if (sizes == null) {
             throw new RuntimeException("No such design found");
-        }
-        Yarns yarns = yarnRepository.findOne(priceDto.getYarnId());
-        if(yarns == null){
-            throw new RuntimeException("No such yarns available");
         }
 
         Prices duplicatePrices = priceRepository.findByDesignAndSizeAndYarn(priceDto.getDesignId(), priceDto.getSizeId(), priceDto.getYarnId());
-        if(duplicatePrices != null && duplicatePrices.getId() != id){
+        if (duplicatePrices != null && !Objects.equals(duplicatePrices.getId(), id)) {
             throw new RuntimeException("Price already exists for design ,size and color");
         }
         existingPrice.setAmount(priceDto.getAmount());
-        existingPrice.setYarn(yarns);
+        if (priceDto.getYarnId() != null) {
+            Yarns yarns = yarnRepository.findOne(priceDto.getYarnId());
+            if (yarns == null) {
+                throw new RuntimeException("No such yarn found");
+            }
+            existingPrice.setYarn(yarns);
+        } else {
+            existingPrice.setYarn(null);
+        }
         existingPrice.setDesign(designs);
         existingPrice.setSize(sizes);
         return priceRepository.save(existingPrice);

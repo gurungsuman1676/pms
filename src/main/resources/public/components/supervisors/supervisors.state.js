@@ -16,8 +16,20 @@
                             name: 'sbAdminApp',
                             files: [
                                 'components/supervisors/supervisors.controller.js',
+                                'components/supervisors/supervisors.weaving.controller.js',
                                 'components/supervisors/supervisors.factory.js',
-                                'components/clothes/clothes.factory.js'
+                                'components/clothes/clothesList.controller.js',
+                                'components/clothes/clothesNew.controller.js',
+                                'components/clothes/clothesEdit.controller.js',
+                                'components/customers/customers.factory.js',
+                                'components/clothes/clothes.factory.js',
+                                'components/designs/designs.factory.js',
+                                'components/colors/colors.factory.js',
+                                'components/sizes/sizes.factory.js',
+                                'components/prints/prints.factory.js',
+                                'components/yarns/yarns.factory.js',
+                                'components/shared/resources.js',
+                                'components/locations/locations.factory.js'
                             ]
                         })
                     }
@@ -29,10 +41,16 @@
                 controller: 'SupervisorsCtrl',
                 controllerAs: 'ctrl'
             })
+            .state('dashboard.supervisors.weaving', {
+                url: '/enter-location',
+                templateUrl: 'components/supervisors/weaving.html',
+                controller: 'SupervisorsWeavingCtrl',
+                controllerAs: 'ctrl'
+            })
             .state('dashboard.supervisors.clothes', {
                 url: '/supervisor/clothes',
                 templateUrl: 'components/supervisors/clothes.html',
-                controller: 'SupervisorsCtrl',
+                controller: 'ClothesListCtrl',
                 controllerAs: 'ctrl'
             });
     }

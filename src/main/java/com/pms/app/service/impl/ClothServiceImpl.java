@@ -4,6 +4,7 @@ import com.pms.app.domain.*;
 import com.pms.app.repo.*;
 import com.pms.app.schema.ClothDto;
 import com.pms.app.schema.ClothLocationDto;
+import com.pms.app.schema.WeavingShippingDTO;
 import com.pms.app.security.AuthUtil;
 import com.pms.app.service.ClothService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,13 +41,19 @@ public class ClothServiceImpl implements ClothService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Clothes> getClothes(Long customerId, Long locationId, Integer orderNo, Long barcode, Date deliverDateFrom, Date deliveryDateTo, Date orderDateFrom,
-                                    Date orderDateTo, Pageable pageable, String role, String shippingNumber, String boxNumber, Boolean isReject, Integer type) {
-        return clothRepository.findAllClothes(customerId,
-                locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom, orderDateTo, pageable,
-                role, shippingNumber, boxNumber,isReject,type);
+                                    Date orderDateTo, Pageable pageable, String role, String shippingNumber, String boxNumber, Boolean isReject, Integer type, Date locationDate, Long designId, Double gauge) {
+        if (locationDate != null && locationId != null && locationId != -1) {
+            return clothRepository.findAllForHistoryByDate(customerId,
+                    locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom, orderDateTo, pageable,
+                    role, shippingNumber, boxNumber, isReject, type,locationDate,designId,gauge);
+        } else {
+            return clothRepository.findAllClothes(customerId,
+                    locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom, orderDateTo, pageable,
+                    role, shippingNumber, boxNumber, isReject, type,designId,locationDate,gauge);
+        }
     }
-
     @Override
     public List<Clothes> addCloth(ClothDto clothDto) {
         if (clothDto.getCustomerId() == null) {
@@ -105,6 +112,7 @@ public class ClothServiceImpl implements ClothService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Clothes getCloth(Long id) {
         Clothes clothes = clothRepository.findOne(id);
         if (clothes == null) {
@@ -116,13 +124,8 @@ public class ClothServiceImpl implements ClothService {
     @Override
     @Transactional
     public Clothes updateCloth(Long id, ClothLocationDto clothDto) {
-        List<Locations> locationByUser = userLocationRepository.findLocationByUser(AuthUtil.getCurrentUser());
-        if (locationByUser == null || locationByUser.isEmpty()) {
-            throw new RuntimeException("No location available");
-        }
-        Locations locations = locationByUser.get(0);
+        Locations locations = getLocationsForCurrentUser();
         Clothes clothes = clothRepository.findOne(id);
-        Long activityCount = clothActivityRepository.doesActivityExist(locations.getId(),clothes.getId());
         if (clothes == null) {
             throw new RuntimeException("Error reading barcode");
         }
@@ -139,6 +142,7 @@ public class ClothServiceImpl implements ClothService {
             clothes.setBoxNumber(clothDto.getBoxNumber());
             clothes.setShipping(clothDto.getShippingNumber());
         }
+        Long activityCount = clothActivityRepository.doesActivityExist(locations.getId(),clothes.getId());
         clothes.setIsReturn(activityCount >= 1);
         clothes.setLocation(locations);
         ClothActivity activity = new ClothActivity();
@@ -157,6 +161,50 @@ public class ClothServiceImpl implements ClothService {
         }
         clothes.setStatus(Status.INACTIVE.toString());
         clothRepository.save(clothes);
+    }
+
+    @Override
+    public void updateWeavingCloth(WeavingShippingDTO weavingShippingDTO) {
+        Locations locations = getLocationsForCurrentUser();
+        List<Clothes> clothes = clothRepository.findForWeavingShipping(weavingShippingDTO,locations.getId());
+
+        if(clothes.size() < weavingShippingDTO.getQuantity()){
+            throw new RuntimeException("Quantity of cloth (" + weavingShippingDTO.getQuantity() + " ) is less than available clothes ("+clothes.size() );
+        }
+        clothes.forEach( c -> {
+            c.setBoxNumber(weavingShippingDTO.getBoxNumber());
+            c.setShipping(weavingShippingDTO.getShipping());
+            c.setLocation(locations);
+        });
+        clothRepository.save(clothes);
+    }
+
+    @Override
+    public List<Customers> getCustomerByOrderNumber(Integer orderNumber) {
+        return clothRepository.findRemaingWeavingCustomerByOrderNumber(orderNumber,getLocationsForCurrentUser().getId());
+    }
+
+    private Locations getLocationsForCurrentUser() {
+        List<Locations> locationByUser = userLocationRepository.findLocationByUser(AuthUtil.getCurrentUser());
+        if (locationByUser == null || locationByUser.isEmpty()) {
+            throw new RuntimeException("No location available");
+        }
+        return locationByUser.get(0);
+    }
+
+    @Override
+    public List<Designs> getDesignByOrderNumberAndCustomer(Integer orderNumber, Long customerId) {
+        return clothRepository.findRemaingWeavingDesignByOrderNumber(orderNumber,customerId,getLocationsForCurrentUser().getId());
+    }
+
+    @Override
+    public List<Prints> getPrintByOrderNumberAndCustomer(Integer orderNumber, Long customerId, Long designId, Long sizeId) {
+        return clothRepository.findRemaingWeavingPrintByOrderNumber(orderNumber,customerId,designId,getLocationsForCurrentUser().getId(),sizeId);
+    }
+
+    @Override
+    public List<Sizes> getSizesForCustomerAndOrderNumber(Integer orderNumber, Long customerId, Long designId) {
+        return clothRepository.findRemaingWeavingSizeByOrderNumber(orderNumber,customerId,designId,getLocationsForCurrentUser().getId());
     }
 
 }

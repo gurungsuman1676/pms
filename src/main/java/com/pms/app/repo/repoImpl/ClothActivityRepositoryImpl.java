@@ -48,7 +48,8 @@ public class ClothActivityRepositoryImpl extends AbstractRepositoryImpl<ClothAct
                 .innerJoin(clothActivity.cloth)
                 .innerJoin(clothActivity.user)
                 .where(clothActivity.cloth.id.eq(clothesId)
-                .and(clothActivity.location.id.eq(locationId)))
+                        .and(clothActivity.location.id.eq(locationId)))
                 .count();
     }
 }
+

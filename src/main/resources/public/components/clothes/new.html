@@ -1,5 +1,5 @@
 <div class="row form-wrapper">
-    <div class="flash-msg" flash-message="3000"></div>
+    <div class="flash-msg" flash-message="10000"></div>
     <div class="col-md-6 col-md-offset-3">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -15,7 +15,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="orderNo">{{selectedType}}</label>
+                        <label for="orderNo">Order No.</label>
                         <input class="form-control" type="text" ng-model="ctrl.cloth.orderNo" id="orderNo"
                                autocomplete="off" required>
                     </div>
@@ -28,18 +28,18 @@
                     </div>
 
                     <!--<div class="form-group">-->
-                        <!--<label>Yarn</label>-->
-                        <!--<selectize ng-model="ctrl.cloth.yarnId" config="{maxOptions: 100}"-->
-                                   <!--ng-change="yarnSelected(ctrl.cloth.yarnId)" options="options.yarns"-->
-                                   <!--required></selectize>-->
+                    <!--<label>Yarn</label>-->
+                    <!--<selectize ng-model="ctrl.cloth.yarnId" config="{maxOptions: 100}"-->
+                    <!--ng-change="yarnSelected(ctrl.cloth.yarnId)" options="options.yarns"-->
+                    <!--required></selectize>-->
                     <!--</div>-->
 
                     <div class="form-group">
                         <label>Design</label>
-                        <selectize class="design-input" config="{maxOptions: 100}" ng-change="fetchSize(ctrl.cloth.colorId)"
+                        <selectize class="design-input" config="{maxOptions: 100}"
+                                   ng-change="fetchSize(ctrl.cloth.colorId)"
                                    ng-model="ctrl.cloth.designId" options="options.designs" required></selectize>
                     </div>
-
 
 
                     <div class="form-group">
@@ -55,7 +55,7 @@
                     <div class="form-group" ng-if="ctrl.cloth.colorId">
                         <label> Color Name </label>
                         <input class="form-control" type="text" ng-model="ctrl.colorName_company"
-                              ng-disabled="true">
+                               ng-disabled="true">
                     </div>
 
                     <div class="form-group">
@@ -65,10 +65,11 @@
 
                     <div class="form-group">
                         <label for="deliveryDate">Delivery Date</label>
-                        <input type="text" id='deliveryDate' class="form-control date-picker-new datepopup" name="date"
+                        <input type="text" id='deliveryDate' class="form-control date-picker-new datepopup"
+                               name="date"
                                data-ng-click="open($event,'adddate')" data-datepicker-popup="{{format}}"
                                data-ng-model="ctrl.cloth.delivery_date" data-is-open="datepickers.adddate"
-                               data-min-date="self.minimum_date" data-close-text="Close"
+                               data-min-date="ctrl.minimum_date" data-close-text="Close"
                                ng-change="ctrl.deliveryDateSet()" required/>
                     </div>
 
@@ -84,7 +85,6 @@
                         <input class="form-control" type="text" ng-model="ctrl.cloth.quantity" id="quantity"
                                autocomplete="off" required>
                     </div>
-
                     <div>
                         <input type="submit" class="btn btn-primary" value="Add">
                     </div>

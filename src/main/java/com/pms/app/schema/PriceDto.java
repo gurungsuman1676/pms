@@ -13,7 +13,7 @@ public class PriceDto {
     private Long designId;
     @NotNull
     private Long sizeId;
-    @NotNull
+
     private Long yarnId;
     @NotNull
     private Double amount;

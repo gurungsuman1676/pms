@@ -9,4 +9,8 @@ public interface PrintConvert {
     List<PrintResource> convert(List<Prints> prints);
 
     PrintResource convert(Prints prints);
+
+    List<PrintResource> convertPrintsWithoutSize(List<Prints> prints);
+
+    PrintResource convertPrintWithoutSize(Prints print);
 }

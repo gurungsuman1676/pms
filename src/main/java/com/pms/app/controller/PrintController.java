@@ -28,17 +28,17 @@ public class PrintController {
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public List<PrintResource> getPrints() {
-        return printConvert.convert(printService.getPrints());
+        return printConvert.convertPrintsWithoutSize(printService.getPrints());
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public PrintResource addPrint(@RequestBody PrintDto printDto) {
-        return printConvert.convert(printService.addPrint(printDto));
+        return printConvert.convertPrintWithoutSize(printService.addPrint(printDto));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public PrintResource getPrint(@PathVariable Long id) {
-        return printConvert.convert(printService.getPrint(id));
+        return printConvert.convertPrintWithoutSize(printService.getPrint(id));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)

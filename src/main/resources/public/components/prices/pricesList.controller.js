@@ -72,6 +72,8 @@ angular.module('sbAdminApp')
         }
 
         self.reloadTable = function () {
+            self.priceTableList.$params.page = 1;
+
             self.priceTableList.reload();
         };
 

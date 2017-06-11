@@ -50,7 +50,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("com.mysema.querydsl:querydsl-jpa:$querydslVersion")
     compile("org.projectlombok:lombok:$lombokVersion")
-    compile("org.apache.poi:poi:3.9")
+    compile("org.apache.poi:poi-ooxml:3.9")
     compile("com.itextpdf:itextpdf:5.0.6")
     runtime("mysql:mysql-connector-java")
     testCompile("org.springframework.boot:spring-boot-starter-test")

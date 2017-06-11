@@ -14,6 +14,7 @@ angular.module('sbAdminApp')
 
 
         self.reloadTable = function () {
+            self.customerListTable.$params.page = 1;
             self.customerListTable.reload();
         };
 

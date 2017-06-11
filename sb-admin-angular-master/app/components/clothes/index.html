@@ -169,7 +169,7 @@
                             </td>
                             <td ng-class="{'cloth-warning': cloth.isReturn}">{{cloth.id}}</td>
                             <td>{{cloth.locationName}}</td>
-                            <td>{{cloth.order_no}}</td>
+                            <td>{{cloth.orderNo}}</td>
                             <td>{{cloth.price.designName}}</td>
                             <td>{{cloth.price.yarnName}}</td>
                             <td>{{cloth.colorCode}}</td>
@@ -208,7 +208,7 @@
         <div class="barcode-wrapper" ng-repeat="cloth in ctrl.clothes">
             <div ng-show="cloth.isChecked">
                 <div class="barcode-details">
-                    <p>{{cloth.order_no}}/ {{cloth.customer.name}}/ {{cloth.price.designName}}/
+                    <p>{{cloth.orderNo}}/ {{cloth.customer.name}}/ {{cloth.price.designName}}/
                         {{cloth.price.sizeName}}/ {{cloth.colorCode}}/ {{cloth.print.name}}</p>
                 </div>
                     <span kendo-barcode

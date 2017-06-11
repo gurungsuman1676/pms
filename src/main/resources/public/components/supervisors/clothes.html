@@ -5,7 +5,62 @@
             <div class="panel-heading">
                 List of Clothes
             </div>
+            <div class="action-buttons">
 
+                <div class="col-sm-3 input-margin">
+                    <selectize placeholder="Type" ng-change="typeSelected(ctrl.filterParams.typeId)"
+                               ng-model="ctrl.filterParams.typeId"
+                               options="ctrl.types">
+                    </selectize>
+                </div>
+
+
+                <div class="col-sm-3 input-margin">
+                    <selectize placeholder="Customer" ng-model="ctrl.filterParams.customerId"
+                               config="{maxOptions: 100}" options="ctrl.customers"></selectize>
+                </div>
+
+                <div class="col-sm-3 input-margin">
+                    <input type="text" class="form-control" ng-model="ctrl.filterParams.orderNo"
+                           placeholder='Order No'>
+                </div>
+
+                <div class="col-sm-3 input-margin">
+                    <selectize placeholder="Designs" ng-model="ctrl.filterParams.designId"
+                               options="ctrl.designs">
+                    </selectize>
+                </div>
+
+                <div class="col-sm-3 input-margin">
+                    <input placeholder="Delivery Date To" type="text" id='deliveryDateTo'
+                           class="form-control date-picker-new datepopup" name="date"
+                           data-ng-click="openDeliveryDateTO($event,'deliveryDateTo')"
+                           data-datepicker-popup="{{format}}" data-ng-model="ctrl.filterParams.deliveryDateTo"
+                           data-is-open="datepickers.deliveryDateTo" data-min-date="self.minimum_date"
+                           data-close-text="Close" required/>
+                </div>
+
+                <div class="col-sm-3 input-margin">
+                    <input type="text" class="form-control" ng-model="ctrl.filterParams.gauge"
+                           placeholder="Gauge">
+                </div>
+
+                <div class="col-sm-12"></div>
+
+
+                <div class="pull-left">
+                    <button class="btn btn btn-primary" ng-click="ctrl.reloadTable()">Search</button>
+                </div>
+
+                <div class="pull-left">
+                    <button class="btn btn btn-primary" ng-click="ctrl.generateCSV()">Generate CSV</button>
+                </div>
+
+                <!--<div class="pull-left">-->
+                <!--<button ng-disabled= "ctrl.filterParams.typeId != 1" class="btn btn btn-primary" ng-click="ctrl.generateWeavingInvoice()">Generate Weaving Invoice</button>-->
+                <!--</div>-->
+
+            </div>
 
             <!-- /.panel-heading -->
             <div class="panel-body">
@@ -24,6 +79,7 @@
                             <th>Customer</th>
                             <th>Delivery Date</th>
                             <th>Print</th>
+                            <th>Gauge</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
@@ -33,10 +89,13 @@
                             <td>{{cloth.locationName}}</td>
                             <td>{{cloth.order_no}}</td>
                             <td>{{cloth.price.designName}}</td>
-                            <td>{{cloth.price.sizeName}}</td>
-                            <td>{{cloth.customer.name}}</td>
-                            <td ng-class="{'cloth-warning': cloth.delivery_date < warningDate}">{{cloth.delivery_date | date: 'dd/MM/yyyy'}}</td>
+                            <td>{{cloth.price.sizeName}}</td>+
+                            <td>{{cloth.price.customer.name}}</td>
+                            <td ng-class="{'cloth-warning': cloth.delivery_date < warningDate}">{{cloth.delivery_date |
+                                date: 'dd/MM/yyyy'}}
+                            </td>
                             <td>{{cloth.print.name}}</td>
+                            <td>{{cloth.price.gauge}}</td>
                             <td>
                                 <button type="button" class="btn btn-xs btn-primary" ng-click="ctrl.viewHistory(cloth)">
                                     History

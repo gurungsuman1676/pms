@@ -1,5 +1,6 @@
 package com.pms.app.domain;
 
+import com.mysema.query.annotations.QueryInit;
 import lombok.Getter;
 import lombok.Setter;
 

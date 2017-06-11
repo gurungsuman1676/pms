@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class DesignServiceImpl implements DesignService {
@@ -32,31 +33,36 @@ public class DesignServiceImpl implements DesignService {
     public Designs addDesign(DesignDto designDto) {
 
 
-        if(designDto.getCustomerId() == null){
+        if (designDto.getCustomerId() == null) {
             throw new RuntimeException("Customer is required");
         }
         Customers customers = customerRepository.findOne(designDto.getCustomerId());
-        if(customers == null){
+        if (customers == null) {
             throw new RuntimeException("No such customer available");
         }
 
 
         Designs parent = null;
-        if(designDto.getParentId() != null){
+        Designs duplicateDesign = null;
+        if (designDto.getParentId() != null) {
             parent = designRepository.findOne(designDto.getParentId());
-            if(parent == null){
+            if (parent == null) {
                 throw new RuntimeException("No such parent available");
             }
+            duplicateDesign = designRepository.findByNameAndParentAndCustomer(designDto.getName(), designDto.getParentId(), designDto.getCustomerId());
+
+        } else {
+            duplicateDesign = designRepository.findByNameAndCustomer(designDto.getName(),  designDto.getCustomerId());
         }
 
-        Designs duplicateDesign = designRepository.findByNameAndParentAndCustomer(designDto.getName(),designDto.getParentId(),designDto.getCustomerId());
 
-        if(duplicateDesign != null){
+        if (duplicateDesign != null) {
             throw new RuntimeException("Design name already exist for customer");
         }
         Designs newDesign = new Designs();
         newDesign.setCustomer(customers);
         newDesign.setName(designDto.getName());
+        newDesign.setGauge(designDto.getGauge());
         newDesign.setParent(parent);
 
         return designRepository.save(newDesign);
@@ -65,7 +71,7 @@ public class DesignServiceImpl implements DesignService {
     @Override
     public Designs getDesign(Long id) {
         Designs designs = designRepository.findOne(id);
-        if(designs == null){
+        if (designs == null) {
             throw new RuntimeException("No design available");
         }
         return designs;
@@ -74,31 +80,36 @@ public class DesignServiceImpl implements DesignService {
     @Override
     public Designs updateDesign(Long id, DesignDto designDto) {
         Designs existingDesign = designRepository.findOne(id);
-        if(existingDesign == null){
+        if (existingDesign == null) {
             throw new RuntimeException("No design available");
         }
 
 
         Customers customers = customerRepository.findOne(designDto.getCustomerId());
-        if(customers == null){
+        if (customers == null) {
             throw new RuntimeException("No such customer available");
         }
 
 
         Designs parent = null;
-        if(designDto.getParentId() != null){
+        Designs duplicateDesign = null;
+        if (designDto.getParentId() != null) {
             parent = designRepository.findOne(designDto.getParentId());
-            if(parent == null){
+            if (parent == null) {
                 throw new RuntimeException("No such parent available");
             }
+             duplicateDesign = designRepository.findByNameAndParentAndCustomer(designDto.getName(), designDto.getParentId(), designDto.getCustomerId());
+
+        }else {
+            duplicateDesign = designRepository.findByNameAndCustomer(designDto.getName(), designDto.getCustomerId());
+
         }
 
-        Designs duplicateDesign = designRepository.findByNameAndParentAndCustomer(designDto.getName(),designDto.getParentId(),designDto.getCustomerId());
 
-        if(duplicateDesign != null){
+        if (duplicateDesign != null && !Objects.equals(duplicateDesign.getId(), id)) {
             throw new RuntimeException("Design name already exist for customer");
         }
-
+        existingDesign.setGauge(designDto.getGauge());
         existingDesign.setCustomer(customers);
         existingDesign.setName(designDto.getName());
         existingDesign.setParent(parent);
@@ -109,14 +120,14 @@ public class DesignServiceImpl implements DesignService {
     @Override
     public List<Designs> getDesignByCustomers(Long customerId) {
         Customers customer = customerRepository.findOne(customerId);
-        if(customer.getParent() != null){
+        if (customer.getParent() != null) {
             customerId = customer.getParent().getId();
         }
         return designRepository.findParentByCustomers(customerId);
     }
 
     @Override
-    public List<Designs> findByParent(Long parentId){
+    public List<Designs> findByParent(Long parentId) {
         return designRepository.findByParent(parentId);
     }
 

@@ -13,4 +13,6 @@ public class DesignDto {
     private Long parentId;
     @NotNull
     private Long customerId;
+
+    private Double gauge;
 }

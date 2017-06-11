@@ -14,6 +14,7 @@ angular.module('sbAdminApp')
         self.options ={};
 
         self.reloadTable = function () {
+            self.designListTable.$params.page = 1;
             self.designListTable.reload();
         };
 

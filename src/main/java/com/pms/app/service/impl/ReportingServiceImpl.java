@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -31,6 +32,7 @@ public class ReportingServiceImpl implements ReportingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void createProformaInvoice(Long orderNo, Long customerId, HttpServletResponse httpServletResponse) {
         HSSFWorkbook workbook = new HSSFWorkbook();
 
@@ -253,6 +255,7 @@ public class ReportingServiceImpl implements ReportingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void getClothReport(Long customerId,
                                Long locationId,
                                Integer orderNo,
@@ -266,20 +269,41 @@ public class ReportingServiceImpl implements ReportingService {
                                String boxNumber,
                                Boolean isReject,
                                Integer type,
-                               HttpServletResponse httpServletResponse) {
-        List<ClothResource> clothResources = clothRepository.findClothResource(customerId,
-                locationId,
-                orderNo,
-                barcode,
-                deliverDateFrom,
-                deliveryDateTo,
-                orderDateFrom,
-                orderDateTo,
-                role,
-                shippingNumber,
-                boxNumber,
-                isReject,
-                type);
+                               Date locationDate,
+                               Long designId, Double gauge, HttpServletResponse httpServletResponse) {
+        List<ClothResource> clothResources = null;
+        if (locationDate == null || locationId == null || locationId == -1) {
+          clothResources = clothRepository.findClothResource(customerId,
+                    locationId,
+                    orderNo,
+                    barcode,
+                    deliverDateFrom,
+                    deliveryDateTo,
+                    orderDateFrom,
+                    orderDateTo,
+                    role,
+                    shippingNumber,
+                    boxNumber,
+                    isReject,
+                    type,
+                  designId,gauge,locationDate);
+        }else {
+            clothResources=   clothRepository.findClothResourceByLocation(customerId,
+                    locationId,
+                    orderNo,
+                    barcode,
+                    deliverDateFrom,
+                    deliveryDateTo,
+                    orderDateFrom,
+                    orderDateTo,
+                    role,
+                    shippingNumber,
+                    boxNumber,
+                    isReject,
+                    type,
+                    locationDate,
+                    designId,gauge);
+        }
 
 
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -502,6 +526,7 @@ public class ReportingServiceImpl implements ReportingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void createOrderSheet(Long orderNo, Long customerId, HttpServletResponse httpServletResponse) {
 
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -674,6 +699,7 @@ public class ReportingServiceImpl implements ReportingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void createPendingList(Long orderNo, Long customerId, HttpServletResponse httpServletResponse) {
         HSSFWorkbook workbook = new HSSFWorkbook();
 
@@ -843,6 +869,7 @@ public class ReportingServiceImpl implements ReportingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void createShippingList(String shippingNumber, HttpServletResponse httpServletResponse) {
         List<ClothShippingResource> clothResources = clothRepository.findShippedCloth(shippingNumber);
 
@@ -1058,6 +1085,7 @@ public class ReportingServiceImpl implements ReportingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void createInvoice(Long orderNo, Long customerId, String shippingNumber, HttpServletResponse httpServletResponse) {
 
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -1341,6 +1369,7 @@ public class ReportingServiceImpl implements ReportingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void createWeaving(Long id, HttpServletResponse httpServletResponse) {
         HSSFWorkbook workbook = new HSSFWorkbook();
 

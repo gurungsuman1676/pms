@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -27,7 +28,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public List<Customers> getCustomers() {
-        return  customerRepository.findAllByOrderByNameAsc();
+        return customerRepository.findAllByOrderByNameAsc();
     }
 
     @Override
@@ -35,13 +36,17 @@ public class CustomerServiceImpl implements CustomerService {
 
 
         Customers parent = null;
+        Customers duplicate = null;
         if (customerDto.getParentId() != null) {
             parent = customerRepository.findOne(customerDto.getParentId());
             if (parent == null) {
                 throw new RuntimeException("No appropriate parent available");
             }
+            duplicate = customerRepository.findByNameAndParentId(customerDto.getName(), customerDto.getParentId());
+
+        } else {
+            duplicate = customerRepository.findByName(customerDto.getName());
         }
-        Customers duplicate = customerRepository.findByNameAndParentId(customerDto.getName(), customerDto.getParentId());
         if (duplicate != null) {
             throw new RuntimeException("Customer with same name already exists");
         }
@@ -73,14 +78,18 @@ public class CustomerServiceImpl implements CustomerService {
             throw new RuntimeException("No customer found");
         }
         Customers parent = null;
+        Customers duplicate = null;
         if (customerDto.getParentId() != null) {
             parent = customerRepository.findOne(customerDto.getParentId());
             if (parent == null) {
                 throw new RuntimeException("No appropriate parent available");
             }
+            duplicate = customerRepository.findByNameAndParentId(customerDto.getName(), customerDto.getParentId());
+
+        } else {
+            duplicate = customerRepository.findByName(customerDto.getName());
         }
-        Customers duplicate = customerRepository.findByNameAndParentId(customerDto.getName(), customerDto.getParentId());
-        if (duplicate != null && duplicate.getId() != id) {
+        if (duplicate != null && !Objects.equals(duplicate.getId(),id)) {
             throw new RuntimeException("Customer with same name already exists");
         }
         Currency currency = currencyRepository.findOne(customerDto.getCurrencyId());

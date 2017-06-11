@@ -17,10 +17,30 @@ public class PrintConvertImpl  implements PrintConvert {
     }
 
     @Override
+    public List<PrintResource> convertPrintsWithoutSize(List<Prints> prints) {
+        return prints.stream().map(this::convertPrintWithoutSize ).collect(Collectors.toList());
+    }
+
+    @Override
     public PrintResource convert(Prints prints) {
         return PrintResource.builder()
                 .id(prints.getId())
-                .name(prints.getName())
+                .name(prints.getName() +"("+prints.getSize().getName()+")")
+                .sizeName(prints.getSize().getName())
+                .sizeId(prints.getSize().getId())
+                .amount(prints.getAmount())
+                .currencyId(prints.getCurrency() != null ? prints.getCurrency().getId() : 0L)
+                .currencyName(prints.getCurrency() != null ? prints.getCurrency().getName() : "N/A")
+                .build();
+    }
+
+
+
+    @Override
+    public PrintResource convertPrintWithoutSize(Prints prints) {
+        return PrintResource.builder()
+                .id(prints.getId())
+                .name(prints.getName() )
                 .sizeName(prints.getSize().getName())
                 .sizeId(prints.getSize().getId())
                 .amount(prints.getAmount())

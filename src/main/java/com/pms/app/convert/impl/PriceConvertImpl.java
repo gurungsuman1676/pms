@@ -37,6 +37,7 @@ public class PriceConvertImpl implements PriceConvert {
                 .designName(prices.getDesign().getName())
                 .sizeId(prices.getSize().getId())
                 .sizeName(prices.getSize().getName())
+                .gauge(prices.getDesign().getGauge())
                 .customer(customerConvert.convertCustomer(prices.getDesign().getCustomer()))
                 .build();
     }

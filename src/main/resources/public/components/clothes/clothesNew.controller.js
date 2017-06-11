@@ -63,11 +63,11 @@ angular.module('sbAdminApp')
         }
 
 
-        ColorsFactory.getColors( function (response) {
+        ColorsFactory.getColors(function (response) {
             $scope.options.colors = response;
             for (var i = 0, len = $scope.options.colors.length; i < len; i++) {
                 lookup[$scope.options.colors[i].id] = $scope.options.colors[i];
-                $scope.options.colors[i].name =  $scope.options.colors[i].code;
+                $scope.options.colors[i].name = $scope.options.colors[i].code;
             }
         }, function (response) {
             Flash.create('danger', response.message, 'custom-class');
@@ -76,16 +76,15 @@ angular.module('sbAdminApp')
         $scope.colorSelected = function (colorId) {
             $scope.fetchSize(colorId);
             $scope.$apply(function () {
-                self.colorName_company = colorId == undefined ? undefined :(lookup[colorId].name_company);
+                self.colorName_company = colorId == undefined ? undefined : (lookup[colorId].name_company);
             });
 
         }
 
 
-
         $scope.fetchSize = function (colorId) {
             if (colorId && self.cloth.designId) {
-               var yarnId = lookup[colorId].yarnId;
+                var yarnId = lookup[colorId].yarnId;
                 SizesFactory.getSizesbyYarns(self.cloth.designId, yarnId, function (response) {
                     $scope.options.sizes = response;
                 }, function (response) {
@@ -96,8 +95,14 @@ angular.module('sbAdminApp')
 
 
         PrintsFactory.getPrints(function (response) {
-            $scope.options.prints = response;
+            var prints = response;
+            angular.forEach(prints, function (p) {
+                p.name = p.name + "(" + p.sizeName + ")";
+            })
+            $scope.options.prints = prints;
         }, function (response) {
+
+
             Flash.create('danger', response.message, 'custom-class');
         })
 

@@ -3,6 +3,7 @@ package com.pms.app.repo;
 import com.pms.app.domain.Customers;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,4 +23,9 @@ public interface CustomerRepository extends AbstractRepository<Customers> {
 
     List<Customers> findAllByOrderByNameAsc();
 
+    @Query("SELECT c.id FROM Customers c WHERE c.name =:name")
+    Long findCustomeIdByName(@Param("name") String name);
+
+    @Query("SELECT c FROM Customers c WHERE c.name =:name")
+    Customers findByName(@Param("name") String name);
 }

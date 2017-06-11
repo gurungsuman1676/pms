@@ -32,6 +32,8 @@ angular.module('sbAdminApp')
         });
 
         self.reloadTable = function () {
+            self.colorListTable.$params.page = 1;
+
             self.colorListTable.reload();
         };
 

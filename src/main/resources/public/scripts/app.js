@@ -20,7 +20,8 @@ angular
         'ngTableExport',
         'AngularPrint',
         'kendo.directives',
-        'ngStorage'
+        'ngStorage',
+        'ngFileUpload'
     ])
     .config(['$stateProvider', '$urlRouterProvider', '$ocLazyLoadProvider','$httpProvider',
         function ($stateProvider, $urlRouterProvider, $ocLazyLoadProvider,$httpProvider) {
