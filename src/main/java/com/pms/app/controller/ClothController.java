@@ -16,7 +16,7 @@ import com.pms.app.schema.PrintResource;
 import com.pms.app.schema.SizeResource;
 import com.pms.app.schema.WeavingShippingDTO;
 import com.pms.app.service.ClothService;
-import com.pms.app.service.ExcelUploadService;
+import com.pms.app.upload.ExcelUploadService;
 import com.pms.app.service.ReportingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -192,12 +192,12 @@ public class ClothController {
 
     @RequestMapping(value = CLOTHS_EXCEL_UPLOAD + "/knitting", method = RequestMethod.POST)
     public void uploadEcelFile(@RequestParam("file") MultipartFile file, HttpServletResponse httpServletResponse) throws Exception {
-        excelUploadService.uploadClothes(file, httpServletResponse);
+        excelUploadService.uploadClothes(file, httpServletResponse, "KNITTING");
     }
 
     @RequestMapping(value = CLOTHS_EXCEL_UPLOAD + "/weaving", method = RequestMethod.POST)
     public void uploadWeavingEcelFile(@RequestParam("file") MultipartFile file, HttpServletResponse httpServletResponse) throws Exception {
-        excelUploadService.uploadWeavingClothes(file, httpServletResponse);
+        excelUploadService.uploadClothes(file, httpServletResponse, "WEAVING");
     }
 
     @RequestMapping(value = "/shipping", method = RequestMethod.PUT)

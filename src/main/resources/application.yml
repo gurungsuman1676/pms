@@ -13,14 +13,13 @@ spring:
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost/pms_development
     username: root
-    password: root
+    password:
 
 backup:
   databaseName : pms_app
   fileName :
   mysqlDumppath:
-server:
-  port: 9090
+
 
 
 
