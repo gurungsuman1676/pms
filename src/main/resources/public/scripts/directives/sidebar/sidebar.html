@@ -23,8 +23,17 @@
             <li ui-sref-active="active" ng-hide="isAdmin">
                 <a ui-sref="dashboard.supervisors.index">Knitting Entry</a>
             </li>
-            <li ui-sref-active="active" ng-hide="isAdmin">
+            <li ui-sref-active="active" ng-show="isShipper">
                 <a ui-sref="dashboard.supervisors.weaving">Weaving Entry</a>
+            </li>
+            <li ui-sref-active="active" ng-show="isKnitter || isAdmin">
+                <a ui-sref="dashboard.knitters.index">Knitter</a>
+            </li>
+            <li ui-sref-active="active" ng-show="isKnitter || isAdmin">
+                <a ui-sref="dashboard.machines.index">Machine</a>
+            </li>
+            <li ui-sref-active="active" ng-show="isKnitter || isAdmin">
+                <a ui-sref="dashboard.knittingHistory.index">Knitting History</a>
             </li>
             <li ui-sref-active="active" ng-show="isAdmin">
                 <a ui-sref="dashboard.locations.index">Locations</a>

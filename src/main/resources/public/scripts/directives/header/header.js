@@ -12,7 +12,9 @@ angular.module('sbAdminApp')
         templateUrl:'scripts/directives/header/header.html',
         restrict: 'E',
         replace: true,
-            scope: {'isAdmin':'=isAdmin'}
+            scope: {'isAdmin':'=isAdmin',
+                'isShipper': '=isShipper',
+                'isKnitter': '=isKnitter'}
     	}
 	});
 

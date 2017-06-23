@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
+import java.util.Date;
 
 @Component
 public class DatabaseBackUpSchedule {
@@ -21,10 +22,10 @@ public class DatabaseBackUpSchedule {
 
     @Value("${backup.databaseName}")
     String dbName;
-    @Value("${backup.fileName}")
-    String backupPath;
+
     @Value("${backup.mysqlDumppath}")
-    String dumpDath;
+    String dumpPath;
+
     @Autowired
     public DatabaseBackUpSchedule(DatabaseSetting databaseSetting) {
         this.databaseSetting = databaseSetting;
@@ -32,7 +33,7 @@ public class DatabaseBackUpSchedule {
 
 //    @Scheduled(cron = "0 0 24 * * ?")
 
-    @Scheduled(fixedRate = 500000)
+    @Scheduled(fixedRate = 50000)
     public void backUpDatabase() {
         System.out.println("entered scheduled");
         try {
@@ -40,11 +41,9 @@ public class DatabaseBackUpSchedule {
 
             String dbUser = databaseSetting.getUsername();
             String dbPass = databaseSetting.getPassword();
-//
-//            String backUpFileName = "C:/Users/ANISH/Documents";
-//            String path = "E:\\xampp\\mysql\\bin";
-            String executeCmd = dumpDath + "\\mysqldump.exe -u " + dbUser + " " + dbName + " > " + backupPath;
 
+            String executeCmd = "mysqldump.exe -u " + dbUser + " -p " + dbPass + " " + dbName + " > " + dumpPath + File.separator + new Date().toString();
+            System.out.println(executeCmd);
             Runtime rt1 = Runtime.getRuntime();
             System.out.println("Command to execute :: " + executeCmd);
             Process p = rt1.exec(executeCmd);
@@ -58,17 +57,11 @@ public class DatabaseBackUpSchedule {
                 System.out.println(line);
             }
 
-        /*NOTE: processComplete=0 if correctly executed, will contain other values if not*/
-//            if (processComplete == 0) {
-//                System.out.println("Backup Complete");
-//            } else {
-//                System.out.println("Backup Failure");
-//            }
 
         } catch (Exception exception)
 
         {
-            System.out.println("Error at Backuprestore" + exception.getMessage());
+            System.out.println("Error at Backup store" + exception.getMessage());
         }
     }
 }

@@ -52,28 +52,40 @@
                             ng-disabled="!(ctrl.filterParams.shippingNumber && ctrl.filterParams.customerId)">Invoice
                     </button>
                 </div>
-                <div class="col-sm-12"></div>
+                <div class="col-sm-12" style="padding-top: 1em"></div>
                 <div class="pull-left">
-                    <button type="file" ngf-select="ctrl.importFromExcel($file)" class="btn btn-success"
-                            accept="application/xls"  >
-                        Import Weaving </button>
+                    <button type="file" ngf-select="ctrl.importFromExcel($file,'WEAVING')" class="btn btn-success"
+                            accept="application/xls">
+                        Import Weaving
+                    </button>
                 </div>
 
                 <div class="pull-left">
-                    <button type="file" ngf-select="ctrl.importFromExcel($file)" class="btn btn-success"
-                            accept="application/xls"  >
-                        Import  Knitting </button>
+                    <button type="file" ngf-select="ctrl.importFromExcel($file,'KNITTING_MULTIPLE')"
+                            class="btn btn-success"
+                            accept="application/xls">
+                        Import Knitting Multiple
+                    </button>
                 </div>
+
+                <div class="pull-left">
+                    <button type="file" ngf-select="ctrl.importFromExcel($file,'KNITTING_SINGLE')"
+                            class="btn btn-success"
+                            accept="application/xls">
+                        Import Knitting Single
+                    </button>
+                </div>
+
                 <div class="col-sm-12"></div>
             </div>
             <div class="search-container" ng-show="showFilter">
 
                 <div class="col-sm-3 input-margin">
-                    <selectize placeholder="Type" ng-change="typeSelected(ctrl.filterParams.typeId)" ng-model="ctrl.filterParams.typeId"
+                    <selectize placeholder="Type" ng-change="typeSelected(ctrl.filterParams.typeId)"
+                               ng-model="ctrl.filterParams.typeId"
                                options="ctrl.types">
                     </selectize>
                 </div>
-
 
 
                 <div class="col-sm-3 input-margin">
@@ -168,6 +180,17 @@
                            placeholder="Gauge">
                 </div>
 
+                <div class="col-sm-3 input-margin">
+                    <input type="text" class="form-control" ng-model="ctrl.filterParams.setting"
+                           placeholder="Setting">
+                </div>
+
+                <div class="col-sm-3 input-margin">
+                    <selectize placeholder="Order" ng-model="ctrl.filterParams.reOrder"
+                               options="ctrl.reOrders">
+                    </selectize>
+                </div>
+
                 <div class="col-sm-12"></div>
 
 
@@ -184,7 +207,7 @@
                 </div>
 
                 <!--<div class="pull-left">-->
-                    <!--<button ng-disabled= "ctrl.filterParams.typeId != 1" class="btn btn btn-primary" ng-click="ctrl.generateWeavingInvoice()">Generate Weaving Invoice</button>-->
+                <!--<button ng-disabled= "ctrl.filterParams.typeId != 1" class="btn btn btn-primary" ng-click="ctrl.generateWeavingInvoice()">Generate Weaving Invoice</button>-->
                 <!--</div>-->
 
             </div>
@@ -211,31 +234,37 @@
                             <th>Price</th>
                             <th>Shipping No</th>
                             <th>Box Number</th>
-                            <th >Actions</th>
+                            <th>Re-Order</th>
+                            <th>Actions</th>
                             <th>Select <input type="checkbox" ng-model="ctrl.selectAll"
                                               ng-change="ctrl.allSelected()"></th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr class="odd gradeX" ng-class="{'shipped': cloth.locationName === 'SHIPPING'}" ng-repeat="cloth in $data | orderBy:'-id'">
-
+                        <tr class="odd gradeX" ng-class="{'shipped': cloth.locationName === 'SHIPPING'}"
+                            ng-repeat="cloth in $data | orderBy:'-id'">
 
 
                             <td ng-class="{'cloth-warning': cloth.isReturn}">{{cloth.id}}</td>
                             <td>{{cloth.locationName}}</td>
-                            <td >{{cloth.order_no}}</td>
+                            <td>{{cloth.order_no}}</td>
                             <td>{{cloth.price.designName}}</td>
                             <td>{{cloth.price.yarnName}}</td>
                             <td>{{cloth.colorCode}}</td>
                             <td>{{cloth.price.sizeName}}</td>
                             <td>{{cloth.customer.name}}</td>
-                            <td ng-class="{'cloth-warning': cloth.delivery_date < warningDate}">{{cloth.delivery_date | date: 'dd/MM/yyyy'}}</td>
+                            <td ng-class="{'cloth-warning': cloth.delivery_date < warningDate}">{{cloth.delivery_date |
+                                date: 'dd/MM/yyyy'}}
+                            </td>
                             <td><span ng-if="!cloth.print.name">N/A</span><span>{{cloth.print.name}}</span></td>
-                            <td><span ng-if="!cloth.print.amount">N/A</span>{{cloth.print.amount | currency: cloth.customer.currencyName}}</td>
+                            <td><span ng-if="!cloth.print.amount && cloth.print.amount != 0">N/A</span>{{cloth.print.amount
+                                | currency: cloth.print.currencyName}}
+                            </td>
                             <td>{{cloth.price.amount | currency: cloth.customer.currencyName}}</td>
-                            <td >{{cloth.shippingNumber}}</td>
+                            <td>{{cloth.shippingNumber}}</td>
                             <td>{{cloth.boxNumber}}</td>
-                            <td  style="width:165px">
+                            <td>{{cloth.reOrder ? 'Re-Order' : 'Bulk'}}</td>
+                            <td style="width:165px">
 
                                 <!--<button type="button" class="btn btn-xs btn-primary" ui-sref="dashboard.clothes.edit({clothId: cloth.id})">-->
                                 <!--Edit-->
@@ -284,10 +313,10 @@
                     <p>{{cloth.order_no}}/ {{cloth.customer.name}}/ {{cloth.price.designName}}/
                         {{cloth.price.sizeName}}/ {{cloth.colorCode}}/ {{cloth.print.name}}</p>
                 </div>
-                    <span kendo-barcode
-                          k-type="'code128'"
-                          ng-model="cloth.id"
-                          style="width: 200px; height: 50px; margin: 0 auto;">
+                <span kendo-barcode
+                      k-type="'code128'"
+                      ng-model="cloth.id"
+                      style="width: 200px; height: 50px; margin: 0 auto;">
                     </span>
             </div>
         </div>

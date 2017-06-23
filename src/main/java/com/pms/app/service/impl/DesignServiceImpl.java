@@ -63,6 +63,7 @@ public class DesignServiceImpl implements DesignService {
         newDesign.setCustomer(customers);
         newDesign.setName(designDto.getName());
         newDesign.setGauge(designDto.getGauge());
+        newDesign.setSetting(designDto.getSetting());
         newDesign.setParent(parent);
 
         return designRepository.save(newDesign);
@@ -112,6 +113,7 @@ public class DesignServiceImpl implements DesignService {
         existingDesign.setGauge(designDto.getGauge());
         existingDesign.setCustomer(customers);
         existingDesign.setName(designDto.getName());
+        existingDesign.setSetting(designDto.getSetting());
         existingDesign.setParent(parent);
 
         return designRepository.save(existingDesign);

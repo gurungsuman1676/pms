@@ -25,10 +25,12 @@ public class ExcelUploadServiceImpl implements ExcelUploadService {
     public void uploadClothes(MultipartFile file, HttpServletResponse httpServletResponse, String type) throws Exception {
 
         TemplateService templateService = null;
-        if (type.equals("KNITTING")) {
+        if (type.equals("KNITTING_MULTIPLE")) {
             templateService = (TemplateService) beanFactory.getBean("dannyTemplate", file);
+        } else if (type.equals("KNITTING_SINGLE")) {
+            templateService = (TemplateService) beanFactory.getBean("phillipeTemplate", file);
         } else {
-            templateService = new RukelTemplate(file);
+            templateService = (TemplateService) beanFactory.getBean("rukelTemplate", file);
         }
         templateService.process();
     }

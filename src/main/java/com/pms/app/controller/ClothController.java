@@ -26,7 +26,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.http.HttpStatus.ACCEPTED;
 
@@ -82,7 +84,9 @@ public class ClothController {
                                                 @RequestParam(required = false, value = "locationDate") Date locationDate,
                                                 @RequestParam(required = false, value = "designId") Long designId,
                                                 @RequestParam(required = false, value = "gauge") Double gauge,
-
+                                                @RequestParam(required = false, value = "setting") String setting,
+                                                @RequestParam(required = false, value = "reOrder") Boolean reOrder,
+                                                @RequestParam(required = false, value = "week") String week,
                                                 Pageable pageable) {
         String role = null;
         if (roles != null && !roles.isEmpty()) {
@@ -95,7 +99,7 @@ public class ClothController {
         }
 
         Page<Clothes> page = clothService.getClothes(customerId, locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom,
-                orderDateTo, pageable, role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge);
+                orderDateTo, pageable, role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge, setting, reOrder,week);
         return new PageResult<>(page.getTotalElements(), page.getSize(), page.getNumber(), clothConvert.convert(page.getContent()));
     }
 
@@ -170,6 +174,9 @@ public class ClothController {
                           @RequestParam(required = false, value = "locationDate") Date locationDate,
                           @RequestParam(required = false, value = "designId") Long designId,
                           @RequestParam(required = false, value = "gauge") Double gauge,
+                          @RequestParam(required = false, value = "setting") String setting,
+                          @RequestParam(required = false, value = "reOrder") Boolean reOrder,
+                          @RequestParam(required = false, value = "week") String week,
                           HttpServletResponse httpServletResponse) {
         String role = null;
         if (roles != null && !roles.isEmpty()) {
@@ -182,7 +189,7 @@ public class ClothController {
         }
 
         reportingService.getClothReport(customerId, locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom,
-                orderDateTo, role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge, httpServletResponse);
+                orderDateTo, role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge, setting, reOrder,week, httpServletResponse);
     }
 
     @RequestMapping(value = CLOTHS_WEAVING_ID, method = RequestMethod.GET)
@@ -190,15 +197,13 @@ public class ClothController {
         reportingService.createWeaving(id, httpServletResponse);
     }
 
-    @RequestMapping(value = CLOTHS_EXCEL_UPLOAD + "/knitting", method = RequestMethod.POST)
-    public void uploadEcelFile(@RequestParam("file") MultipartFile file, HttpServletResponse httpServletResponse) throws Exception {
-        excelUploadService.uploadClothes(file, httpServletResponse, "KNITTING");
+    @RequestMapping(value = CLOTHS_EXCEL_UPLOAD, method = RequestMethod.POST)
+    public void uploadEcelFile(@RequestParam("file") MultipartFile file,
+                               @RequestParam String type,
+                               HttpServletResponse httpServletResponse) throws Exception {
+        excelUploadService.uploadClothes(file, httpServletResponse, type);
     }
 
-    @RequestMapping(value = CLOTHS_EXCEL_UPLOAD + "/weaving", method = RequestMethod.POST)
-    public void uploadWeavingEcelFile(@RequestParam("file") MultipartFile file, HttpServletResponse httpServletResponse) throws Exception {
-        excelUploadService.uploadClothes(file, httpServletResponse, "WEAVING");
-    }
 
     @RequestMapping(value = "/shipping", method = RequestMethod.PUT)
     public void addweavingShipping(@RequestBody WeavingShippingDTO weavingShippingDTO) {
@@ -228,5 +233,15 @@ public class ClothController {
                                                                   @RequestParam Long sizeId) {
         return printConvert.convert(clothService.getPrintByOrderNumberAndCustomer(orderNumber, customerId, designId, sizeId));
     }
+
+    @RequestMapping(value = "/extraFields", method = RequestMethod.GET)
+    public Set<String> getExtraFieldForForCustomerAndOrderNumber(@RequestParam Integer orderNumber,
+                                                                 @RequestParam Long customerId,
+                                                                 @RequestParam Long designId,
+                                                                 @RequestParam Long sizeId,
+                                                                 @RequestParam Long printId) {
+        return new HashSet<>(clothService.getExtraFieldByOrderNumberAndCustomer(orderNumber, customerId, designId, sizeId, printId));
+    }
+
 
 }

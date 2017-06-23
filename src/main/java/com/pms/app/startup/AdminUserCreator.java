@@ -18,21 +18,17 @@ public class AdminUserCreator {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final LocationRepository locationRepository;
-    private final UserLocationRepository userLocationRepository;
 
     @Autowired
-    public AdminUserCreator(UserRepository userRepository, PasswordEncoder passwordEncoder, LocationRepository locationRepository, UserLocationRepository userLocationRepository) {
+    public AdminUserCreator(UserRepository userRepository, PasswordEncoder passwordEncoder, LocationRepository locationRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-
         this.locationRepository = locationRepository;
-        this.userLocationRepository = userLocationRepository;
     }
-
     @PostConstruct
     public void init() {
 
-        if(locationRepository.count() == 0){
+        if (locationRepository.count() == 0) {
             createLocations();
         }
         if (userRepository.count() == 0) {
@@ -41,11 +37,11 @@ public class AdminUserCreator {
     }
 
     private void createLocations() {
-     for (LocationEnum location : LocationEnum.values()){
-         Locations locations = new Locations();
-         locations.setName(location.name());
-         locationRepository.save(locations);
-     }
+        for (LocationEnum location : LocationEnum.values()) {
+            Locations locations = new Locations();
+            locations.setName(location.getName());
+            locationRepository.save(locations);
+        }
     }
 
 

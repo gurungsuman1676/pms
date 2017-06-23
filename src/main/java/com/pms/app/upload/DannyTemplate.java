@@ -28,10 +28,11 @@ public class DannyTemplate extends AbstractTemplate implements TemplateService {
     private static final String ORDER_NO_ALIAS = "ORDER NO";
     private static final String COLOR_NAME_ALIAS = "COLOR NAME";
     private static final String COLOR_CODE_ALIAS = "COLOR CODE";
+    private static final String YARN_ALIAS = "YARN";
     private static final String TOTAL_ALIAS = "TOTAL";
     private static final String GRAND_TOTAL_ALIAS = "GRAND TOTAL";
 
-    boolean completed = false;
+    private boolean completed = false;
 
 
     public DannyTemplate(MultipartFile file) throws IOException {
@@ -71,17 +72,13 @@ public class DannyTemplate extends AbstractTemplate implements TemplateService {
 
         int clothInitNumber = 1;
         Map<Integer, List<Clothes>> clothesMap = new HashMap<>();
-        while (!completed) {
+        while (true) {
             List<Clothes> clothesForNumber = getClothesForNumber(clothInitNumber);
             if (!completed) {
                 clothesMap.put(clothInitNumber, clothesForNumber);
                 clothInitNumber++;
             } else {
-                Integer count = 0;
-                for (List<Clothes> c : clothesMap.values()) {
-                    count += c.size();
-                }
-                validateTotal(count, GRAND_TOTAL_ALIAS);
+                validateTotal(clothesMap.values().stream().mapToInt(List::size).sum(), GRAND_TOTAL_ALIAS);
                 break;
             }
         }
@@ -98,11 +95,12 @@ public class DannyTemplate extends AbstractTemplate implements TemplateService {
         currentRow = rowsIterator.next();
         int colorNameIndex = getColorNameIndex();
         int colorCodeIndex = getColorCodeIndex();
-        Map<Integer, String> sizeIndexes = getSizeIndex(colorCodeIndex);
+        int yarnIndex = getColorYarnIndex();
+        Map<Integer, String> sizeIndexes = getSizeIndex(yarnIndex);
         List<Clothes> clothesMap = new ArrayList<>();
         currentRow = rowsIterator.next();
         while (!hasTotal(TOTAL_ALIAS)) {
-            clothesMap.addAll(getClothByColorIndexAndSizeIndexAndSizeIndex(colorCodeIndex, sizeIndexes, designName));
+            clothesMap.addAll(getClothByColorIndexAndSizeIndexAndSizeIndex(colorCodeIndex, sizeIndexes, yarnIndex, colorNameIndex, designName));
             try {
                 currentRow = rowsIterator.next();
             } catch (Exception e) {
@@ -135,10 +133,12 @@ public class DannyTemplate extends AbstractTemplate implements TemplateService {
         }
     }
 
-    private List<Clothes> getClothByColorIndexAndSizeIndexAndSizeIndex(int colorCodeIndex, Map<Integer, String> sizeIndexes, String designName) {
-        Cell colorCell = currentRow.getCell(colorCodeIndex);
-        colorCell.setCellType(Cell.CELL_TYPE_STRING);
-        String colorCode = colorCell.getStringCellValue();
+    private List<Clothes> getClothByColorIndexAndSizeIndexAndSizeIndex(int colorCodeIndex, Map<Integer, String> sizeIndexes, int yarnIndex, int colorNameIndex, String designName) {
+        String colorCode = getCellValueByIndex(colorCodeIndex);
+        String yarnName = getCellValueByIndex(yarnIndex);
+        String colorName = getCellValueByIndex(colorNameIndex);
+
+
         Map<String, Integer> sizeAndNumberMap = new HashMap<>();
         for (Integer sizeEntryColum : sizeIndexes.keySet()) {
             Cell sizeCell = currentRow.getCell(sizeEntryColum);
@@ -149,7 +149,20 @@ public class DannyTemplate extends AbstractTemplate implements TemplateService {
                 }
             }
         }
-        return getCloth(colorCode, sizeAndNumberMap, designName);
+        return getCloth(colorCode, colorName, yarnName, sizeAndNumberMap, designName, null);
+    }
+
+
+    private String getCellValueByIndex(int index) {
+        if (index == -1) {
+            return "";
+        }
+        Cell cell = currentRow.getCell(index);
+        if (cell == null) {
+            return "";
+        }
+        cell.setCellType(Cell.CELL_TYPE_STRING);
+        return cell.getStringCellValue();
     }
 
     private String getDesignName(int clothInitNumber) {
@@ -161,7 +174,13 @@ public class DannyTemplate extends AbstractTemplate implements TemplateService {
                     cell.setCellType(Cell.CELL_TYPE_STRING);
                     if (cell.getStringCellValue() != null && cell.getStringCellValue().equals(clothInitNumber + "")) {
                         Cell designCell = currentRow.getCell(1);
+                        if (designCell == null) {
+                            throw new RuntimeException("Error finding design at " + clothInitNumber);
+                        }
                         designCell.setCellType(Cell.CELL_TYPE_STRING);
+                        if (designCell.getStringCellValue().trim().isEmpty()) {
+                            throw new RuntimeException("Error design name at " + clothInitNumber);
+                        }
                         return designCell.getStringCellValue();
                     }
                 }
@@ -170,7 +189,7 @@ public class DannyTemplate extends AbstractTemplate implements TemplateService {
                 return null;
             }
         }
-        throw new RuntimeException("Design for " + clothInitNumber + " not available");
+        throw new RuntimeException("Design for serial number " + clothInitNumber + " not available");
     }
 
     private boolean hasTotal(String alias) {
@@ -185,7 +204,7 @@ public class DannyTemplate extends AbstractTemplate implements TemplateService {
                 return cell.getColumnIndex();
             }
         }
-        throw new RuntimeException("Color Name not found  in " + currentRow.getRowNum());
+        throw new RuntimeException("Color Name header not found  in  " + currentRow.getRowNum());
     }
 
     private int getColorCodeIndex() {
@@ -195,7 +214,17 @@ public class DannyTemplate extends AbstractTemplate implements TemplateService {
                 return cell.getColumnIndex();
             }
         }
-        throw new RuntimeException("Color Code not found  in " + currentRow.getRowNum());
+        throw new RuntimeException("Color Code header not found  in " + currentRow.getRowNum());
+    }
+
+    private int getColorYarnIndex() {
+        for (Cell cell : currentRow) {
+            cell.setCellType(Cell.CELL_TYPE_STRING);
+            if (cell.getStringCellValue() != null && cell.getStringCellValue().toUpperCase().contains(YARN_ALIAS)) {
+                return cell.getColumnIndex();
+            }
+        }
+        throw new RuntimeException("Color Code header not found  in " + currentRow.getRowNum());
     }
 
     private Map<Integer, String> getSizeIndex(int colorCodeIndex) {

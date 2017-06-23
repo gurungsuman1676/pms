@@ -9,4 +9,6 @@
 angular.module('sbAdminApp')
     .controller('DashboardCtrl', function ($localStorage, $scope, $position, $http) {
         $scope.isAdmin = $localStorage.isAdmin;
+        $scope.isShipper = $localStorage.isShipper;
+        $scope.isKnitter = $localStorage.isKnitter;
     });

@@ -15,4 +15,5 @@ public class DesignResource {
     private Long customerId;
     private String customerName;
     private Double gauge;
+    private String setting;
 }

@@ -24,9 +24,12 @@ public interface DesignRepository extends AbstractRepository<Designs> {
 
     List<Designs> findAllByOrderByNameAsc();
 
-    @Query("SELECT d.id FROM Designs d WHERE d.name =:name")
-    Long findIdByName(@Param("name") String designName);
-
     @Query("SELECT d FROM Designs d WHERE d.name =:name  AND d.customer.id =:customerId")
     Designs findByNameAndCustomer(@Param("name") String name, @Param("customerId") Long customerId);
+
+
+    @Query("SELECT d.id FROM Designs d WHERE d.name =:name  AND d.customer.id =:customerId")
+    Long findIdByNameAndCustomer(@Param("name") String name, @Param("customerId") Long customerId);
+
+
 }

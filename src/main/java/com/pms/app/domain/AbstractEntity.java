@@ -52,6 +52,7 @@ public abstract class AbstractEntity extends AbstractPersistable<Long> {
     @PrePersist
     public void onPersist(){
         this.created = new Date();
+        this.lastModified = new Date();
     }
     @PreUpdate
     public void onUpdate(){

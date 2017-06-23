@@ -23,37 +23,37 @@ angular
         'ngStorage',
         'ngFileUpload'
     ])
-    .config(['$stateProvider', '$urlRouterProvider', '$ocLazyLoadProvider','$httpProvider',
-        function ($stateProvider, $urlRouterProvider, $ocLazyLoadProvider,$httpProvider) {
+    .config(['$stateProvider', '$urlRouterProvider', '$ocLazyLoadProvider', '$httpProvider',
+        function ($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, $httpProvider) {
 
-        $httpProvider.interceptors.push(['$rootScope','$localStorage',
-            function ($rootScope,$localStorage) {
+            $httpProvider.interceptors.push(['$rootScope', '$localStorage',
+                function ($rootScope, $localStorage) {
 
-                return {
-                    'request': function (config) {
-                        if ($rootScope.isLoggedIn()) {
-                            config.headers['x-auth-token'] = $localStorage.user.token;
+                    return {
+                        'request': function (config) {
+                            if ($rootScope.isLoggedIn()) {
+                                config.headers['x-auth-token'] = $localStorage.user.token;
+                            }
+                            return config;
                         }
-                        return config;
                     }
-                }
-            }]);
+                }]);
 
-        $ocLazyLoadProvider.config({
-            debug: false,
-            events: true,
-        });
-
-        $stateProvider
-            .state('login', {
-                templateUrl: 'components/login/login.html',
-                url: '/login',
-                controller: 'LoginCtrl',
-                controllerAs: 'ctrl'
+            $ocLazyLoadProvider.config({
+                debug: false,
+                events: true,
             });
-    }])
+
+            $stateProvider
+                .state('login', {
+                    templateUrl: 'components/login/login.html',
+                    url: '/login',
+                    controller: 'LoginCtrl',
+                    controllerAs: 'ctrl'
+                });
+        }])
     .filter('trustUrl', function ($sce) {
-        return function(url) {
+        return function (url) {
             return $sce.trustAsResourceUrl(url);
         };
     })
@@ -75,14 +75,33 @@ angular
         }
 
         $rootScope.loginSuccess = function () {
+            console.log($localStorage.user.roles);
             if (($localStorage.user.roles).indexOf("ADMIN") != -1) {
                 $localStorage.isAdmin = true;
+                $localStorage.isShipper = false;
+                $localStorage.isKnitter = false;
                 $state.go('dashboard.clothes.index');
             }
             else {
                 $state.go('dashboard.supervisors.index');
+                if (($localStorage.user.roles).indexOf("SHIPPING") != -1) {
+                    $localStorage.isShipper = true;
+
+                } else {
+                    $localStorage.isShipper = false;
+
+                }
+                if (($localStorage.user.roles).indexOf("PRE-KNITTING") != -1) {
+                    $localStorage.isKnitter = true;
+
+                } else {
+                    $localStorage.isKnitter = false;
+
+                }
                 $localStorage.isAdmin = false;
             }
+
+
         }
 
         $rootScope.$on('$stateChangeStart', function (event, next) {

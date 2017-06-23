@@ -16,7 +16,8 @@ public interface ClothRepositoryCustom extends AbstractRepositoryCustom<Clothes>
 
     Page<Clothes> findAllClothes(Long customerId, Long locationId, Integer orderNo, Long barcode, Date deliverDateFrom,
                                  Date deliveryDateTo, Date orderDateFrom, Date orderDateTo, Pageable pageable,
-                                 String number, String shippingNumber, String boxNumber, Boolean isReject, Integer type, Long designId, Date locationDate, Double gauge);
+                                 String number, String shippingNumber, String boxNumber, Boolean isReject, Integer type, Long designId, Date locationDate,
+                                 Double gauge, String setting, Boolean reOrder, String week);
 
 
     List<ClothOrderResource> findClothesForOrderAndCustomer(Integer orderNo, Long customerId);
@@ -34,7 +35,7 @@ public interface ClothRepositoryCustom extends AbstractRepositoryCustom<Clothes>
                                           String shippingNumber,
                                           String boxNumber,
                                           Boolean isReject,
-                                          Integer type, Long designId, Double gauge, Date locationDate);
+                                          Integer type, Long designId, Double gauge, Date locationDate, String setting, Boolean reOrder, String week);
 
     List<ClothInvoiceResource> findClothesForProformaInvoice(int orderNo, Long customerId);
 
@@ -46,10 +47,17 @@ public interface ClothRepositoryCustom extends AbstractRepositoryCustom<Clothes>
 
     List<ClothWeavingResource> findClothesForOrder(Long id);
 
-    Page<Clothes> findAllForHistoryByDate(Long customerId, Long locationId, Integer orderNo, Long barcode, Date deliverDateFrom, Date deliveryDateTo, Date orderDateFrom, Date orderDateTo, Pageable pageable, String role, String shippingNumber, String boxNumber, Boolean isReject, Integer type, Date locationDate, Long designId, Double gauge);
+    Page<Clothes> findAllForHistoryByDate(Long customerId, Long locationId, Integer orderNo, Long barcode,
+                                          Date deliverDateFrom, Date deliveryDateTo, Date orderDateFrom, Date orderDateTo,
+                                          Pageable pageable, String role, String shippingNumber,
+                                          String boxNumber, Boolean isReject, Integer type, Date locationDate, Long designId,
+                                          Double gauge, String setting, Boolean reOrder, String week);
 
 
-    List<ClothResource> findClothResourceByLocation(Long customerId, Long locationId, Integer orderNo, Long barcode, Date deliverDateFrom, Date deliveryDateTo, Date orderDateFrom, Date orderDateTo, String role, String shippingNumber, String boxNumber, Boolean isReject, Integer type, Date locationDate, Long designId, Double gauge);
+    List<ClothResource> findClothResourceByLocation(Long customerId, Long locationId, Integer orderNo, Long barcode,
+                                                    Date deliverDateFrom, Date deliveryDateTo, Date orderDateFrom, Date orderDateTo,
+                                                    String role, String shippingNumber, String boxNumber, Boolean isReject, Integer type,
+                                                    Date locationDate, Long designId, Double gauge, String setting, Boolean reOrder, String week);
 
     List<Clothes> findForWeavingShipping(WeavingShippingDTO weavingShippingDTO, Long locationId);
 
@@ -60,4 +68,6 @@ public interface ClothRepositoryCustom extends AbstractRepositoryCustom<Clothes>
     List<Prints> findRemaingWeavingPrintByOrderNumber(Integer orderNumber, Long customerId, Long designId, Long locationId, Long sizeId);
 
     List<Sizes> findRemaingWeavingSizeByOrderNumber(Integer orderNumber, Long customerId, Long designId, Long locationId);
+
+    List<String> getExtraFieldByOrderNumberAndCustomer(Integer orderNumber, Long customerId, Long designId, Long sizeId, Long printId);
 }

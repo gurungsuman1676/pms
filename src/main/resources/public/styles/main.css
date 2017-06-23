@@ -208,20 +208,21 @@ input[type=checkbox] {
     margin-right: 5px;
 }
 
-.input-symbol{
-    position:relative;
-}
-.input-symbol span{
-    position: absolute;
-    transform: translate(0,-50%);
-    top:50%;
-    pointer-events:none;
-    margin-left:1em;
-}
-.input-symbol input{
-    text-indent:0.7em;
+.input-symbol {
+    position: relative;
 }
 
+.input-symbol span {
+    position: absolute;
+    transform: translate(0, -50%);
+    top: 50%;
+    pointer-events: none;
+    margin-left: 1em;
+}
+
+.input-symbol input {
+    text-indent: 0.7em;
+}
 
 .cloth-warning {
     background-color: rgba(139, 0, 0, 0.5);
@@ -245,7 +246,7 @@ input[type=checkbox] {
     margin: 20px;
 }
 
-.ngdialog-content{
+.ngdialog-content {
     width: 90% !important;
 }
 
@@ -264,6 +265,11 @@ input[type=checkbox] {
 }
 
 .search-btn-wrapper div {
-    margin-right:5px;
+    margin-right: 5px;
+}
+
+.clickable-td {
+    color: blue;
+    cursor: pointer;
 }
 

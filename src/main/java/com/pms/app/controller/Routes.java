@@ -18,7 +18,10 @@ public interface Routes {
     public static final String LOCATION = V1 + "/locations";
     public static final String CURRENCY = V1 + "/currencies";
     public static final String YARNS = V1 + "/yarns";
-    public static final String ACTIVITY = CLOTH +"{clothId}"+"/activities";
+    public static final String ACTIVITY = CLOTH + "/{clothId}" + "/activities";
+    public static final String KNITTER = V1 + "/knitters";
+    public static final String MACHINE = V1 + "/machines";
+    public static final String KNITTER_HISTORY = V1 + "/knitters-history";
 
 
 }

@@ -16,4 +16,5 @@ public class WeavingShippingDTO {
      private Long designId;
      private Long printId;
      private int quantity;
+     private String extraField;
 }

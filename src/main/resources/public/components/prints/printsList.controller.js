@@ -20,7 +20,7 @@ angular.module('sbAdminApp')
         });
 
         self.reloadTable = function () {
-            self.priceTableList.$params.page = 1;
+            self.printTableList.$params.page = 1;
             self.printTableList.reload();
         };
         CurrenciesFactory.getCurrencies(function (response) {

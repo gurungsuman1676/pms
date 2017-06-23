@@ -19,4 +19,5 @@ public class PriceResource {
     private Double amount;
     private CustomerResource customer;
     private Double gauge;
+    private String setting;
 }

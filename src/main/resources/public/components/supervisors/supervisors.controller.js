@@ -12,6 +12,8 @@ angular.module('sbAdminApp')
         var self = this;
         self.cloth = {};
         self.sizes = [];
+        self.reOrders = [{id: 2, name: "Re Order"}, {id: 1, name: "Bulk"}];
+
         self.isShippingUser = ($localStorage.user.roles).indexOf("SHIPPING") != -1;
         self.filterParams = {
             customerId: undefined,
@@ -86,10 +88,12 @@ angular.module('sbAdminApp')
                             designId: self.filterParams.designId === 'All' ? undefined : self.filterParams.designId,
                             deliveryDateTo: self.filterParams.deliveryDateTo ? self.filterParams.deliveryDateTo.toDateString() : undefined,
                             gauge: self.filterParams.gauge,
-
+                            setting: self.filterParams.setting,
+                            reOrder: angular.isDefined(self.filterParams.reOrder) ? (Number(self.filterParams.reOrder) === 1 ? false : true) : null,
                             //orderNo: self.orderNo,
                             order: 'id,desc',
                             page: page - 1,
+
                             roles:$localStorage.user.roles,
                             size: params.count()
                         },

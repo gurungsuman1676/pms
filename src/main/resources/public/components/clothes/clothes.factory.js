@@ -123,7 +123,7 @@
             // successCallback([{location: 'Linking', created: '2016/7/19'}, {location: 'Washing', created: '2016/7/21'}])
             $http({
                 method: 'GET',
-                url: RESOURCES.apiURL + '/clothes' + cloth.id + '/activities'
+                url: RESOURCES.apiURL + '/clothes/' + cloth.id + '/activities'
             }).success(function (response) {
                 successCallback(response);
             }).error(function (error) {
@@ -164,14 +164,14 @@
             $window.open(RESOURCES.apiURL + '/clothes' + '/weaving/' + id);
         }
 
-        factory.uploadExcel = function (excel, successCallback, errorCallback) {
+        factory.uploadExcel = function (excel, type, successCallback, errorCallback) {
             var file = excel;
             if (file) {
 
                 $http({
                     method: 'POST',
-                    url: RESOURCES.apiURL + '/clothes' + '/excel-upload/knitting',
-                    data: {file: file},
+                    url: RESOURCES.apiURL + '/clothes' + '/excel-upload',
+                    data: {file: file, type: type},
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     },
@@ -229,6 +229,24 @@
                 method: 'GET',
                 url: RESOURCES.apiURL + '/clothes/prints',
                 params: {orderNumber: orderNumber, customerId: customerId, designId: designId, sizeId: sizeId}
+            }).success(function (response) {
+                successCallback(response);
+            }).error(function (response) {
+                errorCallback(response);
+            })
+        };
+
+        factory.getExtraFieldsForWeaving = function (orderNumber, customerId, designId, sizeId, printId, successCallback, errorCallback) {
+            $http({
+                method: 'GET',
+                url: RESOURCES.apiURL + '/clothes/extraFields',
+                params: {
+                    orderNumber: orderNumber,
+                    customerId: customerId,
+                    designId: designId,
+                    sizeId: sizeId,
+                    printId: printId
+                }
             }).success(function (response) {
                 successCallback(response);
             }).error(function (response) {

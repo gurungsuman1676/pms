@@ -7,11 +7,11 @@
  * Controller of the sbAdminApp
  */
 angular.module('sbAdminApp')
-    .controller('DesignsListCtrl', function ($scope, DesignsFactory,ngTableParams,CustomersFactory,$filter) {
+    .controller('DesignsListCtrl', function ($scope, DesignsFactory, ngTableParams, CustomersFactory, $filter) {
 
         var self = this;
         self.designs = [];
-        self.options ={};
+        self.options = {};
 
         self.reloadTable = function () {
             self.designListTable.$params.page = 1;
@@ -19,8 +19,10 @@ angular.module('sbAdminApp')
         };
 
         self.filterParams = {
-            'name': '',
-            customerId: ''
+            name: undefined,
+            customerId: undefined,
+            setting: undefined,
+            gauge: undefined
         };
 
         CustomersFactory.getCustomers(function (response) {
@@ -31,8 +33,16 @@ angular.module('sbAdminApp')
 
         var getFilterParams = function () {
             var filterParams = {};
-            filterParams.name = self.filterParams.name;
-            if (angular.isDefined(self.filterParams.customerId) && self.filterParams.customerId != null) {
+            if (angular.isDefined(self.filterParams.name) && self.filterParams.name.length > 0) {
+                filterParams.name = self.filterParams.name;
+            }
+            if (angular.isDefined(self.filterParams.gauge) && self.filterParams.gauge.length > 0) {
+                filterParams.gauge = self.filterParams.gauge;
+            }
+            if (angular.isDefined(self.filterParams.setting) && self.filterParams.setting.length > 0) {
+                filterParams.setting = self.filterParams.setting;
+            }
+            if (angular.isDefined(self.filterParams.customerId) && self.filterParams.customerId.length > 0 &&  self.filterParams.customerId != null) {
                 filterParams.customerId = self.filterParams.customerId;
             }
             return filterParams;

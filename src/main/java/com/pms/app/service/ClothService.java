@@ -17,7 +17,8 @@ import java.util.List;
 public interface ClothService {
     Page<Clothes> getClothes(Long customerId, Long locationId, Integer orderNo, Long barcode, Date deliverDateFrom,
                              Date deliveryDateTo, Date orderDateFrom, Date orderDateTo,
-                             Pageable pageable, String number, String shippingNumber, String boxNumber, Boolean isReject, Integer type, Date locationDate, Long designId, Double gauge);
+                             Pageable pageable, String number, String shippingNumber, String boxNumber,
+                             Boolean isReject, Integer type, Date locationDate, Long designId, Double gauge, String setting, Boolean reOrder, String week);
 
     List<Clothes> addCloth(ClothDto clothDto);
 
@@ -36,4 +37,6 @@ public interface ClothService {
     List<Prints> getPrintByOrderNumberAndCustomer(Integer orderNumber, Long customerId, Long designId, Long sizeId);
 
     List<Sizes> getSizesForCustomerAndOrderNumber(Integer orderNumber, Long customerId, Long designId);
+
+    List<String> getExtraFieldByOrderNumberAndCustomer(Integer orderNumber, Long customerId, Long designId, Long sizeId, Long printId);
 }

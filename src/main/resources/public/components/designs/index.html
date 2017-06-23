@@ -29,6 +29,18 @@
                     <selectize placeholder="Customer" ng-model="ctrl.filterParams.customerId"
                                config="{maxOptions: 100}" options="ctrl.options.customers"></selectize>
                 </div>
+
+                <div class="col-sm-3 input-margin">
+                    <input type="text" class="form-control" ng-model="ctrl.filterParams.setting"
+                           placeholder="Setting">
+                </div>
+
+                <div class="col-sm-3 input-margin">
+                    <input type="text" class="form-control" ng-model="ctrl.filterParams.gauge"
+                           placeholder="Gauge">
+                </div>
+
+
             </div>
 
             <div class="search-btn-wrapper" ng-show="showFilter">
@@ -47,6 +59,7 @@
                             <th>Customer Name</th>
                             <th>Parent Name</th>
                             <th>Gauge</th>
+                            <th>Setting</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
@@ -57,6 +70,7 @@
                             <td>{{design.customerName}}</td>
                             <td>{{design.parentName}}</td>
                             <td>{{design.gauge}}</td>
+                            <td>{{design.setting}}</td>
                             <td>
                                 <button type="button" class="btn btn-xs btn-primary" ui-sref="dashboard.designs.edit({designId: design.id})">
                                     Edit

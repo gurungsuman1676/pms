@@ -49,10 +49,16 @@ public class PriceServiceImpl implements PriceService {
             throw new RuntimeException("No such price found");
         }
         Designs designs = designRepository.findOne(priceDto.getDesignId());
-        if (sizes == null) {
+        if (designs == null) {
             throw new RuntimeException("No such design found");
         }
-        Prices duplicatePrices = priceRepository.findByDesignAndSizeAndYarn(priceDto.getDesignId(), priceDto.getSizeId(), priceDto.getYarnId());
+
+        Prices duplicatePrices;
+        if (priceDto.getYarnId() != null) {
+            duplicatePrices = priceRepository.findByDesignAndSizeAndYarn(priceDto.getDesignId(), priceDto.getSizeId(), priceDto.getYarnId());
+        } else {
+            duplicatePrices = priceRepository.findByDesignAndSize(priceDto.getDesignId(), priceDto.getSizeId());
+        }
         if (duplicatePrices != null) {
             throw new RuntimeException("Price already exists for design ,size and color");
         }
@@ -92,11 +98,15 @@ public class PriceServiceImpl implements PriceService {
             throw new RuntimeException("No such price found");
         }
         Designs designs = designRepository.findOne(priceDto.getDesignId());
-        if (sizes == null) {
+        if (designs == null) {
             throw new RuntimeException("No such design found");
         }
-
-        Prices duplicatePrices = priceRepository.findByDesignAndSizeAndYarn(priceDto.getDesignId(), priceDto.getSizeId(), priceDto.getYarnId());
+        Prices duplicatePrices;
+        if (priceDto.getYarnId() != null) {
+            duplicatePrices = priceRepository.findByDesignAndSizeAndYarn(priceDto.getDesignId(), priceDto.getSizeId(), priceDto.getYarnId());
+        } else {
+            duplicatePrices = priceRepository.findByDesignAndSize(priceDto.getDesignId(), priceDto.getSizeId());
+        }
         if (duplicatePrices != null && !Objects.equals(duplicatePrices.getId(), id)) {
             throw new RuntimeException("Price already exists for design ,size and color");
         }

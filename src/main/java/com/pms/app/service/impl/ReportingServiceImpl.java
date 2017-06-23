@@ -118,7 +118,6 @@ public class ReportingServiceImpl implements ReportingService {
             sizHeadCell.setCellStyle(style);
 
 
-
             Cell colorHeadCell = headerRow.createCell(3);
             colorHeadCell.setCellValue("Colour Name");
             colorHeadCell.setCellStyle(style);
@@ -145,8 +144,6 @@ public class ReportingServiceImpl implements ReportingService {
             Cell amountHeadCell = headerRow.createCell(8);
             amountHeadCell.setCellValue("Amount");
             amountHeadCell.setCellStyle(style);
-
-
 
 
             Cell emptyHeadCell = headerRow.createCell(9);
@@ -191,8 +188,9 @@ public class ReportingServiceImpl implements ReportingService {
 
 
                 Cell amountCell = row.createCell(8);
-                amountCell.setCellValue(cloth.getCurrency() + (cloth.getClothCount() * cloth.getPrice()));
-
+                if (cloth.getPrice() != null) {
+                    amountCell.setCellValue(cloth.getCurrency() + (cloth.getClothCount() * cloth.getPrice()));
+                }
 
                 Cell emptyCell = row.createCell(9);
 
@@ -270,10 +268,12 @@ public class ReportingServiceImpl implements ReportingService {
                                Boolean isReject,
                                Integer type,
                                Date locationDate,
-                               Long designId, Double gauge, HttpServletResponse httpServletResponse) {
+                               Long designId,
+                               Double gauge, String setting,
+                               Boolean reOrder, String week, HttpServletResponse httpServletResponse) {
         List<ClothResource> clothResources = null;
         if (locationDate == null || locationId == null || locationId == -1) {
-          clothResources = clothRepository.findClothResource(customerId,
+            clothResources = clothRepository.findClothResource(customerId,
                     locationId,
                     orderNo,
                     barcode,
@@ -286,9 +286,9 @@ public class ReportingServiceImpl implements ReportingService {
                     boxNumber,
                     isReject,
                     type,
-                  designId,gauge,locationDate);
-        }else {
-            clothResources=   clothRepository.findClothResourceByLocation(customerId,
+                    designId, gauge, locationDate, setting, reOrder,week);
+        } else {
+            clothResources = clothRepository.findClothResourceByLocation(customerId,
                     locationId,
                     orderNo,
                     barcode,
@@ -302,7 +302,7 @@ public class ReportingServiceImpl implements ReportingService {
                     isReject,
                     type,
                     locationDate,
-                    designId,gauge);
+                    designId, gauge, setting, reOrder,week);
         }
 
 
@@ -909,9 +909,6 @@ public class ReportingServiceImpl implements ReportingService {
             style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 
 
-
-
-
             Row headerRow = sheet.createRow(rownum);
 
 
@@ -1092,7 +1089,7 @@ public class ReportingServiceImpl implements ReportingService {
 
         HSSFSheet sheet = getWithHeaderImage(workbook, "/images/pms-logo.png");
 
-        List<ClothInvoiceResource> resources = clothRepository.findInvoice(orderNo, customerId,shippingNumber);
+        List<ClothInvoiceResource> resources = clothRepository.findInvoice(orderNo, customerId, shippingNumber);
         if (resources == null || resources.isEmpty()) {
             Row headerRow = sheet.createRow(7);
             Cell snHeadCell = headerRow.createCell(7);
@@ -1290,7 +1287,6 @@ public class ReportingServiceImpl implements ReportingService {
                         colorCodeCell.setCellValue(cloth.getColorCode());
 
 
-
                         Cell quantityCell = row.createCell(5);
                         quantityCell.setCellValue(cloth.getClothCount());
 
@@ -1299,12 +1295,13 @@ public class ReportingServiceImpl implements ReportingService {
                         priceCell.setCellValue(cloth.getCurrency() + cloth.getPrice());
 
                         Cell printAmount = row.createCell(7);
-                        printAmount.setCellValue(cloth.getPrint() != null ? cloth.getPrintCurrency() + cloth.getPrintAmount() : "");
+                        printAmount.setCellValue(cloth.getPrint() != null && cloth.getPrintAmount() != null ? cloth.getPrintCurrency() + cloth.getPrintAmount() : "");
 
 
                         Cell amountCell = row.createCell(8);
-                        amountCell.setCellValue(cloth.getCurrency() + (cloth.getClothCount() * cloth.getPrice()));
-
+                        if (cloth.getPrice() != null) {
+                            amountCell.setCellValue(cloth.getCurrency() + (cloth.getClothCount() * cloth.getPrice()));
+                        }
 
                         Cell emptyCell = row.createCell(9);
 
@@ -1398,7 +1395,6 @@ public class ReportingServiceImpl implements ReportingService {
             startCustomerName.setCellStyle(style);
 
 
-
             Cell startOrderNo = startRow.createCell(1);
             startOrderNo.setCellValue("Invoice No");
             startOrderNo.setCellStyle(style);
@@ -1411,7 +1407,6 @@ public class ReportingServiceImpl implements ReportingService {
             Cell startValueCustomerName = startValueRow.createCell(0);
             startValueCustomerName.setCellValue(resources.get(0).getCustomerName());
             startValueCustomerName.setCellStyle(style);
-
 
 
             Cell startValueOrderNo = startValueRow.createCell(1);
@@ -1514,7 +1509,7 @@ public class ReportingServiceImpl implements ReportingService {
 
 
                 Cell printAmountCell = row.createCell(7);
-                if(cloth.getPrint() != null) {
+                if (cloth.getPrint() != null && cloth.getPrintAmount() != null) {
                     printAmountCell.setCellValue(cloth.getPrintAmount());
                 }
 

@@ -7,7 +7,7 @@
  * Controller of the sbAdminApp
  */
 angular.module('sbAdminApp')
-    .controller('ClothesListCtrl', function ($window, $scope, ClothesFactory, CustomersFactory, Flash, ngTableParams, LocationsFactory, ngDialog, DesignsFactory, $localStorage) {
+    .controller('ClothesListCtrl', function ($window, $scope, $state, ClothesFactory, CustomersFactory, Flash, ngTableParams, LocationsFactory, ngDialog, DesignsFactory, $localStorage) {
 
         var self = this;
         self.orderNo = ''
@@ -43,6 +43,8 @@ angular.module('sbAdminApp')
         };
 
         self.statuses = [{id: 1, name: "Accepted"}, {id: 2, name: "Rejected"}];
+        self.reOrders = [{id: 2, name: "Re Order"}, {id: 1, name: "Bulk"}];
+
 
         self.types = [{id: 0, name: "Knitting"}, {id: 1, name: "Weaving"}, {id: 2, name: "All"}];
 
@@ -210,6 +212,10 @@ angular.module('sbAdminApp')
                 (angular.isDefined(self.filterParams.typeId) && self.filterParams.typeId != 'All' && Number(self.filterParams.typeId) !== 2 ? "&type=" + self.filterParams.typeId : "") +
                 (angular.isDefined(self.filterParams.statusId) ? "&isReject=" + (Number(self.filterParams.statusId) === 1 ? false : true) : "") +
                 (angular.isDefined(self.filterParams.gauge) ? "&gauge=" + self.filterParams.gauge : "") +
+                (angular.isDefined(self.filterParams.setting) ? "&setting=" + self.filterParams.setting : "") +
+                (angular.isDefined(self.filterParams.week) ? "&week=" + self.filterParams.week : "") +
+                (angular.isDefined(self.filterParams.statusId) ? "&reOrder=" + (Number(self.filterParams.reOrder) === 1 ? false : true) : "") +
+
                 "&roles=" + $localStorage.user.roles);
         }
 
@@ -277,7 +283,10 @@ angular.module('sbAdminApp')
                             type: angular.isDefined(self.filterParams.typeId) && self.filterParams.typeId != 'All' && Number(self.filterParams.typeId) != 2 ? Number(self.filterParams.typeId) : null,
                             locationDate: self.filterParams.locationDate ? self.filterParams.locationDate.toDateString() : undefined,
                             gauge: self.filterParams.gauge,
-                            sort: 'id,desc',
+                            setting: self.filterParams.setting,
+                            reOrder: angular.isDefined(self.filterParams.reOrder) ? (Number(self.filterParams.reOrder) === 1 ? false : true) : null,
+                            week: self.filterParams.week,
+                            sort: 'lastModified,desc',
                             page: page - 1,
                             roles: $localStorage.user.roles,
                             size: params.count()
@@ -298,10 +307,20 @@ angular.module('sbAdminApp')
                 }
             }
         );
-        self.importFromExcel = function (file) {
+        self.isKnitter = function () {
+            return angular.isDefined($localStorage.user) && ($localStorage.user.roles).indexOf("PRE-KNITTING") != -1;
+        };
+
+        self.onClothClicked = function (clothId) {
+            if (self.isKnitter()) {
+                $state.go("dashboard.knittingHistory.new", {"clothId": clothId});
+            }
+
+        };
+        self.importFromExcel = function (file, type) {
             if (file) {
                 console.log(file);
-                ClothesFactory.uploadExcel(file, function (success) {
+                ClothesFactory.uploadExcel(file, type, function (success) {
                         Flash.create('success', 'Cloth added successfully', 'custom-class');
                         self.reloadTable();
                     }, function (error) {

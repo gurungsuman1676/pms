@@ -15,4 +15,7 @@ public class DesignDto {
     private Long customerId;
 
     private Double gauge;
+
+    private String setting;
+
 }

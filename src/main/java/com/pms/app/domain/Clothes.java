@@ -14,12 +14,17 @@ import java.util.Date;
 public class Clothes extends AbstractEntity {
     @ManyToOne
     private Locations location;
+
     @ManyToOne
     private Prices price;
+
     private Integer order_no;
+
     private Date deliver_date;
+
     @ManyToOne
     private Prints print;
+
     @ManyToOne
     private Customers customer;
 
@@ -36,7 +41,13 @@ public class Clothes extends AbstractEntity {
 
     private Boolean isReturn = false;
 
-     private String weight;
+    private String weight;
 
     private Integer type;
+
+    private String extraField;
+
+    private boolean openFringe = false;
+
+    private boolean reOrder;
 }

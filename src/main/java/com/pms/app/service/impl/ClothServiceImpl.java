@@ -43,17 +43,19 @@ public class ClothServiceImpl implements ClothService {
     @Override
     @Transactional(readOnly = true)
     public Page<Clothes> getClothes(Long customerId, Long locationId, Integer orderNo, Long barcode, Date deliverDateFrom, Date deliveryDateTo, Date orderDateFrom,
-                                    Date orderDateTo, Pageable pageable, String role, String shippingNumber, String boxNumber, Boolean isReject, Integer type, Date locationDate, Long designId, Double gauge) {
+                                    Date orderDateTo, Pageable pageable, String role, String shippingNumber, String boxNumber,
+                                    Boolean isReject, Integer type, Date locationDate, Long designId, Double gauge, String setting, Boolean reOrder, String week) {
         if (locationDate != null && locationId != null && locationId != -1) {
             return clothRepository.findAllForHistoryByDate(customerId,
                     locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom, orderDateTo, pageable,
-                    role, shippingNumber, boxNumber, isReject, type,locationDate,designId,gauge);
+                    role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge,setting,reOrder,week);
         } else {
             return clothRepository.findAllClothes(customerId,
                     locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom, orderDateTo, pageable,
-                    role, shippingNumber, boxNumber, isReject, type,designId,locationDate,gauge);
+                    role, shippingNumber, boxNumber, isReject, type, designId, locationDate, gauge,setting,reOrder,week);
         }
     }
+
     @Override
     public List<Clothes> addCloth(ClothDto clothDto) {
         if (clothDto.getCustomerId() == null) {
@@ -142,8 +144,8 @@ public class ClothServiceImpl implements ClothService {
             clothes.setBoxNumber(clothDto.getBoxNumber());
             clothes.setShipping(clothDto.getShippingNumber());
         }
-        Long activityCount = clothActivityRepository.doesActivityExist(locations.getId(),clothes.getId());
-        clothes.setIsReturn(activityCount >= 1);
+        Long activityCount = clothActivityRepository.doesActivityExist(locations.getId(), clothes.getId());
+        clothes.setIsReturn(clothes.getIsReturn() || activityCount >= 1);
         clothes.setLocation(locations);
         ClothActivity activity = new ClothActivity();
         activity.setCloth(clothes);
@@ -166,12 +168,12 @@ public class ClothServiceImpl implements ClothService {
     @Override
     public void updateWeavingCloth(WeavingShippingDTO weavingShippingDTO) {
         Locations locations = getLocationsForCurrentUser();
-        List<Clothes> clothes = clothRepository.findForWeavingShipping(weavingShippingDTO,locations.getId());
+        List<Clothes> clothes = clothRepository.findForWeavingShipping(weavingShippingDTO, locations.getId());
 
-        if(clothes.size() < weavingShippingDTO.getQuantity()){
-            throw new RuntimeException("Quantity of cloth (" + weavingShippingDTO.getQuantity() + " ) is less than available clothes ("+clothes.size() );
+        if (clothes.size() < weavingShippingDTO.getQuantity()) {
+            throw new RuntimeException("Quantity of cloth (" + weavingShippingDTO.getQuantity() + " ) is less than available clothes (" + clothes.size() + ")");
         }
-        clothes.forEach( c -> {
+        clothes.forEach(c -> {
             c.setBoxNumber(weavingShippingDTO.getBoxNumber());
             c.setShipping(weavingShippingDTO.getShipping());
             c.setLocation(locations);
@@ -181,7 +183,7 @@ public class ClothServiceImpl implements ClothService {
 
     @Override
     public List<Customers> getCustomerByOrderNumber(Integer orderNumber) {
-        return clothRepository.findRemaingWeavingCustomerByOrderNumber(orderNumber,getLocationsForCurrentUser().getId());
+        return clothRepository.findRemaingWeavingCustomerByOrderNumber(orderNumber, getLocationsForCurrentUser().getId());
     }
 
     private Locations getLocationsForCurrentUser() {
@@ -194,17 +196,22 @@ public class ClothServiceImpl implements ClothService {
 
     @Override
     public List<Designs> getDesignByOrderNumberAndCustomer(Integer orderNumber, Long customerId) {
-        return clothRepository.findRemaingWeavingDesignByOrderNumber(orderNumber,customerId,getLocationsForCurrentUser().getId());
+        return clothRepository.findRemaingWeavingDesignByOrderNumber(orderNumber, customerId, getLocationsForCurrentUser().getId());
     }
 
     @Override
     public List<Prints> getPrintByOrderNumberAndCustomer(Integer orderNumber, Long customerId, Long designId, Long sizeId) {
-        return clothRepository.findRemaingWeavingPrintByOrderNumber(orderNumber,customerId,designId,getLocationsForCurrentUser().getId(),sizeId);
+        return clothRepository.findRemaingWeavingPrintByOrderNumber(orderNumber, customerId, designId, getLocationsForCurrentUser().getId(), sizeId);
     }
 
     @Override
     public List<Sizes> getSizesForCustomerAndOrderNumber(Integer orderNumber, Long customerId, Long designId) {
-        return clothRepository.findRemaingWeavingSizeByOrderNumber(orderNumber,customerId,designId,getLocationsForCurrentUser().getId());
+        return clothRepository.findRemaingWeavingSizeByOrderNumber(orderNumber, customerId, designId, getLocationsForCurrentUser().getId());
+    }
+
+    @Override
+    public List<String> getExtraFieldByOrderNumberAndCustomer(Integer orderNumber, Long customerId, Long designId, Long sizeId, Long printId) {
+        return clothRepository.getExtraFieldByOrderNumberAndCustomer(orderNumber, customerId, designId, sizeId, printId);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.pms.app.repo;
 
+import com.pms.app.domain.Currency;
 import com.pms.app.domain.Customers;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,4 +29,7 @@ public interface CustomerRepository extends AbstractRepository<Customers> {
 
     @Query("SELECT c FROM Customers c WHERE c.name =:name")
     Customers findByName(@Param("name") String name);
+
+    @Query("SELECT c.currency FROM Customers c WHERE c.id =:id")
+    Currency findCurrencyByCustomer(@Param("id") Long id);
 }

@@ -48,6 +48,7 @@ public class ClothConvertImpl implements ClothConvert {
                 .colorCode(clothes.getColor()!= null ? clothes.getColor().getCode() : "N/A")
                 .isReturn(clothes.getIsReturn())
                 .weight(clothes.getWeight())
+                .reOrder(clothes.isReOrder())
                 .build();
     }
 }

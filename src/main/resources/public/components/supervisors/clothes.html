@@ -45,15 +45,32 @@
                            placeholder="Gauge">
                 </div>
 
-                <div class="col-sm-12"></div>
-
-
-                <div class="pull-left">
-                    <button class="btn btn btn-primary" ng-click="ctrl.reloadTable()">Search</button>
+                <div class="col-sm-3 input-margin">
+                    <input type="text" class="form-control" ng-model="ctrl.filterParams.setting"
+                           placeholder="Setting">
                 </div>
 
-                <div class="pull-left">
-                    <button class="btn btn btn-primary" ng-click="ctrl.generateCSV()">Generate CSV</button>
+                <div class="col-sm-3 input-margin">
+                    <selectize placeholder="Order" ng-model="ctrl.filterParams.reOrder"
+                               options="ctrl.reOrders">
+                    </selectize>
+                </div>
+
+                <div class="col-sm-3 input-margin">
+                    <input type="number" class="form-control" ng-model="ctrl.filterParams.week"
+                           placeholder="Week">
+                </div>
+
+                <div class="col-sm-12"></div>
+
+                <div class="search-btn-wrapper col-sm-12">
+                    <div class="pull-left">
+                        <button class="btn btn btn-primary" ng-click="ctrl.reloadTable()">Search</button>
+                    </div>
+
+                    <div class="pull-left">
+                        <button class="btn btn btn-primary" ng-click="ctrl.generateCSV()">Generate CSV</button>
+                    </div>
                 </div>
 
                 <!--<div class="pull-left">-->
@@ -71,31 +88,61 @@
                            id="dataTables-example">
                         <thead>
                         <tr>
-                            <th>S.N.</th>
-                            <th>Location</th>
+                            <th>S N</th>
+                            <th>Barcode</th>
                             <th>Order No</th>
                             <th>Design Name</th>
                             <th>Size</th>
                             <th>Customer</th>
                             <th>Delivery Date</th>
                             <th>Print</th>
+                            <th>Yarn</th>
                             <th>Gauge</th>
+                            <th>Setting</th>
+                            <th>Re-Order</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr class="odd gradeX" ng-repeat="cloth in $data">
-                            <td ng-class="{'cloth-warning': cloth.isReturn}">{{cloth.id}}</td>
-                            <td>{{cloth.locationName}}</td>
-                            <td>{{cloth.order_no}}</td>
-                            <td>{{cloth.price.designName}}</td>
-                            <td>{{cloth.price.sizeName}}</td>+
-                            <td>{{cloth.price.customer.name}}</td>
-                            <td ng-class="{'cloth-warning': cloth.delivery_date < warningDate}">{{cloth.delivery_date |
+                        <tr class=' odd gradeX '
+                            ng-repeat="cloth in $data">
+                            <td class="center" ng-class="{'clickable-td': ctrl.isKnitter()}"
+                                data-ng-click="ctrl.onClothClicked(cloth.id)">{{$index + 1}}
+                            </td>
+                            <td ng-class="{'cloth-warning': cloth.isReturn ,'clickable-td': ctrl.isKnitter()}"
+                                data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.id}}
+                            </td>
+                            <td ng-class="{'clickable-td': ctrl.isKnitter()}"
+                                data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.order_no}}
+                            </td>
+                            <td ng-class="{'clickable-td': ctrl.isKnitter()}"
+                                data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.price.designName}}
+                            </td>
+                            <td ng-class="{'clickable-td': ctrl.isKnitter()}"
+                                data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.price.sizeName}}
+                            </td>
+                            <td ng-class="{'clickable-td': ctrl.isKnitter()}"
+                                data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.price.customer.name}}
+                            </td>
+                            <td ng-class="{  'cloth-warning':cloth.delivery_date < warningDate ,'clickable-td': ctrl.isKnitter()} "
+                                data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.delivery_date |
                                 date: 'dd/MM/yyyy'}}
                             </td>
-                            <td>{{cloth.print.name}}</td>
-                            <td>{{cloth.price.gauge}}</td>
+                            <td ng-class="{'clickable-td': ctrl.isKnitter()}"
+                                data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.print.name}}
+                            </td>
+                            <td ng-class="{'clickable-td': ctrl.isKnitter()}"
+                                data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.price.yarnName}}
+                            </td>
+                            <td ng-class="{'clickable-td': ctrl.isKnitter()}"
+                                data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.price.gauge}}
+                            </td>
+                            <td ng-class="{'clickable-td': ctrl.isKnitter()}"
+                                data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.price.setting}}
+                            </td>
+                            <td ng-class="{'clickable-td': ctrl.isKnitter()}"
+                                data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.reOrder ? 'Re-Order' : 'Bulk'}}
+                            </td>
                             <td>
                                 <button type="button" class="btn btn-xs btn-primary" ng-click="ctrl.viewHistory(cloth)">
                                     History

@@ -6,6 +6,8 @@ import com.pms.app.domain.*;
 import com.pms.app.repo.ClothRepository;
 import com.pms.app.repo.repoCustom.ClothRepositoryCustom;
 import com.pms.app.schema.*;
+import com.pms.app.util.DateUtils;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -41,7 +43,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                                         String role,
                                         String shippingNumber,
                                         String boxNumber,
-                                        Boolean isRejected, Integer type, Long designId, Date locationDate, Double gauge) {
+                                        Boolean isRejected, Integer type, Long designId, Date locationDate, Double gauge, String setting, Boolean reOrder, String week) {
 
         QClothes clothes = QClothes.clothes;
         BooleanBuilder where = getBooleanBuilder(customerId,
@@ -58,7 +60,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 isRejected,
                 clothes,
                 type,
-                designId, gauge);
+                designId, gauge, setting, reOrder, week);
         if (locationDate != null) {
             Calendar gval = Calendar.getInstance();
             gval.setTime(locationDate);
@@ -84,11 +86,14 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
         return from(clothes)
                 .leftJoin(clothes.print)
                 .leftJoin(clothes.print.size)
+                .leftJoin(clothes.color)
                 .where(clothes.order_no.eq(orderNo)
                         .and(clothes.customer.id.eq(customerId)).and(clothes.status.eq(Status.ACTIVE.toString())))
                 .groupBy(clothes.price)
                 .groupBy(clothes.color)
                 .groupBy(clothes.print)
+                .orderBy(clothes.price.design.id.asc())
+                .orderBy(clothes.color.id.asc())
                 .list(new QClothOrderResource(
                         clothes.price.design.name,
                         clothes.price.size.name,
@@ -99,8 +104,9 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                         clothes.created,
                         clothes.deliver_date,
                         clothes.customer.name,
-                        clothes.order_no
-                ));
+                        clothes.order_no)
+                );
+
     }
 
     @Override
@@ -116,12 +122,12 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                                                  String shippingNumber,
                                                  String boxNumber,
                                                  Boolean isReject,
-                                                 Integer type, Long designId, Double gauge, Date locationDate) {
+                                                 Integer type, Long designId, Double gauge, Date locationDate, String setting, Boolean reOrder, String week) {
 
         QClothes clothes = QClothes.clothes;
         BooleanBuilder where = getBooleanBuilder(customerId,
                 locationId, orderNo, barcode, deliverDateFrom,
-                deliveryDateTo, orderDateFrom, orderDateTo, role, shippingNumber, boxNumber, isReject, clothes, type, designId, gauge);
+                deliveryDateTo, orderDateFrom, orderDateTo, role, shippingNumber, boxNumber, isReject, clothes, type, designId, gauge, setting, reOrder, week);
         if (locationDate != null) {
             Calendar gval = Calendar.getInstance();
             gval.setTime(locationDate);
@@ -143,8 +149,9 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .leftJoin(clothes.print.currency)
                 .join(clothes.price)
                 .join(clothes.price.size)
-                .join(clothes.price.yarn)
                 .join(clothes.price.design)
+                .leftJoin(clothes.price.yarn)
+                .leftJoin(clothes.color)
                 .where(where)
                 .list(new QClothResource(
                         clothes.id,
@@ -178,10 +185,10 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .leftJoin(clothes.print.size)
                 .leftJoin(clothes.print.currency)
                 .innerJoin(clothes.price)
-                .innerJoin(clothes.price.yarn)
                 .innerJoin(clothes.price.design)
                 .innerJoin(clothes.price.size)
-                .innerJoin(clothes.color)
+                .leftJoin(clothes.price.yarn)
+                .leftJoin(clothes.color)
                 .innerJoin(clothes.customer)
                 .innerJoin(clothes.customer.currency)
                 .where(clothes.order_no.eq(orderNo)
@@ -220,10 +227,11 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .join(clothes.price)
                 .join(clothes.price.size)
                 .join(clothes.price.design)
-                .join(clothes.price.yarn)
+                .leftJoin(clothes.price.yarn)
                 .leftJoin(clothes.print)
                 .leftJoin(clothes.print.size)
                 .leftJoin(clothes.location)
+                .leftJoin(clothes.color)
                 .groupBy(clothes.location)
                 .groupBy(clothes.price)
                 .groupBy(clothes.color)
@@ -258,6 +266,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                         .and(clothes.status.eq(Status.ACTIVE.toString())))
                 .leftJoin(clothes.print)
                 .leftJoin(clothes.print.size)
+                .leftJoin(clothes.color)
                 .groupBy(clothes.boxNumber)
                 .groupBy(clothes.price)
                 .groupBy(clothes.color)
@@ -296,6 +305,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .leftJoin(clothes.print)
                 .leftJoin(clothes.print.size)
                 .leftJoin(clothes.print.currency)
+                .leftJoin(clothes.color)
                 .innerJoin(clothes.price)
                 .where(builder.and(clothes.shipping.eq(shippingNumber))
                         .and(clothes.status.eq(Status.ACTIVE.toString())))
@@ -335,6 +345,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
         return from(clothes)
                 .leftJoin(clothes.print)
                 .leftJoin(clothes.print.size)
+                .leftJoin(clothes.color)
                 .where(clothes.order_no.eq(id.intValue())
                         .and(clothes.status.eq(Status.ACTIVE.toString())))
                 .groupBy(clothes.price)
@@ -355,7 +366,10 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
     }
 
     @Override
-    public Page<Clothes> findAllForHistoryByDate(Long customerId, Long locationId, Integer orderNo, Long barcode, Date deliverDateFrom, Date deliveryDateTo, Date orderDateFrom, Date orderDateTo, Pageable pageable, String role, String shippingNumber, String boxNumber, Boolean isReject, Integer type, Date locationDate, Long designId, Double gauge) {
+    public Page<Clothes> findAllForHistoryByDate(Long customerId, Long locationId, Integer orderNo, Long barcode, Date deliverDateFrom,
+                                                 Date deliveryDateTo, Date orderDateFrom, Date orderDateTo, Pageable pageable,
+                                                 String role, String shippingNumber, String boxNumber, Boolean isReject, Integer type,
+                                                 Date locationDate, Long designId, Double gauge, String setting, Boolean reOrder, String week) {
         QClothActivity activity = QClothActivity.clothActivity;
         QClothes clothes = activity.cloth;
         BooleanBuilder where = getBooleanBuilder(customerId,
@@ -371,7 +385,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 boxNumber,
                 isReject,
                 clothes,
-                type, designId, gauge);
+                type, designId, gauge, setting, reOrder, week);
         Calendar gval = Calendar.getInstance();
         gval.setTime(locationDate);
 
@@ -405,7 +419,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
     private BooleanBuilder getBooleanBuilder(Long customerId, Long locationId, Integer orderNo, Long barcode,
                                              Date deliverDateFrom, Date deliveryDateTo, Date orderDateFrom,
                                              Date orderDateTo, String role, String shippingNumber,
-                                             String boxNumber, Boolean isReject, QClothes clothes, Integer type, Long designId, Double gauge) {
+                                             String boxNumber, Boolean isReject, QClothes clothes, Integer type, Long designId, Double gauge, String setting, Boolean reOrder, String week) {
         BooleanBuilder where = new BooleanBuilder();
         if (role != null) {
             where.and(clothes.location.name.eq(role));
@@ -416,7 +430,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
         } else if (isReject != null && isReject) {
             where.and(clothes.isReturn.isTrue());
             if (orderDateFrom != null && orderDateTo != null) {
-                where.and(clothes.created.between(orderDateFrom, orderDateTo));
+                where.and(clothes.created.between(orderDateFrom, DateUtils.addDays(orderDateTo, 1)));
 
             }
         } else {
@@ -434,16 +448,16 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 }
             }
             if (deliverDateFrom != null) {
-                where.and(clothes.deliver_date.after(deliverDateFrom));
+                where.and(clothes.deliver_date.goe(deliverDateFrom));
             }
             if (deliveryDateTo != null) {
-                where.and(clothes.deliver_date.before(deliveryDateTo));
+                where.and(clothes.deliver_date.loe(DateUtils.addDays(deliveryDateTo, 1)));
             }
             if (orderDateFrom != null) {
-                where.and(clothes.created.after(orderDateFrom));
+                where.and(clothes.created.goe(orderDateFrom));
             }
             if (orderDateTo != null) {
-                where.and(clothes.created.before(orderDateTo));
+                where.and(clothes.created.loe(DateUtils.addDays(orderDateTo, 1)));
             }
 
             if (shippingNumber != null) {
@@ -454,6 +468,12 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 where.and(clothes.boxNumber.eq(boxNumber));
             }
 
+            if (setting != null) {
+                where.and(clothes.price.design.setting.eq(setting));
+            }
+            if (reOrder != null) {
+                where.and(clothes.reOrder.eq(reOrder));
+            }
             if (isReject != null) {
                 where.and(clothes.isReturn.isFalse());
             }
@@ -466,10 +486,25 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
             if (gauge != null) {
                 where.and(clothes.price.design.gauge.eq(gauge));
             }
+            if (week != null) {
+                where.and(clothes.deliver_date.between(getStartDateOfWeek(week), DateUtils.addDays(getLastDateOfWeek(week), 1)));
+            }
         }
 
         where.and(clothes.status.eq(Status.ACTIVE.toString()));
         return where;
+    }
+
+    private static Date getLastDateOfWeek(String week) {
+        Calendar cal = Calendar.getInstance();
+        cal.setWeekDate(cal.get(Calendar.YEAR), Integer.parseInt(week), Calendar.SATURDAY);
+        return cal.getTime();
+    }
+
+    private static Date getStartDateOfWeek(String week) {
+        Calendar cal = Calendar.getInstance();
+        cal.setWeekDate(cal.get(Calendar.YEAR), Integer.parseInt(week), Calendar.SUNDAY);
+        return cal.getTime();
     }
 
     @Override
@@ -486,13 +521,13 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                                                            String boxNumber,
                                                            Boolean isReject,
                                                            Integer type,
-                                                           Date locationDate, Long designId, Double gauge) {
+                                                           Date locationDate, Long designId, Double gauge, String setting, Boolean reOrder, String week) {
 
         QClothActivity activity = QClothActivity.clothActivity;
         QClothes clothes = QClothes.clothes;
         BooleanBuilder where = getBooleanBuilder(customerId,
                 null, orderNo, barcode, deliverDateFrom,
-                deliveryDateTo, orderDateFrom, orderDateTo, role, shippingNumber, boxNumber, isReject, clothes, type, designId, gauge);
+                deliveryDateTo, orderDateFrom, orderDateTo, role, shippingNumber, boxNumber, isReject, clothes, type, designId, gauge, setting, reOrder, week);
 
         Calendar gval = Calendar.getInstance();
         gval.setTime(locationDate);
@@ -509,7 +544,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
         if (locationId != null) {
             if (locationId != -1) {
                 locationWhere.and(activity.location.id.eq(locationId));
-                locationWhere.and(activity.created.between(startDate, endTime));
+                locationWhere.and(activity.created.between(startDate, DateUtils.addDays(endTime,1)));
             }
         }
         return from(activity, clothes)
@@ -520,8 +555,9 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .leftJoin(clothes.print.currency)
                 .join(clothes.price)
                 .join(clothes.price.size)
-                .join(clothes.price.yarn)
                 .join(clothes.price.design)
+                .leftJoin(clothes.price.yarn)
+                .leftJoin(clothes.color)
                 .where(where)
                 .list(new QClothResource(
                         clothes.id,
@@ -555,7 +591,9 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                         .and(clothes.print.id.eq(weavingShippingDTO.getPrintId()))
                         .and(clothes.price.design.id.eq(weavingShippingDTO.getDesignId()))
                         .and(clothes.type.eq(1))
+                        .and(clothes.status.eq(Status.ACTIVE.toString()))
                         .and(clothes.price.size.id.eq(weavingShippingDTO.getSizeId()))
+                        .and(clothes.extraField.eq(weavingShippingDTO.getExtraField()))
                         .and(clothes.location.id.isNull())))
                 .limit(weavingShippingDTO.getQuantity())
                 .list(clothes);
@@ -564,14 +602,21 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
     @Override
     public List<Customers> findRemaingWeavingCustomerByOrderNumber(Integer orderNumber, Long locationId) {
         QClothes clothes = QClothes.clothes;
-        return from(clothes).where(clothes.order_no.eq(orderNumber))
+        return from(clothes).where(clothes.order_no.eq(orderNumber)
+                .and(clothes.type.eq(1))
+                .and(clothes.status.eq(Status.ACTIVE.toString()))
+                .and(clothes.location.isNull()))
                 .list(clothes.customer);
     }
 
     @Override
     public List<Designs> findRemaingWeavingDesignByOrderNumber(Integer orderNumber, Long customerId, Long locationId) {
         QClothes clothes = QClothes.clothes;
-        return from(clothes).where(clothes.order_no.eq(orderNumber).and(clothes.customer.id.eq(customerId)))
+        return from(clothes).where(clothes.order_no.eq(orderNumber)
+                .and(clothes.location.isNull())
+                .and(clothes.type.eq(1))
+                .and(clothes.status.eq(Status.ACTIVE.toString()))
+                .and(clothes.customer.id.eq(customerId)))
                 .list(clothes.price.design);
     }
 
@@ -581,6 +626,9 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
         return from(clothes).where(clothes.order_no.eq(orderNumber)
                 .and(clothes.price.design.id.eq(designId))
                 .and(clothes.customer.id.eq(customerId))
+                .and(clothes.location.isNull())
+                .and(clothes.type.eq(1))
+                .and(clothes.status.eq(Status.ACTIVE.toString()))
                 .and(clothes.price.size.id.eq(sizeId)))
                 .list(clothes.print);
     }
@@ -591,8 +639,25 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
         return from(clothes).where(clothes.order_no.eq(orderNumber)
                 .and(clothes.location.id.isNull())
                 .and(clothes.price.design.id.eq(designId))
+                .and(clothes.location.isNull())
+                .and(clothes.type.eq(1))
+                .and(clothes.status.eq(Status.ACTIVE.toString()))
                 .and(clothes.customer.id.eq(customerId)))
                 .list(clothes.price.size);
+    }
+
+    @Override
+    public List<String> getExtraFieldByOrderNumberAndCustomer(Integer orderNumber, Long customerId, Long designId, Long sizeId, Long printId) {
+        QClothes clothes = QClothes.clothes;
+        return from(clothes).where(clothes.order_no.eq(orderNumber)
+                .and(clothes.price.design.id.eq(designId))
+                .and(clothes.customer.id.eq(customerId))
+                .and(clothes.price.size.id.eq(sizeId))
+                .and(clothes.location.isNull())
+                .and(clothes.type.eq(1))
+                .and(clothes.status.eq(Status.ACTIVE.toString()))
+                .and(clothes.print.id.eq(printId)))
+                .list(clothes.extraField);
     }
 
 

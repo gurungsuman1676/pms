@@ -26,6 +26,7 @@ public class DesignConvertImpl implements DesignConvert{
                 .parentName(designs.getParent() != null ? designs.getParent().getName() : null)
                 .name(designs.getName())
                 .gauge(designs.getGauge())
+                .setting(designs.getSetting())
                 .build();
     }
 }

@@ -1,0 +1,29 @@
+<div class="row">
+    <div class="flash-msg" flash-message="3000"></div>
+    <div class="col-md-6 col-md-offset-3">
+        <div class="panel panel-default valign">
+            <div class="panel-heading">
+                Please enter the history details.
+            </div>
+            <div class="panel-body">
+                <form ng-submit="ctrl.submitHistory()">
+
+                    <div class="form-group">
+                        <label>Knitter</label>
+                        <selectize config="{maxOptions: 100}" options="ctrl.options.knitters"
+                                   ng-model="ctrl.history.knitterId"></selectize>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Machine</label>
+                        <selectize config="myConfig" options="ctrl.options.machines"
+                                   ng-model="ctrl.history.machineId"></selectize>
+                    </div>
+                    <div>
+                        <input type="submit" class="btn btn-primary" value="Submit">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

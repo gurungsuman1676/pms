@@ -32,6 +32,7 @@ public class ClothResource {
     private Boolean isReturn;
     private String weight;
     private Integer type;
+    private boolean reOrder;
 
 
     @QueryProjection

@@ -15,5 +15,8 @@ public interface PriceRepository extends AbstractRepository<Prices> {
     Prices findByDesignAndSizeAndYarn(@Param("designId") Long designId, @Param("sizeId") Long sizeId, @Param("yarnId") Long yarnId);
 
     @Query("SELECT p.size FROM Prices p WHERE p.design.id =:designId AND p.yarn.id =:yarnId ORDER BY p.size.name ASC")
-    List<Sizes> findSizesByDesignIdAndYarnId(@Param("designId")Long designId,@Param("yarnId") Long yarnId);
+    List<Sizes> findSizesByDesignIdAndYarnId(@Param("designId") Long designId, @Param("yarnId") Long yarnId);
+
+    @Query("SELECT p FROM Prices p WHERE p.design.id =:designId AND p.size.id=:sizeId AND p.yarn IS NULL ")
+    Prices findByDesignAndSize(@Param("designId") Long designId, @Param("sizeId") Long sizeId);
 }
