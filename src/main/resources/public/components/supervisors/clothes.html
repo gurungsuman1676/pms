@@ -92,11 +92,11 @@
                             <th>Barcode</th>
                             <th>Order No</th>
                             <th>Design Name</th>
-                            <th>Size</th>
                             <th>Customer</th>
                             <th>Delivery Date</th>
                             <th>Print</th>
                             <th>Yarn</th>
+                            <th>Size</th>
                             <th>Color Name</th>
                             <th>Color Code</th>
                             <th>Gauge</th>
@@ -120,9 +120,7 @@
                             <td ng-class="{'clickable-td': ctrl.isKnitter()}"
                                 data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.price.designName}}
                             </td>
-                            <td ng-class="{'clickable-td': ctrl.isKnitter()}"
-                                data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.price.sizeName}}
-                            </td>
+
                             <td ng-class="{'clickable-td': ctrl.isKnitter()}"
                                 data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.price.customer.name}}
                             </td>
@@ -136,7 +134,9 @@
                             <td ng-class="{'clickable-td': ctrl.isKnitter()}"
                                 data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.price.yarnName}}
                             </td>
-
+                            <td ng-class="{'clickable-td': ctrl.isKnitter()}"
+                                data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.price.sizeName}}
+                            </td>
                             <td ng-class="{'clickable-td': ctrl.isKnitter()}"
                                 data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.colorName}}
                             </td>
