@@ -4,6 +4,8 @@ import com.pms.app.domain.Clothes;
 import com.pms.app.domain.Colors;
 import com.pms.app.domain.Customers;
 import com.pms.app.domain.Designs;
+import com.pms.app.domain.LocationEnum;
+import com.pms.app.domain.Locations;
 import com.pms.app.domain.Prices;
 import com.pms.app.domain.Prints;
 import com.pms.app.domain.Sizes;
@@ -13,11 +15,13 @@ import com.pms.app.repo.ClothRepository;
 import com.pms.app.repo.ColorRepository;
 import com.pms.app.repo.CustomerRepository;
 import com.pms.app.repo.DesignRepository;
+import com.pms.app.repo.LocationRepository;
 import com.pms.app.repo.PriceRepository;
 import com.pms.app.repo.PrintRepository;
 import com.pms.app.repo.SizeRepository;
 import com.pms.app.repo.YarnRepository;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -65,6 +69,8 @@ abstract class AbstractTemplate {
 
     @Autowired
     YarnRepository yarnRepository;
+    @Autowired
+    LocationRepository locationRepository;
 
     @Autowired
     EntityManager entityManager;
@@ -152,11 +158,21 @@ abstract class AbstractTemplate {
             String orderNo = nameExtractFormula.apply(currentRow, alias);
             if (orderNo != null) {
                 try {
-                    orderNo = orderNo.replaceAll(" ", "");
-                    if (orderNo.toUpperCase().contains(REORDER_ALIAS)) {
-                        reOrder = true;
-                    }
                     this.orderNumber = Integer.valueOf(orderNo.toUpperCase().replaceAll(REORDER_ALIAS, ""));
+                    Iterator<Cell> cellIterator = currentRow.cellIterator();
+                    while (cellIterator.hasNext()) {
+                        Cell cell = cellIterator.next();
+                        if (cell.getStringCellValue().toUpperCase().contains(alias)) {
+                            cellIterator.next();
+                            Cell next = cellIterator.next();
+                            if (next == null || next.getStringCellValue() == null || next.getStringCellValue().isEmpty()) {
+                                reOrder = false;
+                            } else if (next.getStringCellValue().toUpperCase().replaceAll(" ", "").contains(REORDER_ALIAS)) {
+                                reOrder = true;
+                            }
+                        }
+                    }
+
                     return;
                 } catch (Exception e) {
                     throw new RuntimeException("Invalid order number " + orderNo);
@@ -170,6 +186,8 @@ abstract class AbstractTemplate {
     List<Clothes> getCloth(String colorCode, String colorName, String yarnName,
                            Map<String, Integer> sizeAndNumberMap,
                            String designName, String printName, String... attrs) {
+        Locations preKnitting = locationRepository.findByName(LocationEnum.PRE_KNITTING.getName());
+
         List<Clothes> clothesList = new ArrayList<>();
         for (String sizeName : sizeAndNumberMap.keySet()) {
             if (colorCode != null) {
@@ -224,6 +242,7 @@ abstract class AbstractTemplate {
                 }
 
                 clothes.setPrice(price);
+                clothes.setLocation(entityManager.getReference(Locations.class, preKnitting.getId()));
                 clothesList.add(clothes);
             }
         }

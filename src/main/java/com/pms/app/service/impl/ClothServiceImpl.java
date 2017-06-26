@@ -96,6 +96,7 @@ public class ClothServiceImpl implements ClothService {
         }
 
         List<Clothes> clothes = new ArrayList<>();
+        Locations locations = locationRepository.findByName(LocationEnum.PRE_KNITTING.getName());
 
         for (int i = 0; i < clothDto.getQuantity(); i++) {
             Clothes cloth = new Clothes();
@@ -109,6 +110,7 @@ public class ClothServiceImpl implements ClothService {
             cloth.setType(clothDto.getTypeId());
             cloth.setStatus(Status.ACTIVE.toString());
             cloth.setColor(color);
+            cloth.setLocation(locations);
         }
         return (List<Clothes>) clothRepository.save(clothes);
     }

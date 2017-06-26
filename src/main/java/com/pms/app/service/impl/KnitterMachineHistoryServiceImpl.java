@@ -250,7 +250,8 @@ public class KnitterMachineHistoryServiceImpl implements KnitterMachineHistorySe
             Cell totalValueTextCell = lastRow.createCell(1);
             totalValueTextCell.setCellStyle(style);
             totalValueTextCell.setCellValue("Total");
-            Cell totalValueCell = lastRow.createCell(5);
+            Cell totalValueCell = lastRow.createCell(2);
+            totalValueCell.setCellStyle(style);
             totalValueCell.setCellValue(historyReportResources.size());
         }
 
