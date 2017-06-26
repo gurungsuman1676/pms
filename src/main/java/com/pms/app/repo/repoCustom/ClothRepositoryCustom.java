@@ -17,7 +17,7 @@ public interface ClothRepositoryCustom extends AbstractRepositoryCustom<Clothes>
     Page<Clothes> findAllClothes(Long customerId, Long locationId, Integer orderNo, Long barcode, Date deliverDateFrom,
                                  Date deliveryDateTo, Date orderDateFrom, Date orderDateTo, Pageable pageable,
                                  String number, String shippingNumber, String boxNumber, Boolean isReject, Integer type, Long designId, Date locationDate,
-                                 Double gauge, String setting, Boolean reOrder, String week);
+                                 Double gauge, String setting, Boolean reOrder, String week, Long colorId);
 
 
     List<ClothOrderResource> findClothesForOrderAndCustomer(Integer orderNo, Long customerId);
@@ -35,7 +35,7 @@ public interface ClothRepositoryCustom extends AbstractRepositoryCustom<Clothes>
                                           String shippingNumber,
                                           String boxNumber,
                                           Boolean isReject,
-                                          Integer type, Long designId, Double gauge, Date locationDate, String setting, Boolean reOrder, String week);
+                                          Integer type, Long designId, Double gauge, Date locationDate, String setting, Boolean reOrder, String week, Long colorId);
 
     List<ClothInvoiceResource> findClothesForProformaInvoice(int orderNo, Long customerId);
 
@@ -51,13 +51,13 @@ public interface ClothRepositoryCustom extends AbstractRepositoryCustom<Clothes>
                                           Date deliverDateFrom, Date deliveryDateTo, Date orderDateFrom, Date orderDateTo,
                                           Pageable pageable, String role, String shippingNumber,
                                           String boxNumber, Boolean isReject, Integer type, Date locationDate, Long designId,
-                                          Double gauge, String setting, Boolean reOrder, String week);
+                                          Double gauge, String setting, Boolean reOrder, String week, Long colorId);
 
 
     List<ClothResource> findClothResourceByLocation(Long customerId, Long locationId, Integer orderNo, Long barcode,
                                                     Date deliverDateFrom, Date deliveryDateTo, Date orderDateFrom, Date orderDateTo,
                                                     String role, String shippingNumber, String boxNumber, Boolean isReject, Integer type,
-                                                    Date locationDate, Long designId, Double gauge, String setting, Boolean reOrder, String week);
+                                                    Date locationDate, Long designId, Double gauge, String setting, Boolean reOrder, String week, Long colorId);
 
     List<Clothes> findForWeavingShipping(WeavingShippingDTO weavingShippingDTO, Long locationId);
 

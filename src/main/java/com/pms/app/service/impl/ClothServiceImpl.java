@@ -44,15 +44,15 @@ public class ClothServiceImpl implements ClothService {
     @Transactional(readOnly = true)
     public Page<Clothes> getClothes(Long customerId, Long locationId, Integer orderNo, Long barcode, Date deliverDateFrom, Date deliveryDateTo, Date orderDateFrom,
                                     Date orderDateTo, Pageable pageable, String role, String shippingNumber, String boxNumber,
-                                    Boolean isReject, Integer type, Date locationDate, Long designId, Double gauge, String setting, Boolean reOrder, String week) {
+                                    Boolean isReject, Integer type, Date locationDate, Long designId, Double gauge, String setting, Boolean reOrder, String week, Long colorId) {
         if (locationDate != null && locationId != null && locationId != -1) {
             return clothRepository.findAllForHistoryByDate(customerId,
                     locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom, orderDateTo, pageable,
-                    role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge,setting,reOrder,week);
+                    role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge,setting,reOrder,week,colorId);
         } else {
             return clothRepository.findAllClothes(customerId,
                     locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom, orderDateTo, pageable,
-                    role, shippingNumber, boxNumber, isReject, type, designId, locationDate, gauge,setting,reOrder,week);
+                    role, shippingNumber, boxNumber, isReject, type, designId, locationDate, gauge,setting,reOrder,week,colorId);
         }
     }
 

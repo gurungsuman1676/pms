@@ -7,7 +7,6 @@ import com.pms.app.repo.ClothRepository;
 import com.pms.app.repo.repoCustom.ClothRepositoryCustom;
 import com.pms.app.schema.*;
 import com.pms.app.util.DateUtils;
-import org.apache.poi.ss.usermodel.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -43,7 +42,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                                         String role,
                                         String shippingNumber,
                                         String boxNumber,
-                                        Boolean isRejected, Integer type, Long designId, Date locationDate, Double gauge, String setting, Boolean reOrder, String week) {
+                                        Boolean isRejected, Integer type, Long designId, Date locationDate, Double gauge, String setting, Boolean reOrder, String week, Long colorId) {
 
         QClothes clothes = QClothes.clothes;
         BooleanBuilder where = getBooleanBuilder(customerId,
@@ -60,7 +59,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 isRejected,
                 clothes,
                 type,
-                designId, gauge, setting, reOrder, week);
+                designId, gauge, setting, reOrder, week, colorId);
         if (locationDate != null) {
             Calendar gval = Calendar.getInstance();
             gval.setTime(locationDate);
@@ -122,12 +121,12 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                                                  String shippingNumber,
                                                  String boxNumber,
                                                  Boolean isReject,
-                                                 Integer type, Long designId, Double gauge, Date locationDate, String setting, Boolean reOrder, String week) {
+                                                 Integer type, Long designId, Double gauge, Date locationDate, String setting, Boolean reOrder, String week, Long colorId) {
 
         QClothes clothes = QClothes.clothes;
         BooleanBuilder where = getBooleanBuilder(customerId,
                 locationId, orderNo, barcode, deliverDateFrom,
-                deliveryDateTo, orderDateFrom, orderDateTo, role, shippingNumber, boxNumber, isReject, clothes, type, designId, gauge, setting, reOrder, week);
+                deliveryDateTo, orderDateFrom, orderDateTo, role, shippingNumber, boxNumber, isReject, clothes, type, designId, gauge, setting, reOrder, week, colorId);
         if (locationDate != null) {
             Calendar gval = Calendar.getInstance();
             gval.setTime(locationDate);
@@ -370,7 +369,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
     public Page<Clothes> findAllForHistoryByDate(Long customerId, Long locationId, Integer orderNo, Long barcode, Date deliverDateFrom,
                                                  Date deliveryDateTo, Date orderDateFrom, Date orderDateTo, Pageable pageable,
                                                  String role, String shippingNumber, String boxNumber, Boolean isReject, Integer type,
-                                                 Date locationDate, Long designId, Double gauge, String setting, Boolean reOrder, String week) {
+                                                 Date locationDate, Long designId, Double gauge, String setting, Boolean reOrder, String week, Long colorId) {
         QClothActivity activity = QClothActivity.clothActivity;
         QClothes clothes = activity.cloth;
         BooleanBuilder where = getBooleanBuilder(customerId,
@@ -386,7 +385,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 boxNumber,
                 isReject,
                 clothes,
-                type, designId, gauge, setting, reOrder, week);
+                type, designId, gauge, setting, reOrder, week, colorId);
         Calendar gval = Calendar.getInstance();
         gval.setTime(locationDate);
 
@@ -420,7 +419,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
     private BooleanBuilder getBooleanBuilder(Long customerId, Long locationId, Integer orderNo, Long barcode,
                                              Date deliverDateFrom, Date deliveryDateTo, Date orderDateFrom,
                                              Date orderDateTo, String role, String shippingNumber,
-                                             String boxNumber, Boolean isReject, QClothes clothes, Integer type, Long designId, Double gauge, String setting, Boolean reOrder, String week) {
+                                             String boxNumber, Boolean isReject, QClothes clothes, Integer type, Long designId, Double gauge, String setting, Boolean reOrder, String week, Long colorId) {
         BooleanBuilder where = new BooleanBuilder();
         if (role != null) {
             where.and(clothes.location.name.eq(role));
@@ -481,6 +480,9 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
             if (type != null) {
                 where.and(clothes.type.eq(type));
             }
+            if (colorId != null) {
+                where.and(clothes.color.id.eq(colorId));
+            }
             if (designId != null) {
                 where.and(clothes.price.design.id.eq(designId));
             }
@@ -522,13 +524,13 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                                                            String boxNumber,
                                                            Boolean isReject,
                                                            Integer type,
-                                                           Date locationDate, Long designId, Double gauge, String setting, Boolean reOrder, String week) {
+                                                           Date locationDate, Long designId, Double gauge, String setting, Boolean reOrder, String week, Long colorId) {
 
         QClothActivity activity = QClothActivity.clothActivity;
         QClothes clothes = QClothes.clothes;
         BooleanBuilder where = getBooleanBuilder(customerId,
                 null, orderNo, barcode, deliverDateFrom,
-                deliveryDateTo, orderDateFrom, orderDateTo, role, shippingNumber, boxNumber, isReject, clothes, type, designId, gauge, setting, reOrder, week);
+                deliveryDateTo, orderDateFrom, orderDateTo, role, shippingNumber, boxNumber, isReject, clothes, type, designId, gauge, setting, reOrder, week, colorId);
 
         Calendar gval = Calendar.getInstance();
         gval.setTime(locationDate);
@@ -545,7 +547,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
         if (locationId != null) {
             if (locationId != -1) {
                 locationWhere.and(activity.location.id.eq(locationId));
-                locationWhere.and(activity.created.between(startDate, DateUtils.addDays(endTime,1)));
+                locationWhere.and(activity.created.between(startDate, DateUtils.addDays(endTime, 1)));
             }
         }
         return from(activity, clothes)

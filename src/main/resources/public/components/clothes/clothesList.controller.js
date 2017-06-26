@@ -7,7 +7,7 @@
  * Controller of the sbAdminApp
  */
 angular.module('sbAdminApp')
-    .controller('ClothesListCtrl', function ($window, $scope, $state, ClothesFactory, CustomersFactory, Flash, ngTableParams, LocationsFactory, ngDialog, DesignsFactory, $localStorage) {
+    .controller('ClothesListCtrl', function ($window, $scope, $state, ClothesFactory, CustomersFactory, Flash, ngTableParams, LocationsFactory, ngDialog, DesignsFactory, $localStorage, ColorsFactory) {
 
         var self = this;
         self.orderNo = ''
@@ -28,6 +28,19 @@ angular.module('sbAdminApp')
                 });
             }
         }
+
+
+        ColorsFactory.getColors(function (response) {
+            self.colors = [];
+            for (var i = 0, len = response.length; i < len; i++) {
+                self.colors.push({
+                    id: response[i].id,
+                    name: response[i].code
+                })
+            }
+        }, function (response) {
+            Flash.create('danger', response.message, 'custom-class');
+        })
 
         self.allSelected = function () {
             if (self.selectAll == true) {
@@ -211,6 +224,7 @@ angular.module('sbAdminApp')
                 (angular.isDefined(self.filterParams.locationDate) ? "&locationDate=" + self.filterParams.locationDate.toDateString() : "") +
                 (angular.isDefined(self.filterParams.typeId) && self.filterParams.typeId != 'All' && Number(self.filterParams.typeId) !== 2 ? "&type=" + self.filterParams.typeId : "") +
                 (angular.isDefined(self.filterParams.statusId) ? "&isReject=" + (Number(self.filterParams.statusId) === 1 ? false : true) : "") +
+                (angular.isDefined(self.filterParams.colorId) && self.filterParams.colorId != 'All' ? "&colorId= " + self.filterParams.colorId : "") +
                 (angular.isDefined(self.filterParams.gauge) ? "&gauge=" + self.filterParams.gauge : "") +
                 (angular.isDefined(self.filterParams.setting) ? "&setting=" + self.filterParams.setting : "") +
                 (angular.isDefined(self.filterParams.week) ? "&week=" + self.filterParams.week : "") +
@@ -286,6 +300,7 @@ angular.module('sbAdminApp')
                             setting: self.filterParams.setting,
                             reOrder: angular.isDefined(self.filterParams.reOrder) ? (Number(self.filterParams.reOrder) === 1 ? false : true) : null,
                             week: self.filterParams.week,
+                            colorId: self.filterParams.colorId,
                             sort: 'lastModified,desc',
                             page: page - 1,
                             roles: $localStorage.user.roles,

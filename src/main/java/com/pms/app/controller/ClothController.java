@@ -87,6 +87,7 @@ public class ClothController {
                                                 @RequestParam(required = false, value = "setting") String setting,
                                                 @RequestParam(required = false, value = "reOrder") Boolean reOrder,
                                                 @RequestParam(required = false, value = "week") String week,
+                                                @RequestParam(required = false, value = "colorId") Long colorId,
                                                 Pageable pageable) {
         String role = null;
         if (roles != null && !roles.isEmpty()) {
@@ -99,7 +100,7 @@ public class ClothController {
         }
 
         Page<Clothes> page = clothService.getClothes(customerId, locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom,
-                orderDateTo, pageable, role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge, setting, reOrder,week);
+                orderDateTo, pageable, role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge, setting, reOrder,week,colorId);
         return new PageResult<>(page.getTotalElements(), page.getSize(), page.getNumber(), clothConvert.convert(page.getContent()));
     }
 
@@ -177,6 +178,8 @@ public class ClothController {
                           @RequestParam(required = false, value = "setting") String setting,
                           @RequestParam(required = false, value = "reOrder") Boolean reOrder,
                           @RequestParam(required = false, value = "week") String week,
+                          @RequestParam(required = false, value = "colorId") Long colorId,
+
                           HttpServletResponse httpServletResponse) {
         String role = null;
         if (roles != null && !roles.isEmpty()) {
@@ -189,7 +192,7 @@ public class ClothController {
         }
 
         reportingService.getClothReport(customerId, locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom,
-                orderDateTo, role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge, setting, reOrder,week, httpServletResponse);
+                orderDateTo, role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge, setting, reOrder,week,colorId, httpServletResponse);
     }
 
     @RequestMapping(value = CLOTHS_WEAVING_ID, method = RequestMethod.GET)

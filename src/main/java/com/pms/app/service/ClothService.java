@@ -18,7 +18,7 @@ public interface ClothService {
     Page<Clothes> getClothes(Long customerId, Long locationId, Integer orderNo, Long barcode, Date deliverDateFrom,
                              Date deliveryDateTo, Date orderDateFrom, Date orderDateTo,
                              Pageable pageable, String number, String shippingNumber, String boxNumber,
-                             Boolean isReject, Integer type, Date locationDate, Long designId, Double gauge, String setting, Boolean reOrder, String week);
+                             Boolean isReject, Integer type, Date locationDate, Long designId, Double gauge, String setting, Boolean reOrder, String week, Long colorId);
 
     List<Clothes> addCloth(ClothDto clothDto);
 
