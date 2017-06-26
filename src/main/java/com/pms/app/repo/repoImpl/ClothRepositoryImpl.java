@@ -173,7 +173,8 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                         clothes.weight,
                         clothes.isReturn,
                         clothes.created,
-                        clothes.type
+                        clothes.type,
+                        clothes.color.name_company
                 ));
     }
 
@@ -579,7 +580,8 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                         clothes.weight,
                         clothes.isReturn,
                         clothes.created,
-                        clothes.type
+                        clothes.type,
+                        clothes.color.name_company
                 ));
     }
 

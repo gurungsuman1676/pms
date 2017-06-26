@@ -97,6 +97,8 @@
                             <th>Delivery Date</th>
                             <th>Print</th>
                             <th>Yarn</th>
+                            <th>Color Name</th>
+                            <th>Color Code</th>
                             <th>Gauge</th>
                             <th>Setting</th>
                             <th>Re-Order</th>
@@ -134,6 +136,17 @@
                             <td ng-class="{'clickable-td': ctrl.isKnitter()}"
                                 data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.price.yarnName}}
                             </td>
+
+                            <td ng-class="{'clickable-td': ctrl.isKnitter()}"
+                                data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.colorName}}
+                            </td>
+
+
+                            <td ng-class="{'clickable-td': ctrl.isKnitter()}"
+                                data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.colorCode}}
+                            </td>
+
+
                             <td ng-class="{'clickable-td': ctrl.isKnitter()}"
                                 data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.price.gauge}}
                             </td>

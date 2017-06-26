@@ -33,6 +33,7 @@ public class ClothResource {
     private String weight;
     private Integer type;
     private boolean reOrder;
+    private String colorName;
 
 
     @QueryProjection
@@ -55,7 +56,8 @@ public class ClothResource {
             String boxNumber,
             String weight,Boolean isReturn,
             Date created,
-            Integer type){
+            Integer type,
+            String colorName){
 
         this.created = created;
         this.id = id;
@@ -83,5 +85,6 @@ public class ClothResource {
         this.isReturn = isReturn;
         this.weight = weight;
         this.type = type;
+        this.colorName = colorName;
     }
 }
