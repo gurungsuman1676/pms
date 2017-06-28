@@ -41,7 +41,7 @@ public class DannyTemplate extends AbstractTemplate implements TemplateService {
 
 
     @Override
-    public void process() throws IOException {
+    public void process() throws Exception {
         setExtractFormula(nameExtractFormula);
         getCustomerName(CUSTOMER_NAME_ALIAS);
         getDeliveryDate(DELIVERY_DATE_ALIAS);
@@ -68,7 +68,7 @@ public class DannyTemplate extends AbstractTemplate implements TemplateService {
             };
 
 
-    private void addClothes() {
+    private void addClothes() throws Exception {
 
         int clothInitNumber = 1;
         Map<Integer, List<Clothes>> clothesMap = new HashMap<>();
@@ -87,7 +87,7 @@ public class DannyTemplate extends AbstractTemplate implements TemplateService {
         }
     }
 
-    private List<Clothes> getClothesForNumber(int clothInitNumber) {
+    private List<Clothes> getClothesForNumber(int clothInitNumber) throws Exception {
         String designName = getDesignName(clothInitNumber);
         if (completed) {
             return null;
@@ -129,14 +129,11 @@ public class DannyTemplate extends AbstractTemplate implements TemplateService {
             }
         }
         if (total != size) {
-            throw new RuntimeException(alias + "number  of clothes (" + size + ") is not equal to Given " + alias + " (" + total);
+            throw new RuntimeException(alias + "number  of clothes (" + size + ") is not equal to Given " + alias + " (" + total + ") at row" + currentRow.getRowNum());
         }
     }
 
-    private List<Clothes> getClothByColorIndexAndSizeIndexAndSizeIndex(int colorCodeIndex, Map<Integer, String> sizeIndexes, int yarnIndex, int colorNameIndex, String designName) {
-        String colorCode = getCellValueByIndex(colorCodeIndex);
-        String yarnName = getCellValueByIndex(yarnIndex);
-        String colorName = getCellValueByIndex(colorNameIndex);
+    private List<Clothes> getClothByColorIndexAndSizeIndexAndSizeIndex(int colorCodeIndex, Map<Integer, String> sizeIndexes, int yarnIndex, int colorNameIndex, String designName) throws Exception {
 
 
         Map<String, Integer> sizeAndNumberMap = new HashMap<>();
@@ -145,24 +142,43 @@ public class DannyTemplate extends AbstractTemplate implements TemplateService {
             if (sizeCell != null) {
                 sizeCell.setCellType(Cell.CELL_TYPE_STRING);
                 if (sizeCell.getStringCellValue() != null && !sizeCell.getStringCellValue().isEmpty()) {
-                    sizeAndNumberMap.put(sizeIndexes.get(sizeEntryColum), Integer.parseInt(sizeCell.getStringCellValue()));
+                    int sizeValue;
+                    try {
+                        sizeValue = Integer.parseInt(sizeCell.getStringCellValue());
+                    } catch (Exception e) {
+                        sizeValue = 0;
+                    }
+                    sizeAndNumberMap.put(sizeIndexes.get(sizeEntryColum), sizeValue);
+
                 }
             }
         }
+        if (sizeAndNumberMap.size() == 0) {
+            return new ArrayList<>();
+        }
+        String colorCode = getCellValueByIndex(colorCodeIndex, COLOR_CODE_ALIAS);
+        String yarnName = getCellValueByIndex(yarnIndex, YARN_ALIAS);
+        String colorName = getCellValueByIndex(colorNameIndex, COLOR_NAME_ALIAS);
         return getCloth(colorCode, colorName, yarnName, sizeAndNumberMap, designName, null);
     }
 
 
-    private String getCellValueByIndex(int index) {
+    private String getCellValueByIndex(int index, String alias) {
         if (index == -1) {
-            return "";
+            throw new RuntimeException("Invalid value for " + alias + " at row " + currentRow.getRowNum());
         }
         Cell cell = currentRow.getCell(index);
         if (cell == null) {
-            return "";
+            throw new RuntimeException("Invalid value for " + alias + " at row " + currentRow.getRowNum());
         }
         cell.setCellType(Cell.CELL_TYPE_STRING);
-        return cell.getStringCellValue();
+        String stringCellValue = cell.getStringCellValue();
+        if (stringCellValue.isEmpty()) {
+            throw new RuntimeException("Invalid value for " + alias + " at row " + currentRow.getRowNum());
+
+        }
+        return stringCellValue;
+
     }
 
     private String getDesignName(int clothInitNumber) {
@@ -224,21 +240,24 @@ public class DannyTemplate extends AbstractTemplate implements TemplateService {
                 return cell.getColumnIndex();
             }
         }
-        throw new RuntimeException("Color Code header not found  in " + currentRow.getRowNum());
+        throw new RuntimeException("Yarn header not found  in " + currentRow.getRowNum());
     }
 
-    private Map<Integer, String> getSizeIndex(int colorCodeIndex) {
+    private Map<Integer, String> getSizeIndex(int yarnIndex) {
         Map<Integer, String> sizesIndex = new HashMap<>();
         for (Cell cell : currentRow) {
-            if (cell.getColumnIndex() > colorCodeIndex) {
+            if (cell.getColumnIndex() > yarnIndex) {
                 cell.setCellType(Cell.CELL_TYPE_STRING);
+
                 if (cell.getStringCellValue().equalsIgnoreCase(TOTAL_ALIAS)) {
                     return sizesIndex;
                 }
-                sizesIndex.put(cell.getColumnIndex(), cell.getStringCellValue());
+                if (!cell.getStringCellValue().trim().isEmpty()) {
+                    sizesIndex.put(cell.getColumnIndex(), cell.getStringCellValue());
+                }
             }
         }
-        throw new RuntimeException("Total not available cloth total " + currentRow.getRowNum());
+        throw new RuntimeException("Total header not available cloth  for row " + currentRow.getRowNum());
     }
 
 

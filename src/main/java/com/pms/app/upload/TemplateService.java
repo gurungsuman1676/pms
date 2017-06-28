@@ -10,7 +10,7 @@ import java.io.IOException;
  */
 public interface TemplateService {
 
-    void process() throws IOException;
+    void process() throws Exception;
 
 
 }

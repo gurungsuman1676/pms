@@ -74,8 +74,8 @@ public class PhillipeTemplate extends AbstractTemplate implements TemplateServic
             clothes.addAll(getClothForRow(designIndex, bagNameIndex, colorIndex, sizeIndex, yarnIndex, barcodeIndex, quantityIndex, colorNameIndex));
         }
         try {
-            if (Integer.valueOf(getCellValueByIndex(quantityIndex)) != clothes.size()) {
-                throw new RuntimeException("Total " + clothes.size() + " does not match with given total " + Integer.valueOf(getCellValueByIndex(quantityIndex)));
+            if (Integer.valueOf(getCellValueByIndex(quantityIndex, QUANTITY_ALIAS, true)) != clothes.size()) {
+                throw new RuntimeException("Total " + clothes.size() + " does not match with given total " + Integer.valueOf(getCellValueByIndex(quantityIndex, QUANTITY_ALIAS, true)));
             }
         } catch (Exception e) {
             throw new RuntimeException("Total is not available ");
@@ -86,15 +86,10 @@ public class PhillipeTemplate extends AbstractTemplate implements TemplateServic
 
 
     private List<Clothes> getClothForRow(int designIndex, int bagNameIndex, int colorIndex, int sizeIndex, int yarnIndex, int barcodeIndex, int quantityIndex, int colorNameIndex) {
-        String designName = getCellValueByIndex(designIndex);
-        String bagName = getCellValueByIndex(bagNameIndex);
-        String colorCode = getCellValueByIndex(colorIndex);
-        String size = getCellValueByIndex(sizeIndex);
-        String yarn = getCellValueByIndex(yarnIndex);
-        String barcode = getCellValueByIndex(barcodeIndex);
-        String quantity = getCellValueByIndex(quantityIndex);
-        String colorName = getCellValueByIndex(colorNameIndex);
-        if (designName.length() == 0 && colorCode.length() == 0 && size.length() == 0) {
+        String quantity = getCellValueByIndex(quantityIndex, QUANTITY_ALIAS, false);
+        String designName = getCellValueByIndex(designIndex, DESIGN_ALIAS, false);
+
+        if (designName.length() == 0) {
             if (quantity.length() > 0) {
                 completed = true;
                 return new ArrayList<>();
@@ -102,21 +97,45 @@ public class PhillipeTemplate extends AbstractTemplate implements TemplateServic
                 return new ArrayList<>();
             }
         }
+
+        String bagName = getCellValueByIndex(bagNameIndex, NAME_ON_BAG_ALIAS, false);
+        String colorCode = getCellValueByIndex(colorIndex, COLOR_ALIAS, true);
+        String size = getCellValueByIndex(sizeIndex, SIZE_ALIAS, true);
+        String yarn = getCellValueByIndex(yarnIndex, YARN_ALIAS, true);
+        String barcode = getCellValueByIndex(barcodeIndex, BARCODE_ALIAS, false);
+        String colorName = getCellValueByIndex(colorNameIndex, COLOR_NAME_ALIAS, true);
+
         Map<String, Integer> sizes = new HashMap<>();
         sizes.put(size, Integer.parseInt(quantity));
         return getCloth(colorCode, colorName, yarn, sizes, designName, null, bagName.isEmpty() ? "" : "Name ::" + bagName, barcode.isEmpty() ? "" : "Barcode::" + barcode);
     }
 
-    private String getCellValueByIndex(int index) {
+    private String getCellValueByIndex(int index, String alias, boolean required) {
         if (index == -1) {
-            return "";
+            if (required) {
+                throw new RuntimeException("Invalid value for " + alias + " at row " + currentRow.getRowNum());
+            } else {
+                return "";
+            }
         }
         Cell cell = currentRow.getCell(index);
         if (cell == null) {
-            return "";
+            if (required) {
+                throw new RuntimeException("Invalid value for " + alias + " at row " + currentRow.getRowNum());
+            } else {
+                return "";
+            }
         }
         cell.setCellType(Cell.CELL_TYPE_STRING);
-        return cell.getStringCellValue();
+        String stringCellValue = cell.getStringCellValue();
+        if (stringCellValue.isEmpty()) {
+            if (required) {
+                throw new RuntimeException("Invalid value for " + alias + " at row " + currentRow.getRowNum());
+            } else {
+                return "";
+            }
+        }
+        return stringCellValue;
     }
 
     private int getIndexForAlias(String alias, boolean required) {

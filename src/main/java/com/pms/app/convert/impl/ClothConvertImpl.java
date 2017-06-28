@@ -45,11 +45,11 @@ public class ClothConvertImpl implements ClothConvert {
                 .clothAmount(clothes.getPrice().getAmount())
                 .boxNumber(clothes.getBoxNumber() == null ? "N/A" : clothes.getBoxNumber())
                 .shippingNumber(clothes.getShipping() == null ? "N/A" : clothes.getShipping())
-                .colorCode(clothes.getColor()!= null ? clothes.getColor().getCode() : "N/A")
+                .colorCode(clothes.getColor() != null ? clothes.getColor().getCode() : "N/A")
                 .isReturn(clothes.getIsReturn())
                 .weight(clothes.getWeight())
                 .reOrder(clothes.isReOrder())
-                .colorName(clothes.getColor().getName_company())
+                .colorName(clothes.getColor() != null ? clothes.getColor().getName_company() : "N/A")
                 .build();
     }
 }

@@ -77,12 +77,13 @@ public class RukelTemplate extends AbstractTemplate implements TemplateService {
         validateTotal(clothesMap.values().stream().mapToInt(List::size).sum(), quantityIndex);
         clothesMap.keySet().forEach(k -> {
             Long customeIdByName = customerRepository.findCustomeIdByName(k);
-            if (customeIdByName != null) {
-                clothesMap.get(k).forEach(c -> {
+
+            clothesMap.get(k).forEach(c -> {
+                if (customeIdByName != null) {
                     c.setCustomer(entityManager.getReference(Customers.class, customeIdByName));
-                    clothRepository.save(c);
-                });
-            }
+                }
+                clothRepository.save(c);
+            });
         });
 
     }
@@ -134,7 +135,7 @@ public class RukelTemplate extends AbstractTemplate implements TemplateService {
         }
         ClothMini clothMini = new ClothMini();
         while (!clothMini.currentBlockCompleted && !hasTotal()) {
-            String designName = getCellValueByIndex(designIndex);
+            String designName = getCellValueByIndex(designIndex, DESIGN_ALIAS, false);
             if (designName.isEmpty() && clothMini.getDesignName() == null) {
                 currentRow = rowsIterator.next();
                 continue;
@@ -161,13 +162,17 @@ public class RukelTemplate extends AbstractTemplate implements TemplateService {
             }
 
 
-            String printName = getCellValueByIndex(printIndex);
-            String sizeName = getCellValueByIndex(sizeIndex);
-            if (!sizeName.isEmpty()) {
+            String printName = getCellValueByIndex(printIndex, PRINT_ALIAS, false);
+            if (printName.isEmpty()) {
+                currentRow = rowsIterator.next();
+                continue;
+            }
+            if (clothMini.getSize() == null) {
+                String sizeName = getCellValueByIndex(sizeIndex, SIZE_ALIAS, true);
                 clothMini.setSize(sizeName);
             }
             String extraField = getCellValuesForAdditionalPrint(printFinalIndex);
-            String quantity = getCellValueByIndex(quantityIndex);
+            String quantity = getCellValueByIndex(quantityIndex, QUANTITY_ALIAS, true);
             if (printName.isEmpty()) {
                 currentRow = rowsIterator.next();
                 continue;
@@ -269,21 +274,37 @@ public class RukelTemplate extends AbstractTemplate implements TemplateService {
         return printFinalIndex
                 .keySet()
                 .stream()
-                .filter(k -> !getCellValueByIndex(printFinalIndex.get(k)).isEmpty())
-                .map((k) -> k + " : " + getCellValueByIndex(printFinalIndex.get(k)))
+                .filter(k -> !getCellValueByIndex(printFinalIndex.get(k), k, false).isEmpty())
+                .map((k) -> k + " : " + getCellValueByIndex(printFinalIndex.get(k), k, true))
                 .collect(Collectors.joining(" ,"));
     }
 
-    private String getCellValueByIndex(int index) {
+    private String getCellValueByIndex(int index, String alias, boolean required) {
         if (index == -1) {
-            return "";
+            if (required) {
+                throw new RuntimeException("Invalid value for " + alias + " at row " + currentRow.getRowNum());
+            } else {
+                return "";
+            }
         }
         Cell cell = currentRow.getCell(index);
         if (cell == null) {
-            return "";
+            if (required) {
+                throw new RuntimeException("Invalid value for " + alias + " at row " + currentRow.getRowNum());
+            } else {
+                return "";
+            }
         }
         cell.setCellType(Cell.CELL_TYPE_STRING);
-        return cell.getStringCellValue();
+        String stringCellValue = cell.getStringCellValue();
+        if (stringCellValue.isEmpty()) {
+            if (required) {
+                throw new RuntimeException("Invalid value for " + alias + " at row " + currentRow.getRowNum());
+            } else {
+                return "";
+            }
+        }
+        return stringCellValue;
     }
 
     @Override
