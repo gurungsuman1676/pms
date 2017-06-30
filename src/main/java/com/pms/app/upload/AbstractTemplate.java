@@ -158,24 +158,35 @@ abstract class AbstractTemplate {
             String orderNo = nameExtractFormula.apply(currentRow, alias);
             if (orderNo != null) {
                 try {
-                    this.orderNumber = Integer.valueOf(orderNo.toUpperCase().replaceAll(REORDER_ALIAS, ""));
+                    this.orderNumber = Integer.valueOf(orderNo);
                     Iterator<Cell> cellIterator = currentRow.cellIterator();
                     while (cellIterator.hasNext()) {
                         Cell cell = cellIterator.next();
+                        cell.setCellType(Cell.CELL_TYPE_STRING);
                         if (cell.getStringCellValue().toUpperCase().contains(alias)) {
-                            cellIterator.next();
-                            Cell next = cellIterator.next();
-                            if (next == null || next.getStringCellValue() == null || next.getStringCellValue().isEmpty()) {
+                            if (clothType == 0) {
+                                cellIterator.next();
+                            }
+                            if (!cellIterator.hasNext()) {
                                 reOrder = false;
-                            } else if (next.getStringCellValue().toUpperCase().replaceAll(" ", "").contains(REORDER_ALIAS)) {
+                                return;
+                            }
+                            Cell next = cellIterator.next();
+                            if (next == null) {
+                                reOrder = false;
+                                return;
+                            }
+                            next.setCellType(Cell.CELL_TYPE_STRING);
+
+                            if (next.getStringCellValue() != null && next.getStringCellValue().toUpperCase().replaceAll(" ", "").contains(REORDER_ALIAS)) {
                                 reOrder = true;
                             }
+                            return;
                         }
                     }
 
-                    return;
                 } catch (Exception e) {
-                    throw new RuntimeException("Invalid order number " + orderNo);
+                    throw new RuntimeException("Invalid Re order field ");
                 }
             }
         }
