@@ -30,22 +30,22 @@ public class KnitterController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public List<KnitterResource> getLocation() {
+    public List<KnitterResource> getknitter() {
         return knitterConvert.convert(knitterService.getAll());
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public KnitterResource addLocation(@RequestBody KnitterDto knitterDto) {
+    public KnitterResource addknitter(@RequestBody KnitterDto knitterDto) {
         return knitterConvert.convert(knitterService.add(knitterDto));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public KnitterResource getLocation(@PathVariable Long id) {
+    public KnitterResource getknitter(@PathVariable Long id) {
         return knitterConvert.convert(knitterService.get(id));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public KnitterResource editLocation(@PathVariable Long id, @RequestBody KnitterDto knitterDto) {
+    public KnitterResource editknitter(@PathVariable Long id, @RequestBody KnitterDto knitterDto) {
         return knitterConvert.convert(knitterService.edit(id, knitterDto));
     }
 }

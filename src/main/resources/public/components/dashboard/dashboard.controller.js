@@ -11,4 +11,5 @@ angular.module('sbAdminApp')
         $scope.isAdmin = $localStorage.isAdmin;
         $scope.isShipper = $localStorage.isShipper;
         $scope.isKnitter = $localStorage.isKnitter;
+        $scope.isShawlUser = $localStorage.isShawlUser;
     });

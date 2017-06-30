@@ -18,17 +18,20 @@ public class SecurityUserDetails implements UserDetails {
     private final Users users;
 
     @Getter
-    private final List<String> locations;
+    private final Set<String> locations;
 
-    public SecurityUserDetails(Users users, List<String> locations) {
+    @Getter
+    private final String type;
+
+    public SecurityUserDetails(Users users, Set<String> locations, String type) {
         this.users = users;
         this.locations = locations;
+        this.type = type;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
-        authorities = locations.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
+        Set<SimpleGrantedAuthority> authorities = locations.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
         authorities.add(new SimpleGrantedAuthority(users.getRole().toString()));
         return authorities;
     }

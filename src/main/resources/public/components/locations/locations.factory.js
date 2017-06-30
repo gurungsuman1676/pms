@@ -5,10 +5,11 @@
     var LocationsFactory = function ($http, RESOURCES) {
         var factory = {};
 
-        factory.getLocations = function (successCallback, errorCallback) {
+        factory.getLocations = function (params, successCallback, errorCallback) {
             $http({
                 method: 'GET',
-                url: RESOURCES.apiURL + '/locations'
+                url: RESOURCES.apiURL + '/locations',
+                params: params
             }).success(function (response) {
                 successCallback(response);
             }).error(function (response) {

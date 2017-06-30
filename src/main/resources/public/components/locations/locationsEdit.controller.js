@@ -10,6 +10,15 @@ angular.module('sbAdminApp')
     .controller('LocationsEditCtrl', function ($stateParams, LocationsFactory, $state, Flash) {
 
         var self = this;
+        self.locationTypes = [
+            {
+                id: 'Shawl,',
+                name: 'Shawl'
+            },
+            {
+                id: 'KNITTING',
+                name: 'KNITTING'
+            }];
 
         LocationsFactory.getLocation($stateParams.sizeId, function (response) {
             self.location = response;

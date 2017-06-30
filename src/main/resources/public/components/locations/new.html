@@ -9,7 +9,13 @@
                 <form ng-submit="ctrl.submitLocation(ctrl.location)">
                     <div class="form-group">
                         <label for="name">Name:</label>
-                        <input class="form-control" ng-model="ctrl.location.name" type="text" id="name" autocomplete="off">
+                        <input class="form-control" ng-model="ctrl.location.name" type="text" id="name"
+                               autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label>Location Type</label>
+                        <selectize config="{maxOptions: 100}" options="ctrl.locationTypes"
+                                   ng-model="ctrl.location.locationType"></selectize>
                     </div>
                     <div>
                         <input type="submit" class="btn btn-primary" value="Submit">

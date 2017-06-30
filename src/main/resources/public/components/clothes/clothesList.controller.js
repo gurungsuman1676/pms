@@ -101,7 +101,7 @@ angular.module('sbAdminApp')
         }, function (response) {
             Flash.create('danger', response.message, 'custom-class');
         });
-        LocationsFactory.getLocations(function (response) {
+        LocationsFactory.getLocations({type: 'KNITTING'},function (response) {
             self.locations = addAllOptions(response);
             self.locations.unshift({name: 'Empty', id: '-1'});
 

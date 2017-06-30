@@ -10,6 +10,15 @@ angular.module('sbAdminApp')
     .controller('LocationsNewCtrl', function (LocationsFactory, $state, Flash) {
 
         var self = this;
+        self.locationTypes = [
+            {
+                id: 'SHAWL',
+                name: 'SHAWL'
+            },
+            {
+                id: 'KNITTING',
+                name: 'KNITTING'
+            }];
         self.submitLocation = function () {
             LocationsFactory.createLocation(self.location, function (response) {
                 $state.go('dashboard.locations.index');

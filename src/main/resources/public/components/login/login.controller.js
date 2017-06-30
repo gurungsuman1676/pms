@@ -15,7 +15,8 @@ angular.module('sbAdminApp')
                     $localStorage.user = {
                         username: response.username,
                         token: response.token,
-                        roles: response.roles
+                        roles: response.roles,
+                        type: response.type
                     };
                     $rootScope.loginSuccess();
                 }, function (response) {

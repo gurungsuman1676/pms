@@ -16,7 +16,8 @@ angular.module('sbAdminApp')
             scope: {
                 'isAdmin': '=isAdmin',
                 'isShipper': '=isShipper',
-                'isKnitter': '=isKnitter'
+                'isKnitter': '=isKnitter',
+                'isShawlUser': '=isShawlUser'
             },
             controller: function ($scope) {
                 $scope.selectedMenu = 'dashboard';

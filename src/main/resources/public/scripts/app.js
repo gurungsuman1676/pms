@@ -75,7 +75,8 @@ angular
         }
 
         $rootScope.loginSuccess = function () {
-            console.log($localStorage.user.roles);
+            $localStorage.isShawlUser = $localStorage.user.type === 'SHAWL';
+
             if (($localStorage.user.roles).indexOf("ADMIN") != -1) {
                 $localStorage.isAdmin = true;
                 $localStorage.isShipper = false;
@@ -83,7 +84,7 @@ angular
                 $state.go('dashboard.clothes.index');
             }
             else {
-                $state.go('dashboard.supervisors.index');
+
                 if (($localStorage.user.roles).indexOf("SHIPPING") != -1) {
                     $localStorage.isShipper = true;
 
@@ -99,6 +100,13 @@ angular
 
                 }
                 $localStorage.isAdmin = false;
+
+                if ($localStorage.isShawlUser) {
+                    $state.go('dashboard.shawls.index');
+                } else {
+                    $state.go('dashboard.supervisors.index');
+
+                }
             }
 
 

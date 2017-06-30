@@ -29,22 +29,22 @@ public class MachineController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public List<MachineResource> getLocation() {
+    public List<MachineResource> getMachine() {
         return machineConvert.convert(machineService.getAll());
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public MachineResource addLocation(@RequestBody MachineDto machineDto) {
+    public MachineResource addMachine(@RequestBody MachineDto machineDto) {
         return machineConvert.convert(machineService.add(machineDto));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public MachineResource getLocation(@PathVariable Long id) {
+    public MachineResource getMachine(@PathVariable Long id) {
         return machineConvert.convert(machineService.get(id));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public MachineResource editLocation(@PathVariable Long id, @RequestBody MachineDto machineDto) {
+    public MachineResource editMachine(@PathVariable Long id, @RequestBody MachineDto machineDto) {
         return machineConvert.convert(machineService.edit(id, machineDto));
     }
 }

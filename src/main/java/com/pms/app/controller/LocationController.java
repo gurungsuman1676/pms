@@ -1,11 +1,17 @@
 package com.pms.app.controller;
 
 import com.pms.app.convert.LocationConvert;
+import com.pms.app.domain.LocationType;
 import com.pms.app.schema.LocationDto;
 import com.pms.app.schema.LocationResource;
 import com.pms.app.service.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -22,8 +28,8 @@ public class LocationController {
     }
 
     @RequestMapping(value="", method = RequestMethod.GET)
-    public List<LocationResource> getLocation(){
-        return locationConvert.convert(locationService.getLocations());
+    public List<LocationResource> getLocation(@RequestParam(value = "type",required = false) LocationType locationType){
+        return locationConvert.convert(locationService.getLocations(locationType));
     }
 
     @RequestMapping(value = "",method = RequestMethod.POST)

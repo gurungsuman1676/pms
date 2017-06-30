@@ -1,6 +1,7 @@
 package com.pms.app.config;
 
 import com.pms.app.controller.Routes;
+import com.pms.app.domain.Locations;
 import com.pms.app.domain.Users;
 import com.pms.app.repo.UserLocationRepository;
 import com.pms.app.repo.UserRepository;
@@ -25,6 +26,7 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.util.Assert;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
@@ -32,8 +34,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private UserRepository userRepository;
     private UserLocationRepository userLocationRepository;
+
     @Autowired
-    public void setSimUserRepository(UserRepository userRepository,UserLocationRepository userLocationRepository) {
+    public void setSimUserRepository(UserRepository userRepository, UserLocationRepository userLocationRepository) {
         Assert.notNull(userRepository);
         this.userRepository = userRepository;
         this.userLocationRepository = userLocationRepository;
@@ -89,8 +92,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             if (users == null) {
                 throw new UsernameNotFoundException("User not found.");
             }
-            List<String> locations = userLocationRepository.findByUser(users);
-            return new SecurityUserDetails(users,locations);
+            List<Locations> locations = userLocationRepository.findLocationByUser(users);
+            return new SecurityUserDetails(users, locations.stream().map(Locations::getName).collect(Collectors.toSet()), locations.size() > 0 ? locations.get(0).getLocationType().name() : null);
         };
     }
 }

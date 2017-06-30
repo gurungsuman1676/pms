@@ -1,6 +1,7 @@
 package com.pms.app.convert.impl;
 
 import com.pms.app.convert.UserConvert;
+import com.pms.app.domain.Locations;
 import com.pms.app.domain.Users;
 import com.pms.app.schema.UserResource;
 import com.pms.app.service.UserService;
@@ -30,7 +31,7 @@ public class UserConvertImpl implements UserConvert {
                 .id(users.getId())
                 .username(users.getUsername())
                 .role(users.getRole())
-                .location(userService.findUserLocation(users).stream().collect(Collectors.joining(", ")))
+                .location(userService.findUserLocation(users).stream().map(Locations::getName).collect(Collectors.joining(", ")))
                 .build();
     }
 

@@ -11,6 +11,8 @@ import javax.persistence.Entity;
 @Entity
 public class Locations extends AbstractEntity {
 
-    @Column(nullable = false)
+    @Column(nullable = false,unique = true)
     private String name;
+
+    private LocationType locationType;
 }

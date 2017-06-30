@@ -13,7 +13,7 @@ angular.module('sbAdminApp')
         self.options = {};
         self.roles = [{id:'ADMIN', name:'ADMIN'},{id:'USER', name:'SUPERVISOR'}];
 
-        LocationsFactory.getLocations(function (response) {
+        LocationsFactory.getLocations({},function (response) {
             self.options.locations = response;
         }, function (response) {
             Flash.create('danger', response.message, 'custom-class');

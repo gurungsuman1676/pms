@@ -11,7 +11,7 @@ angular.module('sbAdminApp')
 
         var self = this;
         self.locations = [];
-        LocationsFactory.getLocations(function (response) {
+        LocationsFactory.getLocations({}, function (response) {
             self.locations = response;
         }, function (response) {
             Flash.create('danger', response.message, 'custom-class');

@@ -4,7 +4,6 @@ import com.pms.app.convert.KnitterMachineHistoryConvert;
 import com.pms.app.domain.KnitterMachineHistory;
 import com.pms.app.schema.KnitterMachineHistoryDto;
 import com.pms.app.schema.KnitterMachineHistoryResource;
-import com.pms.app.schema.KnitterResource;
 import com.pms.app.schema.PageResult;
 import com.pms.app.service.KnitterMachineHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +50,7 @@ public class KnitterMachineHistoryController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public KnitterMachineHistoryResource addLocation(@RequestBody KnitterMachineHistoryDto knitterMachineHistoryDto) {
+    public KnitterMachineHistoryResource addKnittingHistory(@RequestBody KnitterMachineHistoryDto knitterMachineHistoryDto) {
         return knitterMachineHistoryConvert.convert(knitterMachineHistoryService.add(knitterMachineHistoryDto));
     }
 

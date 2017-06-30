@@ -1,8 +1,6 @@
 package com.pms.app.controller;
 
 
-import java.lang.String;
-
 public interface Routes {
     public static final String V1 = "api/v1";
     public static final String SIZE = V1 + "/sizes";
@@ -22,6 +20,15 @@ public interface Routes {
     public static final String KNITTER = V1 + "/knitters";
     public static final String MACHINE = V1 + "/machines";
     public static final String KNITTER_HISTORY = V1 + "/knitters-history";
+    public static final String SHAWL = V1 + "/shawls";
+    public static final String SHAWL_CUSTOMER = SHAWL + "/customers";
+    public static final String SHAWL_COLOR = SHAWL + "/colors";
+    public static final String SHAWL_YARN = SHAWL + "/yarns";
+    public static final String SHAWL_SIZE = SHAWL + "/sizes";
+    public static final String SHAWL_PROPERTIES = SHAWL + "/{id}/properties";
+    public static final String SHAWL_ENTRY = SHAWL + "/entries";
+
+
 
 
 }

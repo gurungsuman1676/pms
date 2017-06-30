@@ -44,7 +44,6 @@ public class AuthenticationController {
 
         Authentication authentication = this.authenticationManager.authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
         UserDetails details = this.userDetailsService.loadUserByUsername(login.getUsername());
 
         Set<String> roles = new HashSet<>();
@@ -52,8 +51,7 @@ public class AuthenticationController {
             roles.add(authority.toString());
         }
 
-
-        return new UserTransfer(details.getUsername(), roles, tokenUtils.createToken(details));
+        return new UserTransfer(details.getUsername(), roles, ((SecurityUserDetails) details).getType(), tokenUtils.createToken(details));
     }
 
     @Getter
@@ -63,11 +61,13 @@ public class AuthenticationController {
         private final String username;
         private final Set<String> roles;
         private final String token;
+        private final String type;
 
-        public UserTransfer(String username, Set<String> roles, String token) {
+        public UserTransfer(String username, Set<String> roles, String type, String token) {
             this.username = username;
             this.roles = roles;
             this.token = token;
+            this.type = type;
         }
     }
 }

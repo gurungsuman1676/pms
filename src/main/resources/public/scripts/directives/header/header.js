@@ -7,15 +7,18 @@
  * # adminPosHeader
  */
 angular.module('sbAdminApp')
-	.directive('header',function(){
-		return {
-        templateUrl:'scripts/directives/header/header.html',
-        restrict: 'E',
-        replace: true,
-            scope: {'isAdmin':'=isAdmin',
+    .directive('header', function () {
+        return {
+            templateUrl: 'scripts/directives/header/header.html',
+            restrict: 'E',
+            replace: true,
+            scope: {
+                'isAdmin': '=isAdmin',
                 'isShipper': '=isShipper',
-                'isKnitter': '=isKnitter'}
-    	}
-	});
+                'isKnitter': '=isKnitter',
+                'isShawlUser': '=isShawlUser'
+            }
+        }
+    });
 
 

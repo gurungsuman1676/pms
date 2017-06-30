@@ -11,8 +11,6 @@ import java.util.List;
 
 @Repository
 public interface UserLocationRepository extends AbstractRepository<UserLocations> {
-    @Query("SELECT u.location.name FROM UserLocations u WHERE u.user =:user ")
-    List<String> findByUser(@Param("user")Users user);
 
     @Query("SELECT u.location FROM UserLocations u WHERE u.user =:user ORDER BY u.location.name ASC")
     List<Locations> findLocationByUser(@Param("user")Users user);

@@ -1,6 +1,6 @@
 package com.pms.app.service;
 
-import com.pms.app.domain.UserLocations;
+import com.pms.app.domain.Locations;
 import com.pms.app.domain.Users;
 import com.pms.app.schema.PasswordDto;
 import com.pms.app.schema.UserDto;
@@ -16,7 +16,7 @@ public interface UserService {
 
     Users updateUser(Long id, UserDto userDto);
 
-    List<String> findUserLocation(Users users);
+    List<Locations> findUserLocation(Users users);
 
     void changePassword(Long userId, PasswordDto password);
 }
