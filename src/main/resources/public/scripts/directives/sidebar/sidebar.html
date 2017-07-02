@@ -62,11 +62,26 @@
 
 
             <li ui-sref-active="active" ng-show="isShawlUser">
+                <a ui-sref="dashboard.shawls.entries.index">Inventory</a>
+            </li>
+
+            <li ui-sref-active="active" ng-show="isShawlUser">
                 <a ui-sref="dashboard.shawls.index">Shawl</a>
             </li>
 
             <li ui-sref-active="active" ng-show="isShawlUser">
                 <a ui-sref="dashboard.shawls.yarns.index">Yarn</a>
+            </li>
+
+            <li ui-sref-active="active" ng-show="isShawlUser">
+                <a ui-sref="dashboard.shawls.customers.index">Customer</a>
+            </li>
+
+            <li ui-sref-active="active" ng-show="isShawlUser">
+                <a ui-sref="dashboard.shawls.sizes.index">Size</a>
+            </li>
+            <li ui-sref-active="active" ng-show="isShawlUser">
+                <a ui-sref="dashboard.shawls.colors.index">Color</a>
             </li>
         </ul>
     </div>

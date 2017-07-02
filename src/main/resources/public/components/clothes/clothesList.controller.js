@@ -191,7 +191,7 @@ angular.module('sbAdminApp')
         }
 
         self.hideBarcode = function () {
-            self.showBarcode = false;
+            self.showBarcodec = false;
             self.showContents = true;
 
         }
@@ -215,7 +215,7 @@ angular.module('sbAdminApp')
                 (angular.isDefined(self.filterParams.designId) && self.filterParams.designId != 'All' ? "&customerId=" + self.filterParams.designId : "") +
                 (angular.isDefined(self.filterParams.locationId) && self.filterParams.locationId != 'All' ? "&locationId= " + self.filterParams.locationId : "") +
                 (angular.isDefined(self.filterParams.barcode) ? "&barcode=" + self.filterParams.barcode : "") +
-                (angular.isDefined(self.filterParams.deliverDateFrom) ? "&deliverDateFrom=" + self.filterParams.deliverDateFrom.toDateString() : "") +
+                (angular.isDefined(self.filterParams.deliveryDateFrom) ? "&deliveryDateFrom=" + self.filterParams.deliveryDateFrom.toDateString() : "") +
                 (angular.isDefined(self.filterParams.deliveryDateTo) ? "&deliveryDateTo=" + self.filterParams.deliveryDateTo.toDateString() : "") +
                 (angular.isDefined(self.filterParams.orderDateFrom) ? "&orderDateFrom=" + self.filterParams.orderDateFrom.toDateString() : "") +
                 (angular.isDefined(self.filterParams.orderDateTo) ? "&orderDateTo=" + self.filterParams.orderDateTo.toDateString() : "") +
@@ -287,7 +287,7 @@ angular.module('sbAdminApp')
                             designId: self.filterParams.designId === 'All' ? undefined : self.filterParams.designId,
                             locationId: self.filterParams.locationId === 'All' ? undefined : self.filterParams.locationId,
                             barcode: self.filterParams.barcode,
-                            deliverDateFrom: self.filterParams.deliverDateFrom ? self.filterParams.deliverDateFrom.toDateString() : undefined,
+                            deliveryDateFrom: self.filterParams.deliveryDateFrom ? self.filterParams.deliveryDateFrom.toDateString() : undefined,
                             deliveryDateTo: self.filterParams.deliveryDateTo ? self.filterParams.deliveryDateTo.toDateString() : undefined,
                             orderDateFrom: self.filterParams.orderDateFrom ? self.filterParams.orderDateFrom.toDateString() : undefined,
                             orderDateTo: self.filterParams.orderDateTo ? self.filterParams.orderDateTo.toDateString() : undefined,

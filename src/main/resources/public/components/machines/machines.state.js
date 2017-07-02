@@ -16,7 +16,7 @@
                             name: 'sbAdminApp',
                             files: [
                                 'components/machines/machinesList.controller.js',
-                                'components/machines/shawlsNew.controller.js',
+                                'components/machines/machinesNew.controller.js',
                                 'components/machines/machinesEdit.controller.js',
                                 'components/machines/machines.factory.js',
                                 'components/shared/resources.js'

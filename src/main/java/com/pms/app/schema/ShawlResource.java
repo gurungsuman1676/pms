@@ -1,6 +1,7 @@
 package com.pms.app.schema;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Builder;
 

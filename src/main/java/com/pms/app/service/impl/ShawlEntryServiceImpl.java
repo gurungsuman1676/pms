@@ -3,6 +3,7 @@ package com.pms.app.service.impl;
 import com.pms.app.domain.LocationEnum;
 import com.pms.app.domain.Locations;
 import com.pms.app.domain.Shawl;
+import com.pms.app.domain.ShawlActivity;
 import com.pms.app.domain.ShawlColor;
 import com.pms.app.domain.ShawlCustomer;
 import com.pms.app.domain.ShawlEntry;
@@ -11,24 +12,31 @@ import com.pms.app.domain.ShawlExportBatch;
 import com.pms.app.domain.ShawlSize;
 import com.pms.app.domain.ShawlYarn;
 import com.pms.app.repo.LocationRepository;
+import com.pms.app.repo.ShawlActivityRepository;
 import com.pms.app.repo.ShawlEntryBatchRepository;
 import com.pms.app.repo.ShawlEntryRepository;
 import com.pms.app.repo.ShawlExportBatchRepository;
 import com.pms.app.schema.ShawlEntryDto;
+import com.pms.app.security.AuthUtil;
 import com.pms.app.service.ShawlEntryService;
+import com.pms.app.service.ShawlReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Component;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.print.attribute.standard.ReferenceUriSchemesSupported;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by arjun on 6/27/2017.
  */
 
-@Component
+@Service
+@Transactional
 public class ShawlEntryServiceImpl implements ShawlEntryService {
 
     private final ShawlEntryRepository shawlEntryRepository;
@@ -36,19 +44,23 @@ public class ShawlEntryServiceImpl implements ShawlEntryService {
     private final ShawlExportBatchRepository shawlExportBatchRepository;
     private final EntityManager entityManager;
     private final LocationRepository locationRepository;
+    private final ShawlActivityRepository shawlActivityRepository;
+    private final ShawlReportService shawlReportService;
 
     @Autowired
-    public ShawlEntryServiceImpl(ShawlEntryRepository shawlEntryRepository, ShawlEntryBatchRepository shawlEntryBatchRepository, ShawlExportBatchRepository shawlExportBatchRepository, EntityManager entityManager, LocationRepository locationRepository) {
+    public ShawlEntryServiceImpl(ShawlEntryRepository shawlEntryRepository, ShawlEntryBatchRepository shawlEntryBatchRepository, ShawlExportBatchRepository shawlExportBatchRepository, EntityManager entityManager, LocationRepository locationRepository, ShawlActivityRepository shawlActivityRepository, ShawlReportService shawlReportService) {
         this.shawlEntryRepository = shawlEntryRepository;
         this.shawlEntryBatchRepository = shawlEntryBatchRepository;
         this.shawlExportBatchRepository = shawlExportBatchRepository;
         this.entityManager = entityManager;
         this.locationRepository = locationRepository;
+        this.shawlActivityRepository = shawlActivityRepository;
+        this.shawlReportService = shawlReportService;
     }
 
     @Override
     public void update(ShawlEntryDto shawlEntryDto) {
-        Locations locationByName = locationRepository.findByName(LocationEnum.ORDER_IN.getName());
+        Locations locationByName = locationRepository.findOne(shawlEntryDto.getLocationId());
         switch (locationByName.getName()) {
             case "ORDER-IN":
                 addEntryBatch(shawlEntryDto);
@@ -57,28 +69,34 @@ public class ShawlEntryServiceImpl implements ShawlEntryService {
                 addExportBatch(shawlEntryDto);
                 break;
             default:
-                updateEntry(shawlEntryDto);
+                updateEntry(shawlEntryDto, locationByName.getName().equals(LocationEnum.REJECTED.getName()));
         }
 
 
     }
 
-    private void updateEntry(ShawlEntryDto shawlEntryDto) {
+    private void updateEntry(ShawlEntryDto shawlEntryDto, boolean isReject) {
         Long count = shawlEntryRepository.findCountByShawlIdColorIdYarnIdCustomerIdSizeId(shawlEntryDto.getShawlId(),
-                shawlEntryDto.getShawlColorId(), shawlEntryDto.getShawlYarnId(), shawlEntryDto.getShawlCustomerId(),
-                shawlEntryDto.getShawlSizeId());
+                shawlEntryDto.getColorId(), shawlEntryDto.getYarnId(), shawlEntryDto.getCustomerId(),
+                shawlEntryDto.getSizeId());
 
         if (count < shawlEntryDto.getQuantity()) {
-            throw new RuntimeException("The number of shawl available is " + count);
+            throw new RuntimeException("The number of available shawl for provided values is " + count);
         }
 
 
         List<ShawlEntry> shawlEntryList = shawlEntryRepository.findByShawlIdColorIdYarnIdCustomerIdSizeId(shawlEntryDto.getShawlId(),
-                shawlEntryDto.getShawlColorId(), shawlEntryDto.getShawlYarnId(), shawlEntryDto.getShawlCustomerId(),
-                shawlEntryDto.getShawlSizeId(), shawlEntryDto.getQuantity());
+                shawlEntryDto.getColorId(), shawlEntryDto.getYarnId(), shawlEntryDto.getCustomerId(),
+                shawlEntryDto.getSizeId(), shawlEntryDto.getQuantity());
 
         shawlEntryList.forEach(shawlEntry -> {
-            shawlEntry.setLocations(entityManager.getReference(Locations.class, shawlEntryDto.getLocationId()));
+            shawlEntry.setLocation(entityManager.getReference(Locations.class, shawlEntryDto.getLocationId()));
+            ShawlActivity activity = new ShawlActivity();
+            activity.setLocation(entityManager.getReference(Locations.class, shawlEntryDto.getLocationId()));
+            activity.setShawlEntry(shawlEntry);
+            activity.setUser(AuthUtil.getCurrentUser());
+            shawlActivityRepository.save(activity);
+            shawlEntry.setRejected(isReject);
         });
 
         shawlEntryRepository.save(shawlEntryList);
@@ -88,8 +106,8 @@ public class ShawlEntryServiceImpl implements ShawlEntryService {
 
     private void addExportBatch(ShawlEntryDto shawlEntryDto) {
         Long count = shawlEntryRepository.findCountForExportByShawlIdColorIdYarnIdCustomerIdSizeId(shawlEntryDto.getShawlId(),
-                shawlEntryDto.getShawlColorId(), shawlEntryDto.getShawlYarnId(), shawlEntryDto.getShawlCustomerId(),
-                shawlEntryDto.getShawlSizeId());
+                shawlEntryDto.getColorId(), shawlEntryDto.getYarnId(), shawlEntryDto.getCustomerId(),
+                shawlEntryDto.getSizeId());
 
         if (count < shawlEntryDto.getQuantity()) {
             throw new RuntimeException("The number of shawl available is " + count);
@@ -97,16 +115,17 @@ public class ShawlEntryServiceImpl implements ShawlEntryService {
 
         ShawlExportBatch shawlExportBatch = new ShawlExportBatch();
         shawlExportBatch.setQuantity(shawlEntryDto.getQuantity());
-        shawlExportBatch.setCustomer(entityManager.getReference(ShawlCustomer.class, shawlEntryDto.getShawlCustomerId()));
+        shawlExportBatch.setCustomer(entityManager.getReference(ShawlCustomer.class, shawlEntryDto.getCustomerId()));
         final ShawlExportBatch exportedBatch = shawlExportBatchRepository.save(shawlExportBatch);
 
         List<ShawlEntry> shawlEntryList = shawlEntryRepository.findForExportByShawlIdColorIdYarnIdCustomerIdSizeId(shawlEntryDto.getShawlId(),
-                shawlEntryDto.getShawlColorId(), shawlEntryDto.getShawlYarnId(), shawlEntryDto.getShawlCustomerId(),
-                shawlEntryDto.getShawlSizeId(), shawlEntryDto.getQuantity());
+                shawlEntryDto.getColorId(), shawlEntryDto.getYarnId(), shawlEntryDto.getCustomerId(),
+                shawlEntryDto.getSizeId(), shawlEntryDto.getQuantity());
 
         shawlEntryList.forEach(shawlEntry -> {
-            shawlEntry.setLocations(entityManager.getReference(Locations.class, shawlEntryDto.getLocationId()));
+            shawlEntry.setLocation(entityManager.getReference(Locations.class, shawlEntryDto.getLocationId()));
             shawlEntry.setShawlExportBatch(entityManager.getReference(ShawlExportBatch.class, exportedBatch.getId()));
+            shawlEntry.setCompleted(true);
         });
         shawlEntryRepository.save(shawlEntryList);
 
@@ -117,16 +136,16 @@ public class ShawlEntryServiceImpl implements ShawlEntryService {
         ShawlEntryBatch shawlEntryBatch = new ShawlEntryBatch();
         shawlEntryBatch.setQuantity(shawlEntryDto.getQuantity());
         shawlEntryBatch.setShawl(entityManager.getReference(Shawl.class, shawlEntryDto.getShawlId()));
-        shawlEntryBatch.setShawlColor(entityManager.getReference(ShawlColor.class, shawlEntryDto.getShawlColorId()));
-        if (shawlEntryDto.getShawlCustomerId() != null) {
-            shawlEntryBatch.setShawlCustomer(entityManager.getReference(ShawlCustomer.class, shawlEntryDto.getShawlCustomerId()));
+        shawlEntryBatch.setShawlColor(entityManager.getReference(ShawlColor.class, shawlEntryDto.getColorId()));
+        if (shawlEntryDto.getCustomerId() != null) {
+            shawlEntryBatch.setShawlCustomer(entityManager.getReference(ShawlCustomer.class, shawlEntryDto.getCustomerId()));
         }
-        shawlEntryBatch.setShawlYarn(entityManager.getReference(ShawlYarn.class, shawlEntryDto.getShawlYarnId()));
-        shawlEntryBatch.setShawlSize(entityManager.getReference(ShawlSize.class, shawlEntryDto.getShawlSizeId()));
+        shawlEntryBatch.setShawlYarn(entityManager.getReference(ShawlYarn.class, shawlEntryDto.getYarnId()));
+        shawlEntryBatch.setShawlSize(entityManager.getReference(ShawlSize.class, shawlEntryDto.getSizeId()));
         shawlEntryBatch = shawlEntryBatchRepository.save(shawlEntryBatch);
-        for (int i = 1; i == shawlEntryDto.getQuantity(); i++) {
+        for (int i = 1; i <= shawlEntryDto.getQuantity(); i++) {
             ShawlEntry shawlEntry = new ShawlEntry();
-            shawlEntry.setLocations(entityManager.getReference(Locations.class, shawlEntryDto.getLocationId()));
+            shawlEntry.setLocation(entityManager.getReference(Locations.class, shawlEntryDto.getLocationId()));
             shawlEntry.setShawlEntryBatch(entityManager.getReference(ShawlEntryBatch.class, shawlEntryBatch.getId()));
             shawlEntryRepository.save(shawlEntry);
         }
@@ -134,7 +153,14 @@ public class ShawlEntryServiceImpl implements ShawlEntryService {
     }
 
     @Override
-    public Page<ShawlEntry> getAll() {
-        return null;
+    public Page<ShawlEntry> getAll(Long locationId, Long sizeId, Long yarnId, Long customerId, Long colorId, Long shawlId, Date entryDateFrom, Date entryDateTo, Date exportDateFrom, Date exportDateTo, Pageable pageable) {
+        return shawlEntryRepository.getAll(locationId, sizeId, yarnId, customerId, colorId, shawlId, entryDateFrom, entryDateTo, exportDateFrom, exportDateTo, pageable);
     }
+
+    @Override
+    public void generateReport(Long locationId, Long sizeId, Long yarnId, Long customerId, Long colorId, Long shawlId, Date entryDateFrom, Date entryDateTo, Date exportDateFrom, Date exportDateTo, HttpServletResponse httpServletResponse) {
+       shawlReportService.generateReport(locationId,sizeId,yarnId,customerId,colorId,shawlId,entryDateFrom,entryDateTo,exportDateFrom,exportDateTo,httpServletResponse);
+    }
+
+
 }

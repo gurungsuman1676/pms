@@ -1,13 +1,21 @@
 package com.pms.app.repo.repoImpl;
 
 import com.mysema.query.BooleanBuilder;
+import com.mysema.query.jpa.JPQLQuery;
 import com.pms.app.domain.QShawlEntry;
 import com.pms.app.domain.ShawlEntry;
 import com.pms.app.repo.ShawlEntryRepository;
 import com.pms.app.repo.repoCustom.ShawlEntryRepositoryCustom;
+import com.pms.app.schema.QShawlEntryResource;
+import com.pms.app.schema.ShawlEntryResource;
+import com.pms.app.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,6 +47,8 @@ public class ShawlEntryRepositoryImpl extends AbstractRepositoryImpl<ShawlEntry,
                         .and(shawlEntry.shawlEntryBatch.shawlColor.id.eq(shawlColorId))
                         .and(shawlEntry.shawlEntryBatch.shawl.id.eq(shawlId))
                         .and(shawlEntry.shawlEntryBatch.shawlYarn.id.eq(shawlYarnId))
+                        .and(shawlEntry.rejected.isFalse())
+                        .and(shawlEntry.completed.isFalse())
                         .and((shawlEntry.shawlEntryBatch.shawlCustomer.isNull().or(shawlEntry.shawlEntryBatch.shawlCustomer.id.eq(shawlCustomerId))))
                 )
                 .count();
@@ -57,9 +67,12 @@ public class ShawlEntryRepositoryImpl extends AbstractRepositoryImpl<ShawlEntry,
                 .where(shawlEntry.shawlEntryBatch.shawlSize.id.eq(shawlSizeId)
                         .and(shawlEntry.shawlEntryBatch.shawlColor.id.eq(shawlColorId))
                         .and(shawlEntry.shawlEntryBatch.shawl.id.eq(shawlId))
+                        .and(shawlEntry.rejected.isFalse())
+                        .and(shawlEntry.completed.isFalse())
                         .and(shawlEntry.shawlEntryBatch.shawlYarn.id.eq(shawlYarnId))
                         .and((shawlEntry.shawlEntryBatch.shawlCustomer.isNull().or(shawlEntry.shawlEntryBatch.shawlCustomer.id.eq(shawlCustomerId))))
                 )
+                .orderBy(shawlEntry.shawlEntryBatch.shawlCustomer.id.asc().nullsLast())
                 .limit(quantity)
                 .list(shawlEntry);
     }
@@ -84,6 +97,8 @@ public class ShawlEntryRepositoryImpl extends AbstractRepositoryImpl<ShawlEntry,
                 .where(shawlEntry.shawlEntryBatch.shawlSize.id.eq(shawlSizeId)
                         .and(shawlEntry.shawlEntryBatch.shawlColor.id.eq(shawlColorId))
                         .and(shawlEntry.shawlEntryBatch.shawl.id.eq(shawlId))
+                        .and(shawlEntry.rejected.isFalse())
+                        .and(shawlEntry.completed.isFalse())
                         .and(shawlEntry.shawlEntryBatch.shawlYarn.id.eq(shawlYarnId))
                         .and(where)
                 )
@@ -110,10 +125,130 @@ public class ShawlEntryRepositoryImpl extends AbstractRepositoryImpl<ShawlEntry,
                 .where(shawlEntry.shawlEntryBatch.shawlSize.id.eq(shawlSizeId)
                         .and(shawlEntry.shawlEntryBatch.shawlColor.id.eq(shawlColorId))
                         .and(shawlEntry.shawlEntryBatch.shawl.id.eq(shawlId))
+                        .and(shawlEntry.rejected.isFalse())
+                        .and(shawlEntry.completed.isFalse())
                         .and(shawlEntry.shawlEntryBatch.shawlYarn.id.eq(shawlYarnId))
                         .and(where)
                 )
                 .limit(quantity)
                 .list(shawlEntry);
+    }
+
+    @Override
+    public Page<ShawlEntry> getAll(Long locationId,
+                                   Long sizeId,
+                                   Long yarnId,
+                                   Long customerId,
+                                   Long colorId,
+                                   Long shawlId,
+                                   Date entryDateFrom,
+                                   Date entryDateTo,
+                                   Date exportDateFrom,
+                                   Date exportDateTo,
+                                   Pageable pageable) {
+
+        BooleanBuilder where = getBoolenBuilder(locationId, sizeId, yarnId, customerId, colorId, shawlId, entryDateFrom, entryDateTo, exportDateFrom, exportDateTo);
+        QShawlEntry shawlEntry = QShawlEntry.shawlEntry;
+
+        JPQLQuery query = getQuery(shawlEntry, where);
+        Long totalCount = query.count();
+
+        List<ShawlEntry> shawlEntries = query.limit(pageable.getPageSize())
+                .offset(pageable.getOffset())
+                .list(shawlEntry);
+        return new PageImpl(shawlEntries, pageable, totalCount);
+    }
+
+
+    @Override
+    public List<ShawlEntryResource> getAllResources(Long locationId,
+                                                    Long sizeId,
+                                                    Long yarnId,
+                                                    Long customerId,
+                                                    Long colorId,
+                                                    Long shawlId,
+                                                    Date entryDateFrom,
+                                                    Date entryDateTo,
+                                                    Date exportDateFrom,
+                                                    Date exportDateTo) {
+
+        BooleanBuilder where = getBoolenBuilder(locationId, sizeId, yarnId, customerId, colorId, shawlId, entryDateFrom, entryDateTo, exportDateFrom, exportDateTo);
+        QShawlEntry shawlEntry = QShawlEntry.shawlEntry;
+
+        return getQuery(shawlEntry, where).list(
+                new QShawlEntryResource(
+                        shawlEntry.id,
+                        shawlEntry.shawlEntryBatch.shawl.name,
+                        shawlEntry.shawlEntryBatch.shawlCustomer.name,
+                        shawlEntry.shawlExportBatch.customer.name,
+                        shawlEntry.shawlEntryBatch.shawlYarn.name,
+                        shawlEntry.shawlEntryBatch.shawlColor.name,
+                        shawlEntry.shawlEntryBatch.shawlSize.name,
+                        shawlEntry.location.name,
+                        shawlEntry.shawlEntryBatch.created,
+                        shawlEntry.shawlExportBatch.created
+                )
+        );
+    }
+
+    private JPQLQuery getQuery(QShawlEntry shawlEntry, BooleanBuilder where) {
+        return from(shawlEntry)
+                .innerJoin(shawlEntry.shawlEntryBatch)
+                .innerJoin(shawlEntry.shawlEntryBatch.shawl)
+                .innerJoin(shawlEntry.shawlEntryBatch.shawlYarn)
+                .innerJoin(shawlEntry.shawlEntryBatch.shawlSize)
+                .innerJoin(shawlEntry.shawlEntryBatch.shawlColor)
+                .leftJoin(shawlEntry.shawlEntryBatch.shawlCustomer)
+                .leftJoin(shawlEntry.shawlExportBatch)
+                .leftJoin(shawlEntry.shawlExportBatch.customer)
+                .where(where);
+    }
+
+
+    private BooleanBuilder getBoolenBuilder(Long locationId,
+                                            Long sizeId,
+                                            Long yarnId,
+                                            Long customerId,
+                                            Long colorId,
+                                            Long shawlId,
+                                            Date entryDateFrom,
+                                            Date entryDateTo,
+                                            Date exportDateFrom,
+                                            Date exportDateTo) {
+        BooleanBuilder where = new BooleanBuilder();
+        QShawlEntry shawlEntry = QShawlEntry.shawlEntry;
+        if (locationId != null) {
+            where.and(shawlEntry.location.id.eq(locationId));
+        }
+        if (shawlId != null) {
+            where.and(shawlEntry.shawlEntryBatch.shawl.id.eq(shawlId));
+        }
+        if (sizeId != null) {
+            where.and(shawlEntry.shawlEntryBatch.shawlSize.id.eq(sizeId));
+        }
+        if (yarnId != null) {
+            where.and(shawlEntry.shawlEntryBatch.shawlYarn.id.eq(yarnId));
+        }
+        if (customerId != null) {
+            where.and(shawlEntry.shawlEntryBatch.shawlCustomer.id.eq(customerId))
+                    .or(shawlEntry.shawlExportBatch.customer.id.eq(customerId));
+        }
+        if (colorId != null) {
+            where.and(shawlEntry.shawlEntryBatch.shawlColor.id.eq(colorId));
+        }
+        if (entryDateFrom != null) {
+            where.and(shawlEntry.shawlEntryBatch.created.goe(entryDateFrom));
+        }
+        if (entryDateTo != null) {
+            where.and(shawlEntry.shawlEntryBatch.created.loe(DateUtils.addDays(entryDateTo, 1)));
+        }
+        if (exportDateFrom != null) {
+            where.and(shawlEntry.shawlExportBatch.created.goe(exportDateFrom));
+        }
+        if (exportDateTo != null) {
+            where.and(shawlEntry.shawlExportBatch.created.loe(DateUtils.addDays(exportDateTo, 1)));
+        }
+        return where;
+
     }
 }

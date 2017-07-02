@@ -409,11 +409,12 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
         }
 
         JPQLQuery query = from(activity)
-                .where(where)
-                .limit(pageable.getPageSize())
                 .offset(pageable.getOffset());
         Long totalCount = query.count();
-        return new PageImpl(query.list(activity.cloth), pageable, totalCount);
+        return new PageImpl(query
+                .where(where)
+                .limit(pageable.getPageSize())
+                .list(activity.cloth), pageable, totalCount);
     }
 
     private BooleanBuilder getBooleanBuilder(Long customerId, Long locationId, Integer orderNo, Long barcode,

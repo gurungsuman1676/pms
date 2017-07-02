@@ -18,15 +18,15 @@ public class ShawlEntryDto {
 
     private int quantity;
 
-    private Long shawlSizeId;
+    private Long sizeId;
 
     private Long shawlId;
 
-    private Long shawlYarnId;
+    private Long yarnId;
 
-    private Long shawlColorId;
+    private Long colorId;
 
-    private Long shawlCustomerId;
+    private Long customerId;
 
     private Long locationId;
 }

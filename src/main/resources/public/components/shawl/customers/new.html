@@ -1,0 +1,21 @@
+<div class="row">
+    <div class="flash-msg" flash-message="3000"></div>
+    <div class="col-md-6 col-md-offset-3">
+        <div class="panel panel-default valign">
+            <div class="panel-heading">
+                Please enter the customer details.
+            </div>
+            <div class="panel-body">
+                <form ng-submit="ctrl.submitCustomer(ctrl.customer)">
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input class="form-control" ng-model="ctrl.customer.name" type="text" id="name" autocomplete="off">
+                    </div>
+                    <div>
+                        <input type="submit" class="btn btn-primary" value="Submit">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

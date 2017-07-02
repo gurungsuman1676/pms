@@ -102,7 +102,7 @@ angular
                 $localStorage.isAdmin = false;
 
                 if ($localStorage.isShawlUser) {
-                    $state.go('dashboard.shawls.index');
+                    $state.go('dashboard.shawls.entries.index');
                 } else {
                     $state.go('dashboard.supervisors.index');
 

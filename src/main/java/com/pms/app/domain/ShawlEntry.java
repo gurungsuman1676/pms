@@ -27,5 +27,9 @@ public class ShawlEntry extends AbstractEntity {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private Locations locations;
+    private Locations location;
+
+    private boolean rejected ;
+
+    private boolean completed;
 }

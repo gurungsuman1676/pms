@@ -72,7 +72,7 @@ public class ClothController {
                                                 @RequestParam(required = false, value = "locationId") Long locationId,
                                                 @RequestParam(required = false, value = "orderNo") Integer orderNo,
                                                 @RequestParam(required = false, value = "barcode") Long barcode,
-                                                @RequestParam(required = false, value = "deliverDateFrom") Date deliverDateFrom,
+                                                @RequestParam(required = false, value = "deliveryDateFrom") Date deliveryDateFrom,
                                                 @RequestParam(required = false, value = "deliveryDateTo") Date deliveryDateTo,
                                                 @RequestParam(required = false, value = "orderDateFrom") Date orderDateFrom,
                                                 @RequestParam(required = false, value = "orderDateTo") Date orderDateTo,
@@ -99,7 +99,7 @@ public class ClothController {
             }
         }
 
-        Page<Clothes> page = clothService.getClothes(customerId, locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom,
+        Page<Clothes> page = clothService.getClothes(customerId, locationId, orderNo, barcode, deliveryDateFrom, deliveryDateTo, orderDateFrom,
                 orderDateTo, pageable, role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge, setting, reOrder,week,colorId);
         return new PageResult<>(page.getTotalElements(), page.getSize(), page.getNumber(), clothConvert.convert(page.getContent()));
     }

@@ -67,6 +67,7 @@ public class AdminUserCreator {
         for (LocationEnum location : LocationEnum.values()) {
             switch (location) {
                 case ORDER_IN:
+                case REJECTED:
                 case ORDER_OUT: {
                     Locations locations = new Locations();
                     locations.setName(location.getName());

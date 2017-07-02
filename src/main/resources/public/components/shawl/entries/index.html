@@ -1,0 +1,159 @@
+<div class="row">
+    <div class="flash-msg" flash-message="30000"></div>
+    <div class="col-lg-12 panel-body">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                List of Shawls
+            </div>
+            <div class="action-buttons">
+
+                <div class="pull-left">
+                    <button type="button" class="btn btn-primary" ui-sref="dashboard.shawls.entries.new">Add Entry
+                    </button>
+                </div>
+
+                <div class="pull-left">
+                    <button class="btn btn btn-primary" ng-click="showFilter = !showFilter"><p ng-if="!showFilter">Show
+                        Filter</p>
+                        <p ng-if="showFilter">Hide Filter</p></button>
+                </div>
+            </div>
+
+            <div class="search-container" ng-show="showFilter">
+
+
+                <div class="col-sm-3 input-margin">
+                    <selectize placeholder="Customer" ng-model="ctrl.filterParams.customerId"
+                               config="{maxOptions: 100}" options="ctrl.filtersOptions.customers"></selectize>
+                </div>
+                <div class="col-sm-3 input-margin">
+                    <selectize placeholder="Yarn" ng-model="ctrl.filterParams.yarnId"
+                               config="{maxOptions: 100}" options="ctrl.filtersOptions.yarns"></selectize>
+                </div>
+                <div class="col-sm-3 input-margin">
+                    <selectize placeholder="Shawl" ng-model="ctrl.filterParams.shawlId"
+                               config="{maxOptions: 100}" options="ctrl.filtersOptions.shawls"></selectize>
+                </div>
+                <div class="col-sm-3 input-margin">
+                    <selectize placeholder="Color" ng-model="ctrl.filterParams.colorId"
+                               config="{maxOptions: 100}" options="ctrl.filtersOptions.colors"></selectize>
+                </div>
+                <div class="col-sm-3 input-margin">
+                    <selectize placeholder="Size" ng-model="ctrl.filterParams.sizeId"
+                               config="{maxOptions: 100}" options="ctrl.filtersOptions.sizes"></selectize>
+                </div>
+                <div class="col-sm-3 input-margin">
+                    <selectize placeholder="Location" ng-model="ctrl.filterParams.locationId"
+                               config="{maxOptions: 100}" options="ctrl.filtersOptions.locations"></selectize>
+                </div>
+
+                <div class="col-sm-3 input-margin">
+                    <input placeholder="Entry Date From" type="text" id='entryDateFrom'
+                           class="form-control date-picker-new datepopup" name="date"
+                           data-ng-click="openEntryDateFrom($event,'entryDateFrom')"
+                           data-datepicker-popup="{{format}}" data-ng-model="ctrl.filterParams.entryDateFrom"
+                           data-is-open="datepickers.entryDateFrom" data-min-date="self.minimum_date"
+                           data-close-text="Close" required/>
+                </div>
+
+                <div class="col-sm-3 input-margin">
+                    <input placeholder="Entry Date To" type="text" id='entryDateTo'
+                           class="form-control date-picker-new datepopup" name="date"
+                           data-ng-click="openEntryDateTO($event,'entryDateTo')"
+                           data-datepicker-popup="{{format}}" data-ng-model="ctrl.filterParams.entryDateTo"
+                           data-is-open="datepickers.entryDateTo" data-min-date="self.minimum_date"
+                           data-close-text="Close" required/>
+                </div>
+
+                <div class="col-sm-3 input-margin">
+                    <input placeholder="Export Date From" type="text" id='exportDateFrom'
+                           class="form-control date-picker-new datepopup" name="date"
+                           data-ng-click="openExportDateFrom($event,'exportDateFrom')"
+                           data-datepicker-popup="{{format}}" data-ng-model="ctrl.filterParams.exportDateFrom"
+                           data-is-open="datepickers.exportDateFrom" data-min-date="self.minimum_date"
+                           data-close-text="Close" required/>
+                </div>
+
+                <div class="col-sm-3 input-margin">
+                    <input placeholder="Export Date To" type="text" id='exportDateTo'
+                           class="form-control date-picker-new datepopup" name="date"
+                           data-ng-click="openExportDateTO($event,'exportDateTo')"
+                           data-datepicker-popup="{{format}}" data-ng-model="ctrl.filterParams.exportDateTo"
+                           data-is-open="datepickers.exportDateTo" data-min-date="self.minimum_date"
+                           data-close-text="Close" required/>
+                </div>
+
+
+                <div class="col-sm-12"></div>
+
+
+            </div>
+
+            <div class="search-btn-wrapper" ng-show="showFilter">
+
+                <div class="pull-left">
+                    <button class="btn btn btn-primary" ng-click="ctrl.reloadTable()">Search</button>
+                </div>
+
+                <div class="pull-left">
+                    <button class="btn btn btn-primary" ng-click="ctrl.generateCSV()">Generate CSV</button>
+                </div>
+
+            </div>
+
+            <div class="panel-body">
+                <div class="dataTable_wrapper no-padding horizontal-scroll">
+                    <table ng-table="ctrl.entryListTable"
+                           class="table table-striped table-bordered table-hover table-condensed"
+                           id="dataTables-example">
+                        <thead>
+                        <tr>
+                            <th>Shawl</th>
+                            <th>Imported For</th>
+                            <th>Exported To</th>
+                            <th>Yarn</th>
+                            <th>Color</th>
+                            <th>Size</th>
+                            <th>Location</th>
+                            <th>Entry Date</th>
+                            <th>ExportDate</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr class="odd gradeX"
+                            ng-repeat="entry in $data | orderBy:'-id'">
+
+
+                            <td>{{entry.shawl.name}}</td>
+                            <td>{{entry.importCustomer ? entry.importCustomer.name : 'N/A'}}</td>
+                            <td>{{entry.exportCustomer ? entry.exportCustomer.name : 'N/A'}}</td>
+                            <td>{{entry.yarn.name}}</td>
+                            <td>{{entry.color.name}}</td>
+                            <td>{{entry.size.name}}</td>
+                            <td>{{entry.location.name}}</td>
+                            <td>{{entry.importDate |date: 'dd/MM/yyyy'}}</td>
+                            <td>{{entry.exportDate ? (entry.exportDate |date: 'dd/MM/yyyy') : 'N/A'}}</td>
+                            <td style="width:165px">
+                                <button type="button" class="btn btn-xs btn-primary"
+                                        ng-click="ctrl.viewHistory(entry.id)">
+                                    History
+                                </button>
+                            </td>
+
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+
+    <div class="col-lg-12" ng-show="ctrl.noResults">
+        No results containing all your search terms were found.
+    </div>
+</div>
+

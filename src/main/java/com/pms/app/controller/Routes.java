@@ -27,8 +27,7 @@ public interface Routes {
     public static final String SHAWL_SIZE = SHAWL + "/sizes";
     public static final String SHAWL_PROPERTIES = SHAWL + "/{id}/properties";
     public static final String SHAWL_ENTRY = SHAWL + "/entries";
-
-
+    public static final String SHAWL_ENTRY_ACTIVITY = SHAWL_ENTRY + "/{entryId}/activities";
 
 
 }
