@@ -34,6 +34,7 @@ public class ClothResource {
     private Integer type;
     private boolean reOrder;
     private String colorName;
+    private String extraField;
 
 
     @QueryProjection
@@ -54,29 +55,29 @@ public class ClothResource {
             String printName,
             String shippingNumber,
             String boxNumber,
-            String weight,Boolean isReturn,
+            String weight, Boolean isReturn,
             Date created,
             Integer type,
-            String colorName){
+            String colorName) {
 
         this.created = created;
         this.id = id;
         this.price = PriceResource.builder()
-        .amount(price)
-        .customer(CustomerResource.builder()
-                .name(customerName)
-                .currencyName(currency)
-                .build())
+                .amount(price)
+                .customer(CustomerResource.builder()
+                        .name(customerName)
+                        .currencyName(currency)
+                        .build())
                 .designName(designName)
                 .yarnName(yarnName)
                 .sizeName(size)
-        .build();
+                .build();
         this.order_no = order_no;
         this.delivery_date = delivery_date;
         this.print = PrintResource.builder().currencyName(printCurrency)
-        .amount(printAmount)
+                .amount(printAmount)
                 .name(printName)
-        .build();
+                .build();
         this.clothAmount = price;
         this.locationName = locationName;
         this.shippingNumber = shippingNumber;
@@ -85,6 +86,61 @@ public class ClothResource {
         this.isReturn = isReturn;
         this.weight = weight;
         this.type = type;
+        this.colorName = colorName;
+    }
+
+    @QueryProjection
+    public ClothResource(
+            Long id,
+            String locationName,
+            Double price,
+            String currency,
+            Integer order_no,
+            String designName,
+            String yarnName,
+            String colorCode,
+            String size,
+            String customerName,
+            Date delivery_date,
+            String printCurrency,
+            Double printAmount,
+            String printName,
+            String shippingNumber,
+            String boxNumber,
+            String weight, Boolean isReturn,
+            Date created,
+            Integer type,
+            String colorName,
+            String extraField,
+            String parentName) {
+        this.created = created;
+        this.id = id;
+        this.price = PriceResource.builder()
+                .amount(price)
+                .customer(CustomerResource.builder()
+                        .name(customerName)
+                        .currencyName(currency)
+                        .parentName(parentName)
+                        .build())
+                .designName(designName)
+                .yarnName(yarnName)
+                .sizeName(size)
+                .build();
+        this.order_no = order_no;
+        this.delivery_date = delivery_date;
+        this.print = PrintResource.builder().currencyName(printCurrency)
+                .amount(printAmount)
+                .name(printName)
+                .build();
+        this.clothAmount = price;
+        this.locationName = locationName;
+        this.shippingNumber = shippingNumber;
+        this.boxNumber = boxNumber;
+        this.colorCode = colorCode;
+        this.isReturn = isReturn;
+        this.weight = weight;
+        this.type = type;
+        this.extraField = extraField;
         this.colorName = colorName;
     }
 }

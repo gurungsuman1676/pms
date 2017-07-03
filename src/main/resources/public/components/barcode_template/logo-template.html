@@ -1,0 +1,15 @@
+<div print-section class="barcode-container">
+    <div class="barcode-wrapper">
+        <div>
+            <div class="barcode-details">
+                <p>{{cloth.order_no}}/ {{cloth.customer.name}}/ {{cloth.price.designName}}/
+                    {{cloth.price.sizeName}}/ {{cloth.colorCode}}/ {{cloth.print.name}}</p>
+            </div>
+            <span kendo-barcode
+                  k-type="'UPCa'"
+                  ng-model="cloth.id"
+                  style="width: 200px; height: 50px; margin: 0 auto;">
+                    </span>
+        </div>
+    </div>
+</div>

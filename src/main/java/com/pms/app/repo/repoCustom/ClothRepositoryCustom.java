@@ -70,4 +70,6 @@ public interface ClothRepositoryCustom extends AbstractRepositoryCustom<Clothes>
     List<Sizes> findRemaingWeavingSizeByOrderNumber(Integer orderNumber, Long customerId, Long designId, Long locationId);
 
     List<String> getExtraFieldByOrderNumberAndCustomer(Integer orderNumber, Long customerId, Long designId, Long sizeId, Long printId);
+
+    List<ClothResource> getClothesByBarcode(List<Long> barcodes);
 }

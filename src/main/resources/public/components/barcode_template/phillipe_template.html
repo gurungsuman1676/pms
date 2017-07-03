@@ -1,0 +1,17 @@
+<div print-section class="barcode-container col-sm-6">
+    <div class="barcode-wrapper">
+        <div>
+            <span kendo-barcode
+                  k-type="'code128'"
+                  ng-model="ctrl.getByLabel(cloth,'Barcode')"
+                  style="width: 200px; height: 50px; margin: 0 auto;">
+                    </span>
+        </div>
+
+        <span class="text-center col-sm-12">
+                {{ctrl.getByLabel(cloth,'Barcode')}}</span>
+
+        <span class="text-center col-sm-12">
+                {{ctrl.getByLabel(cloth,'Name On The Bag')}}</span>
+    </div>
+</div>

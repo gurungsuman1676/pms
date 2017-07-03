@@ -4,6 +4,7 @@ import com.pms.app.domain.*;
 import com.pms.app.repo.*;
 import com.pms.app.schema.ClothDto;
 import com.pms.app.schema.ClothLocationDto;
+import com.pms.app.schema.ClothResource;
 import com.pms.app.schema.WeavingShippingDTO;
 import com.pms.app.security.AuthUtil;
 import com.pms.app.service.ClothService;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ClothServiceImpl implements ClothService {
@@ -48,11 +50,11 @@ public class ClothServiceImpl implements ClothService {
         if (locationDate != null && locationId != null && locationId != -1) {
             return clothRepository.findAllForHistoryByDate(customerId,
                     locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom, orderDateTo, pageable,
-                    role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge,setting,reOrder,week,colorId);
+                    role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge, setting, reOrder, week,colorId);
         } else {
             return clothRepository.findAllClothes(customerId,
                     locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom, orderDateTo, pageable,
-                    role, shippingNumber, boxNumber, isReject, type, designId, locationDate, gauge,setting,reOrder,week,colorId);
+                    role, shippingNumber, boxNumber, isReject, type, designId, locationDate, gauge, setting, reOrder, week,colorId);
         }
     }
 
@@ -168,7 +170,7 @@ public class ClothServiceImpl implements ClothService {
     }
 
     @Override
-    public void updateWeavingCloth(WeavingShippingDTO weavingShippingDTO) {
+    public List<Long> updateWeavingCloth(WeavingShippingDTO weavingShippingDTO) {
         Locations locations = getLocationsForCurrentUser();
         List<Clothes> clothes = clothRepository.findForWeavingShipping(weavingShippingDTO, locations.getId());
 
@@ -181,6 +183,7 @@ public class ClothServiceImpl implements ClothService {
             c.setLocation(locations);
         });
         clothRepository.save(clothes);
+        return clothes.stream().map(Clothes::getId).collect(Collectors.toList());
     }
 
     @Override
@@ -214,6 +217,11 @@ public class ClothServiceImpl implements ClothService {
     @Override
     public List<String> getExtraFieldByOrderNumberAndCustomer(Integer orderNumber, Long customerId, Long designId, Long sizeId, Long printId) {
         return clothRepository.getExtraFieldByOrderNumberAndCustomer(orderNumber, customerId, designId, sizeId, printId);
+    }
+
+    @Override
+    public List<ClothResource> getCothesByBarCode(List<Long> barcodes) {
+        return clothRepository.getClothesByBarcode(barcodes);
     }
 
 }

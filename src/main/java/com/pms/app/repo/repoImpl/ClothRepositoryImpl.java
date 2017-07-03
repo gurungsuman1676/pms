@@ -665,5 +665,48 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .list(clothes.extraField);
     }
 
+    @Override
+    public List<ClothResource> getClothesByBarcode(List<Long> barcodes) {
+        QClothes clothes = QClothes.clothes;
+        return from(clothes)
+                .leftJoin(clothes.location)
+                .leftJoin(clothes.print)
+                .leftJoin(clothes.print.size)
+                .leftJoin(clothes.print.currency)
+                .join(clothes.price)
+                .join(clothes.price.size)
+                .join(clothes.price.design)
+                .leftJoin(clothes.price.yarn)
+                .leftJoin(clothes.color)
+                .innerJoin(clothes.customer)
+                .leftJoin(clothes.customer.parent)
+                .where(clothes.id.in(barcodes))
+                .list(new QClothResource(
+                        clothes.id,
+                        clothes.location.name,
+                        clothes.price.amount,
+                        clothes.customer.currency.name,
+                        clothes.order_no,
+                        clothes.price.design.name,
+                        clothes.price.yarn.name,
+                        clothes.color.code,
+                        clothes.price.size.name,
+                        clothes.customer.name,
+                        clothes.deliver_date,
+                        clothes.print.currency.name,
+                        clothes.print.amount,
+                        clothes.print.name.concat("(").concat(clothes.print.size.name).concat(")"),
+                        clothes.shipping,
+                        clothes.boxNumber,
+                        clothes.weight,
+                        clothes.isReturn,
+                        clothes.created,
+                        clothes.type,
+                        clothes.color.name_company,
+                        clothes.extraField,
+                        clothes.customer.parent.name
+                ));
+    }
+
 
 }

@@ -58,6 +58,9 @@ angular
         };
     })
     .run(['$rootScope', '$state', '$localStorage', function ($rootScope, $state, $localStorage) {
+        if (angular.isUndefined($localStorage.shippedClothes) || !angular.isArray($localStorage.shippedClothes)) {
+            $localStorage.shippedClothes = [];
+        }
 
         $rootScope.isLoggedIn = function () {
             var user = $localStorage.user

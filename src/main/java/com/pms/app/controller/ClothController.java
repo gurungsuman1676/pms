@@ -16,12 +16,18 @@ import com.pms.app.schema.PrintResource;
 import com.pms.app.schema.SizeResource;
 import com.pms.app.schema.WeavingShippingDTO;
 import com.pms.app.service.ClothService;
-import com.pms.app.upload.ExcelUploadService;
 import com.pms.app.service.ReportingService;
+import com.pms.app.upload.ExcelUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -100,7 +106,7 @@ public class ClothController {
         }
 
         Page<Clothes> page = clothService.getClothes(customerId, locationId, orderNo, barcode, deliveryDateFrom, deliveryDateTo, orderDateFrom,
-                orderDateTo, pageable, role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge, setting, reOrder,week,colorId);
+                orderDateTo, pageable, role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge, setting, reOrder, week, colorId);
         return new PageResult<>(page.getTotalElements(), page.getSize(), page.getNumber(), clothConvert.convert(page.getContent()));
     }
 
@@ -192,7 +198,7 @@ public class ClothController {
         }
 
         reportingService.getClothReport(customerId, locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom,
-                orderDateTo, role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge, setting, reOrder,week,colorId, httpServletResponse);
+                orderDateTo, role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge, setting, reOrder, week, colorId, httpServletResponse);
     }
 
     @RequestMapping(value = CLOTHS_WEAVING_ID, method = RequestMethod.GET)
@@ -209,8 +215,8 @@ public class ClothController {
 
 
     @RequestMapping(value = "/shipping", method = RequestMethod.PUT)
-    public void addweavingShipping(@RequestBody WeavingShippingDTO weavingShippingDTO) {
-        clothService.updateWeavingCloth(weavingShippingDTO);
+    public List<Long> addweavingShipping(@RequestBody WeavingShippingDTO weavingShippingDTO) {
+        return clothService.updateWeavingCloth(weavingShippingDTO);
     }
 
     @RequestMapping(value = "/customers", method = RequestMethod.GET)
@@ -246,5 +252,9 @@ public class ClothController {
         return new HashSet<>(clothService.getExtraFieldByOrderNumberAndCustomer(orderNumber, customerId, designId, sizeId, printId));
     }
 
+    @RequestMapping(value = "/shipping/barcodes", method = RequestMethod.GET)
+    public List<ClothResource> getShippedClothForBarcode(@RequestParam(value = "barcodes", required = false) List<Long> barcodes) {
+        return clothService.getCothesByBarCode(barcodes);
+    }
 
 }

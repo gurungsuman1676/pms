@@ -253,6 +253,19 @@
                 errorCallback(response);
             })
         };
+        factory.getClothesByBarcode = function (barcodes, successCallback, errorCallback) {
+            $http({
+                method: 'GET',
+                url: RESOURCES.apiURL + '/clothes/shipping/barcodes',
+                params: barcodes
+            }).success(function (response) {
+                successCallback(response);
+            }).error(function (response) {
+                errorCallback(response);
+            })
+        };
+
+
 
         factory.updateWeavingShipping = function (cloth, successCallback, errorCallback) {
             $http({

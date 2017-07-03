@@ -15,7 +15,20 @@
             }).error(function (response) {
                 errorCallback(response);
             });
-        }
+        };
+        factory.getClothesByBarcode = function (params, successCallback, errorCallback) {
+            $http({
+                method: 'GET',
+                url: RESOURCES.apiURL + '/clothes',
+                params: params
+            }).success(function (response) {
+                successCallback(response);
+            }).error(function (response) {
+                errorCallback(response);
+            })
+        };
+
+
         return factory;
     };
 

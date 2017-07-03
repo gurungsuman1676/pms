@@ -2,8 +2,9 @@
     <div class="flash-msg" flash-message="3000"></div>
     <div class="col-md-6 col-md-offset-3">
         <div class="panel panel-default valign">
-            <div class="panel-heading">
+            <div class="panel-heading col-sm-12">
                 Knitting Entry
+                <button class="pull-right btn btn-success" ng-click="ctrl.generateBarCode()"> Generate Barcode</button>
             </div>
             <div class="panel-body">
                 <form ng-submit="ctrl.submitCloth()" class="form-group" novalidate>

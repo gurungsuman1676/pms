@@ -7,7 +7,7 @@
  * Controller of the sbAdminApp
  */
 angular.module('sbAdminApp')
-    .controller('SupervisorsWeavingCtrl', function ($scope, SupervisorsFactory, Flash, ClothesFactory, $localStorage,$window) {
+    .controller('SupervisorsWeavingCtrl', function ($scope,$state, SupervisorsFactory, Flash, ClothesFactory, $localStorage,$window) {
 
         var self = this;
         self.cloth = {};
@@ -105,11 +105,17 @@ angular.module('sbAdminApp')
                 Flash.create('danger', response.message, 'custom-class');
             })
         }
+        self.generateBarCode = function () {
+            $state.go("dashboard.supervisors.barcode");
+        }
 
         self.submitCloth = function () {
             ClothesFactory.updateWeavingShipping(self.cloth, function (response) {
+
                 self.cloth.extraField = undefined;
                 self.cloth.quantity = undefined;
+                $localStorage.shippedClothes.push(response);
+
                 Flash.create('success', 'Cloth added to shipped ', 'custom-class');
 
             }, function (response) {

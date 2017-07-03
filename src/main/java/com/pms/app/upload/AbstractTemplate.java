@@ -212,7 +212,7 @@ abstract class AbstractTemplate {
                 clothes.setDeliver_date(deliveryDate);
                 clothes.setOrder_no(orderNumber);
                 clothes.setCustomer(entityManager.getReference(Customers.class, customerId));
-                clothes.setExtraField(String.join("-", attrs));
+                clothes.setExtraField(String.join("--", attrs));
                 clothes.setType(clothType);
                 clothes.setReOrder(reOrder);
                 clothes.setStatus(Status.ACTIVE.toString());

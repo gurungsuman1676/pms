@@ -18,6 +18,7 @@
                                 'components/supervisors/supervisors.controller.js',
                                 'components/supervisors/supervisors.weaving.controller.js',
                                 'components/supervisors/supervisors.factory.js',
+                                'components/supervisors/supervisor.barcode.controller.js',
                                 'components/clothes/clothesList.controller.js',
                                 'components/clothes/clothesNew.controller.js',
                                 'components/clothes/clothesEdit.controller.js',
@@ -36,15 +37,21 @@
                 }
             })
             .state('dashboard.supervisors.index', {
-                url: '/enter-location',
+                url: '/supervisor/enter-location',
                 templateUrl: 'components/supervisors/index.html',
                 controller: 'SupervisorsCtrl',
                 controllerAs: 'ctrl'
             })
             .state('dashboard.supervisors.weaving', {
-                url: '/enter-location',
+                url: '/supervisor/enter-location',
                 templateUrl: 'components/supervisors/weaving.html',
                 controller: 'SupervisorsWeavingCtrl',
+                controllerAs: 'ctrl'
+            })
+            .state('dashboard.supervisors.barcode', {
+                url: '/shipping/barcode',
+                templateUrl: 'components/supervisors/shipping_barcode.html',
+                controller: 'SupervisorsBarcodeCtrl',
                 controllerAs: 'ctrl'
             })
             .state('dashboard.supervisors.clothes', {

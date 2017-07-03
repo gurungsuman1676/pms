@@ -1,0 +1,15 @@
+<div class="barcode-wrapper" ng-repeat="cloth in ctrl.clothes">
+    <div ng-switch on="cloth.customer">
+        <div ng-switch-when="cloth.customer.name == ctrl.CUSTOMER_NAME.ROBERT || cloth.customer.parentName == ctrl.CUSTOMER_NAME.ROBERT">
+            <div ng-include="'components/barcode_template/robert-template.html'"></div>
+        </div>
+        <div ng-switch-when="(cloth.customer.name == ctrl.CUSTOMER_NAME.PHILLIPE || cloth.customer.parentName == ctrl.CUSTOMER_NAME.PHILLIPE)
+                 && ctrl.getByLabel(cloth,'Barcode').length != 0">
+            <div ng-include="'components/barcode_template/phillipe-template.html'"></div>
+        </div>
+
+        <div ng-switch-default>
+            <div ng-include="'components/barcode_template/simple-template.html'"></div>
+        </div>
+    </div>
+</div>

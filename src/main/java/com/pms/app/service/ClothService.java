@@ -7,6 +7,7 @@ import com.pms.app.domain.Prints;
 import com.pms.app.domain.Sizes;
 import com.pms.app.schema.ClothDto;
 import com.pms.app.schema.ClothLocationDto;
+import com.pms.app.schema.ClothResource;
 import com.pms.app.schema.WeavingShippingDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +29,7 @@ public interface ClothService {
 
     void deleteCloth(Long id);
 
-    void updateWeavingCloth(WeavingShippingDTO weavingShippingDTO);
+    List<Long> updateWeavingCloth(WeavingShippingDTO weavingShippingDTO);
 
     List<Customers> getCustomerByOrderNumber(Integer orderNumber);
 
@@ -39,4 +40,6 @@ public interface ClothService {
     List<Sizes> getSizesForCustomerAndOrderNumber(Integer orderNumber, Long customerId, Long designId);
 
     List<String> getExtraFieldByOrderNumberAndCustomer(Integer orderNumber, Long customerId, Long designId, Long sizeId, Long printId);
+
+    List<ClothResource> getCothesByBarCode(List<Long> barcodes);
 }
