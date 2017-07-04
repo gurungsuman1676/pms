@@ -8,22 +8,28 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 /**
- * Created by arjun on 6/28/2017.
+ * Created by arjun on 6/27/2017.
  */
 
 @Entity
-@Setter
 @Getter
-public class ShawlActivity extends AbstractEntity {
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private ShawlEntry shawlEntry;
+@Setter
+public class ShawlInventory extends AbstractEntity {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private Users user;
+    private Designs designs;
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private Locations location;
-  }
+    private Sizes sizes;
+
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private ShawlColor color;
+
+    @ManyToOne
+    @JoinColumn Customers customer;
+
+    private int count;
+}

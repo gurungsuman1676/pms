@@ -23,7 +23,7 @@ public class ShawlProperties extends AbstractEntity {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private Shawl shawl;
+    private Designs design;
 
     private boolean active = true;
 }

@@ -15,8 +15,10 @@ import javax.persistence.ManyToOne;
 @Getter
 @Setter
 public class ShawlExportBatch extends AbstractEntity {
+
     private int quantity;
+
     @ManyToOne
     @JoinColumn(nullable = false)
-    private ShawlCustomer customer;
+    private Customers customer;
 }

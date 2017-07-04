@@ -9,7 +9,7 @@ import java.util.List;
  * Created by arjun on 6/27/2017.
  */
 public interface ShawlPropertiesService {
-    List<ShawlProperties> getByShawlId(Long id);
-
-    void editForShawl(Long id, List<ShawlPropertiesResource> shawlPropertiesResources);
+//    List<ShawlProperties> getByShawlId(Long id);
+//
+//    void editForShawl(Long id, List<ShawlPropertiesResource> shawlPropertiesResources);
 }

@@ -13,6 +13,6 @@ import java.util.List;
  */
 public interface ShawlPropertiesRepository extends AbstractRepository<ShawlProperties> {
 
-    @Query("SELECT s FROM ShawlProperties  s WHERE s.shawl.id =:shawlId AND s.active =:active ")
-    List<ShawlProperties> findAllByShawlIdAndActive(@Param("shawlId") Long shawlId,@Param("active") Boolean active);
+//    @Query("SELECT s FROM ShawlProperties  s WHERE s.shawl.id =:shawlId AND s.active =:active ")
+//    List<ShawlProperties> findAllByShawlIdAndActive(@Param("shawlId") Long shawlId,@Param("active") Boolean active);
 }
