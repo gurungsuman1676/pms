@@ -307,7 +307,7 @@
         <button type="button" class="btn btn-primary" ng-click="ctrl.hideBarcode()">Back</button>
     </div>
     <div print-section class="barcode-container">
-        <div class="barcode-wrapper" ng-repeat="cloth in ctrl.clothes">
+        <div class="barcode-wrapper" ng-repeat="cloth in ctrl.clothes | orderBy:['price.designId','price.sizeId']">
             <div ng-show="cloth.isChecked">
                 <div class="barcode-details">
                     <p>{{cloth.order_no}}/ {{cloth.customer.name}}/ {{cloth.price.designName}}/
