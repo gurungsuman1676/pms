@@ -32,4 +32,7 @@ public interface CustomerRepository extends AbstractRepository<Customers> {
 
     @Query("SELECT c.currency FROM Customers c WHERE c.id =:id")
     Currency findCurrencyByCustomer(@Param("id") Long id);
+
+    @Query("SELECT cp.id FROM Customers c  LEFT JOIN c.parent cp WHERE c.id =:id")
+    Long findCustomerParentById(@Param("id") Long customerId);
 }

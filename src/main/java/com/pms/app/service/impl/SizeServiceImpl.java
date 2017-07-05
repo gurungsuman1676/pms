@@ -6,6 +6,8 @@ import com.pms.app.repo.SizeRepository;
 import com.pms.app.schema.SizeDto;
 import com.pms.app.service.SizeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +26,7 @@ public class SizeServiceImpl implements SizeService {
     }
 
     @Override
+    @Cacheable(cacheNames = "sizes")
     public List<Sizes> getSizes(Long designId, Long yarnId) {
         if(designId == null && yarnId == null){
             return  sizeRepository.findAllByOrderByNameAsc();
@@ -34,6 +37,7 @@ public class SizeServiceImpl implements SizeService {
     }
 
     @Override
+    @CacheEvict(cacheNames = "sizes",allEntries = true)
     public Sizes addSize(SizeDto sizeDto) {
         Sizes duplicateSizeName = sizeRepository.findByName(sizeDto.getName());
         if (duplicateSizeName != null) {
@@ -54,6 +58,7 @@ public class SizeServiceImpl implements SizeService {
     }
 
     @Override
+    @CacheEvict(cacheNames = "sizes",allEntries = true)
     public Sizes updateSize(Long id, SizeDto sizeDto) {
         Sizes duplicateSizeName = sizeRepository.findByName(sizeDto.getName());
         if(duplicateSizeName!= null && duplicateSizeName.getId() != id) {

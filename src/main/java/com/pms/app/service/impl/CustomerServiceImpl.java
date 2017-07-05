@@ -7,6 +7,9 @@ import com.pms.app.repo.CustomerRepository;
 import com.pms.app.schema.CustomerDto;
 import com.pms.app.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,11 +30,14 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Cacheable(cacheNames = "customers")
     public List<Customers> getCustomers() {
+        System.out.println("GET Customer called");
         return customerRepository.findAllByOrderByNameAsc();
     }
 
     @Override
+    @CacheEvict(cacheNames = "customers",allEntries = true)
     public Customers addCustomer(CustomerDto customerDto) {
 
 
@@ -72,6 +78,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @CacheEvict(cacheNames = "customers",allEntries = true)
     public Customers updateCustomer(Long id, CustomerDto customerDto) {
         Customers existingCustomers = customerRepository.findOne(id);
         if (existingCustomers == null) {

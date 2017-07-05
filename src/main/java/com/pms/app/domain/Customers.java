@@ -2,7 +2,10 @@ package com.pms.app.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -23,4 +26,5 @@ public class Customers extends AbstractEntity {
 
     @ManyToOne
     private Customers parent;
+
 }

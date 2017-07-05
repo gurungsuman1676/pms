@@ -9,6 +9,8 @@ import com.pms.app.domain.Sizes;
 import lombok.Data;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,6 +49,13 @@ public class RukelTemplate extends AbstractTemplate implements TemplateService {
     }
 
     @Override
+    @Caching( evict = {
+            @CacheEvict(value = "designs",allEntries = true),
+            @CacheEvict(value = "prints",allEntries = true),
+            @CacheEvict(value = "designs",allEntries = true),
+            @CacheEvict(value = "sizes",allEntries = true),
+            @CacheEvict(value = "prices",allEntries = true)
+    })
     public void process() throws IOException {
         setExtractFormula(nameExtractFormula);
         getCustomerName(CUSTOMER_NAME_ALIAS);
