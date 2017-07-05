@@ -1,0 +1,46 @@
+<div class="panel panel-default col-sm-12">
+    <div class="panel-heading col-sm-12">
+        <button class="btn btn-success pull-right" data-ng-click="addData()" ng-disabled="!canAddData()">
+            Add
+        </button>
+    </div>
+    <div class="panel-body  col-sm-12">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Value</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="odd gradeX" ng-repeat="data in properties | orderBy: 'created':false">
+                <td class="center">
+                    <div class="form-group">
+                        <input class="form-control" ng-model="data.name" type="text" id="name" autocomplete="off"
+                               required>
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <input class="form-control" ng-model="data.value" type="text" id="value" autocomplete="off"
+                               required>
+                    </div>
+                </td>
+                <td>
+                    <button class="btn btn-danger" data-ng-click="deleteData(data)">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+
+
+        </table>
+    </div>
+    <div class="panel-footer  col-sm-12">
+        <button class="btn btn-success" ng-disabled="!canAddData() || properties.length == 0"
+                data-ng-click="submitProperties()"> Submit
+        </button>
+    </div>
+</div>

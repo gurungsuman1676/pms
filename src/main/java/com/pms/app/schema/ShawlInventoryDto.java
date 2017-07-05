@@ -19,6 +19,6 @@ public class ShawlInventoryDto {
 
     private Long colorId;
 
-    private Long locationId;
+    private String location;
 
 }

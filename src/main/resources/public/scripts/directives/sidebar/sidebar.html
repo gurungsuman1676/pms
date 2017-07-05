@@ -8,7 +8,7 @@
             <li ui-sref-active="active" ng-hide="isAdmin || isShawlUser">
                 <a ui-sref="dashboard.supervisors.clothes">Clothes</a>
             </li>
-            <li ui-sref-active="active" ng-show="isAdmin">
+            <li ui-sref-active="active" ng-show="isAdmin ">
                 <a ui-sref="dashboard.colors.index"> Colors</a>
             </li>
             <li ui-sref-active="active" ng-show="isAdmin">
@@ -17,14 +17,14 @@
             <li ui-sref-active="active" ng-show="isAdmin">
                 <a ui-sref="dashboard.customers.index">Customers</a>
             </li>
-            <li ui-sref-active="active" ng-show="isAdmin">
+            <li ui-sref-active="active" ng-show="isAdmin || isShawlUser">
                 <a ui-sref="dashboard.designs.index">Designs</a>
             </li>
             <li ui-sref-active="active" ng-hide="isAdmin || isShawlUser">
-                <a ui-sref="dashboard.supervisors.index">Knitting Entry</a>
+                <a ui-sref="dashboard.supervisors.index"> Entry</a>
             </li>
-            <li ui-sref-active="active" ng-show="isShipper">
-                <a ui-sref="dashboard.supervisors.weaving">Weaving Entry</a>
+            <li ui-sref-active="active" ng-show="isShawlUser">
+                <a ui-sref="dashboard.supervisors.weaving"> Entry</a>
             </li>
             <li ui-sref-active="active" ng-show="isKnitter || isAdmin">
                 <a ui-sref="dashboard.knitters.index">Knitter</a>
@@ -48,7 +48,7 @@
             </li>
 
             </li>
-            <li ui-sref-active="active" ng-show="isAdmin">
+            <li ui-sref-active="active" ng-show="isAdmin || isShawlUser">
                 <a ui-sref="dashboard.sizes.index">Sizes</a>
             </li>
 
@@ -62,26 +62,11 @@
 
 
             <li ui-sref-active="active" ng-show="isShawlUser">
-                <a ui-sref="dashboard.shawls.entries.index">Inventory</a>
+                <a ui-sref="dashboard.inventory.index">Inventory</a>
             </li>
 
             <li ui-sref-active="active" ng-show="isShawlUser">
-                <a ui-sref="dashboard.shawls.index">Shawl</a>
-            </li>
-
-            <li ui-sref-active="active" ng-show="isShawlUser">
-                <a ui-sref="dashboard.shawls.yarns.index">Yarn</a>
-            </li>
-
-            <li ui-sref-active="active" ng-show="isShawlUser">
-                <a ui-sref="dashboard.shawls.customers.index">Customer</a>
-            </li>
-
-            <li ui-sref-active="active" ng-show="isShawlUser">
-                <a ui-sref="dashboard.shawls.sizes.index">Size</a>
-            </li>
-            <li ui-sref-active="active" ng-show="isShawlUser">
-                <a ui-sref="dashboard.shawls.colors.index">Color</a>
+                <a ui-sref="dashboard.inventory.colors.index">Color</a>
             </li>
         </ul>
     </div>

@@ -21,21 +21,20 @@ import java.util.Date;
 public class ShawlInventoryResource {
     private Long id;
     private DesignResource design;
-    private CustomerResource importCustomer;
-    private CustomerResource exportCustomer;
     private ShawlColorResource color;
     private SizeResource size;
+    private Integer count;
 
     @QueryProjection
     public ShawlInventoryResource(Long id,
-                                  String shawlName,
-                                  String importCustomer,
-                                  String exportCustomer,
+                                  String designName,
                                   String color,
                                   String size,
-                                  String location,
-                                  Date importDate,
-                                  Date exportDate) {
+                                  Integer count) {
         this.id = id;
+        this.design = DesignResource.builder().name(designName).build();
+        this.color = ShawlColorResource.builder().name(color).build();
+        this.size = SizeResource.builder().name(size).build();
+        this.count = count;
     }
 }

@@ -15,7 +15,7 @@ import javax.persistence.ManyToOne;
 @Entity
 @Getter
 @Setter
-public class ShawlProperties extends AbstractEntity {
+public class DesignProperties extends AbstractEntity {
 
     private String name;
 

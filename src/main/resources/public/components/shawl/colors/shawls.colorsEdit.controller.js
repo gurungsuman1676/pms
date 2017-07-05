@@ -11,7 +11,7 @@ angular.module('sbAdminApp')
 
         self.submitColor = function () {
             ShawlsColorsFactory.updateColor(self.color, function (response) {
-                $state.go('dashboard.shawls.colors.index');
+                $state.go('dashboard.inventory.colors.index');
                 Flash.create('success', 'Color updated successfully', 'custom-class');
             }, function (response) {
                 Flash.create('danger', response.message, 'custom-class');

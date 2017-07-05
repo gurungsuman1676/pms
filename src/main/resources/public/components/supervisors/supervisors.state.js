@@ -36,13 +36,13 @@
                 }
             })
             .state('dashboard.supervisors.index', {
-                url: '/enter-location',
+                url: '/enter-knitting-location',
                 templateUrl: 'components/supervisors/index.html',
                 controller: 'SupervisorsCtrl',
                 controllerAs: 'ctrl'
             })
             .state('dashboard.supervisors.weaving', {
-                url: '/enter-location',
+                url: '/enter-weaving-location',
                 templateUrl: 'components/supervisors/weaving.html',
                 controller: 'SupervisorsWeavingCtrl',
                 controllerAs: 'ctrl'

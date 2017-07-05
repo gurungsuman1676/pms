@@ -66,9 +66,7 @@ public class AdminUserCreator {
     public void createShawlLocation() {
         for (LocationEnum location : LocationEnum.values()) {
             switch (location) {
-                case ORDER_IN:
-                case REJECTED:
-                case ORDER_OUT: {
+                case REJECTED: {
                     Locations locations = new Locations();
                     locations.setName(location.getName());
                     locations.setLocationType(LocationType.SHAWL);

@@ -1,9 +1,13 @@
 package com.pms.app.controller;
 
 import com.pms.app.convert.ShawlInventoryConvert;
+import com.pms.app.domain.ShawlInventory;
+import com.pms.app.schema.PageResult;
 import com.pms.app.schema.ShawlInventoryDto;
+import com.pms.app.schema.ShawlInventoryResource;
 import com.pms.app.service.ShawlInventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,18 +34,18 @@ public class ShawlInventoryController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public void getShawlEntry(
+    public PageResult<ShawlInventoryResource> getShawlEntry(
             @RequestParam(value = "sizeId", required = false) Long sizeId,
             @RequestParam(value = "colorId", required = false) Long colorId,
             @RequestParam(value = "designId", required = false) Long designId,
             Pageable pageable) {
-//        Page<ShawlEntry> page = shawlInventoryService.getAll(locationId, sizeId, yarnId, customerId, colorId, shawlId, entryDateFrom, entryDateTo, exportDateFrom, exportDateTo, pageable);
-//        return new PageResult<>(page.getTotalElements(), page.getSize(), page.getNumber(), shawlInventoryConvert.convert(page.getContent()));
+        Page<ShawlInventory> page = shawlInventoryService.getAll( sizeId, colorId, designId, pageable);
+        return new PageResult<>(page.getTotalElements(), page.getSize(), page.getNumber(), shawlInventoryConvert.convert(page.getContent()));
     }
 
     @RequestMapping(method = RequestMethod.POST)
     public void updateShawlEntry(@RequestBody ShawlInventoryDto shawlInventoryDto) {
-//        shawlInventoryService.update(shawlInventoryDto);
+        shawlInventoryService.update(shawlInventoryDto);
     }
 
 
@@ -51,7 +55,7 @@ public class ShawlInventoryController {
             @RequestParam(value = "colorId", required = false) Long colorId,
             @RequestParam(value = "designId", required = false) Long designId,
             HttpServletResponse httpServletResponse) {
-//        shawlInventoryService.generateReport(locationId, sizeId, yarnId, customerId, colorId, shawlId, entryDateFrom, entryDateTo, exportDateFrom, exportDateTo, httpServletResponse);
+        shawlInventoryService.generateReport( sizeId ,colorId, designId, httpServletResponse);
     }
 
 }

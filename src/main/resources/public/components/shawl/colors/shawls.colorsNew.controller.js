@@ -12,7 +12,7 @@ angular.module('sbAdminApp')
         var self = this;
         self.submitColor = function () {
             ShawlsColorsFactory.createColor(self.color, function (response) {
-                $state.go('dashboard.shawls.colors.index');
+                $state.go('dashboard.inventory.colors.index');
                 Flash.create('success', 'New Color added successfully', 'custom-class');
             }, function (response) {
                 Flash.create('danger', response.message, 'custom-class');

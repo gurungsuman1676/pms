@@ -8,7 +8,7 @@
             events: true,
         });
         $stateProvider
-            .state('dashboard.shawls.colors', {
+            .state('dashboard.inventory.colors', {
                 template: '<ui-view />',
                 resolve: {
                     loadMyFiles: function ($ocLazyLoad) {
@@ -25,19 +25,19 @@
                     }
                 }
             })
-            .state('dashboard.shawls.colors.index', {
+            .state('dashboard.inventory.colors.index', {
                 url: '/shawls/colors',
                 templateUrl: 'components/shawl/colors/index.html',
                 controller: 'ShawlsColorsListCtrl',
                 controllerAs: 'ctrl'
             })
-            .state('dashboard.shawls.colors.new', {
+            .state('dashboard.inventory.colors.new', {
                 url: '/shawls/colors/new',
                 templateUrl: 'components/shawl/colors/new.html',
                 controller: 'ShawlsColorsNewCtrl',
                 controllerAs: 'ctrl'
             })
-            .state('dashboard.shawls.colors.edit', {
+            .state('dashboard.inventory.colors.edit', {
                 url: '/shawls/colors/edit/{colorId:string}',
                 templateUrl: 'components/shawl/colors/new.html',
                 controller: 'ShawlsColorsEditCtrl',

@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 /**
  * Created by arjun on 6/27/2017.
@@ -14,5 +16,9 @@ import javax.persistence.Entity;
 @Setter
 public class ShawlEntryBatch extends AbstractEntity {
     private int quantity;
+    
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private ShawlInventory inventory;
 
 }

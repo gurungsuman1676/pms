@@ -7,7 +7,7 @@
  * Controller of the sbAdminApp
  */
 angular.module('sbAdminApp')
-    .controller('DesignsListCtrl', function ($scope, DesignsFactory, ngTableParams, CustomersFactory, $filter) {
+    .controller('DesignsListCtrl', function ($scope, DesignsFactory, ngTableParams, CustomersFactory, $filter, $modal, DesignsPropertiesFactory) {
 
         var self = this;
         self.designs = [];
@@ -31,6 +31,60 @@ angular.module('sbAdminApp')
             Flash.create('danger', response.message, 'custom-class');
         });
 
+        self.getDesignProperty = function (designId) {
+            $modal.open({
+                templateUrl: '/components/designs/property/index.html',
+                size: 'lg',
+                resolve: {
+                    designId: function () {
+                        return designId;
+                    }
+                },
+                controller: ['$scope', 'DesignsPropertiesFactory', 'designId', '$modalInstance', 'Flash', function ($scope, DesignsPropertiesFactory, designId, $modalInstance, Flash) {
+                    $scope.properties = [];
+                    DesignsPropertiesFactory.getProperties(designId, function (response) {
+                        $scope.properties = response;
+                    }, function (response) {
+                        Flash.create('danger', response.message, 'custom-class');
+
+                    });
+
+                    $scope.submitProperties = function () {
+                        DesignsPropertiesFactory.createProperties(designId, $scope.properties,
+                            function (response) {
+                                Flash.create('success', 'Properties updated successfully', 'custom-class');
+                                $modalInstance.dismiss();
+                            }, function (response) {
+                                Flash.create('danger', response.message, 'custom-class');
+                                $modalInstance.dismiss();
+
+                            });
+
+                    };
+
+                    $scope.addData = function () {
+                        $scope.properties.push({
+                            name: '',
+                            value: ''
+                        });
+                    };
+
+                    $scope.canAddData = function () {
+                        var valid = true;
+                        angular.forEach($scope.properties, function (p) {
+                            valid = valid && p.name.length > 0 && p.value.length > 0;
+                        });
+                        return valid;
+                    };
+
+                    $scope.deleteData = function (item) {
+                        var index = $scope.properties.indexOf(item);
+                        $scope.properties.splice(index, 1);
+                    }
+                }]
+            });
+        };
+
         var getFilterParams = function () {
             var filterParams = {};
             if (angular.isDefined(self.filterParams.name) && self.filterParams.name.length > 0) {
@@ -42,7 +96,7 @@ angular.module('sbAdminApp')
             if (angular.isDefined(self.filterParams.setting) && self.filterParams.setting.length > 0) {
                 filterParams.setting = self.filterParams.setting;
             }
-            if (angular.isDefined(self.filterParams.customerId) && self.filterParams.customerId.length > 0 &&  self.filterParams.customerId != null) {
+            if (angular.isDefined(self.filterParams.customerId) && self.filterParams.customerId.length > 0 && self.filterParams.customerId != null) {
                 filterParams.customerId = self.filterParams.customerId;
             }
             return filterParams;

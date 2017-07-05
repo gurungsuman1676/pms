@@ -28,8 +28,5 @@ public class ShawlInventory extends AbstractEntity {
     @JoinColumn(nullable = false)
     private ShawlColor color;
 
-    @ManyToOne
-    @JoinColumn Customers customer;
-
     private int count;
 }

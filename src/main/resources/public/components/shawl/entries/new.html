@@ -7,18 +7,12 @@
             </div>
             <div class="panel-body">
                 <form ng-submit="ctrl.submitEntry()">
-                    <div class="form-group">
-                        <label>Customer</label>
-                        <selectize ng-model="ctrl.entry.customerId" config="{maxOptions: 100}"
-                                   options="ctrl.options.customers"></selectize>
-                    </div>
 
                     <div class="form-group">
-                        <label>Shawl</label>
+                        <label>Designs</label>
                         <selectize class="design-input" config="{maxOptions: 100}"
-                                   ng-model="ctrl.entry.shawlId" options="ctrl.options.shawls" required></selectize>
+                                   ng-model="ctrl.entry.designId" options="ctrl.options.designs" required></selectize>
                     </div>
-
 
                     <div class="form-group">
                         <label>Color </label>
@@ -34,14 +28,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Yarn</label>
-                        <selectize ng-model="ctrl.entry.yarnId" config="{maxOptions: 100}"
-                                   options="ctrl.options.yarns" required></selectize>
-                    </div>
-
-                    <div class="form-group">
                         <label>Location</label>
-                        <selectize ng-model="ctrl.entry.locationId" config="{maxOptions: 100}"
+                        <selectize ng-model="ctrl.entry.location" config="{maxOptions: 100}"
                                    options="ctrl.options.locations" required></selectize>
                     </div>
 

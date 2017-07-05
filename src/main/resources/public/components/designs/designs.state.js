@@ -22,6 +22,7 @@
                                 'components/designs/designsNew.controller.js',
                                 'components/designs/designsEdit.controller.js',
                                 'components/designs/designs.factory.js',
+                                'components/designs/property/properties.factory.js',
                                 'components/customers/customers.factory.js',
                                 'components/shared/resources.js'
                             ]

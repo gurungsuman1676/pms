@@ -20,5 +20,5 @@ public class ShawlExportBatch extends AbstractEntity {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private Customers customer;
+    private ShawlInventory inventory;
 }

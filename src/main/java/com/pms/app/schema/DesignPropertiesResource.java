@@ -1,6 +1,8 @@
 package com.pms.app.schema;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Builder;
 
@@ -9,10 +11,12 @@ import lombok.experimental.Builder;
  */
 
 
-@Builder
 @Setter
 @Getter
-public class ShawlPropertiesResource {
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class DesignPropertiesResource {
     private Long id;
     private String name;
     private String value;
