@@ -5,6 +5,8 @@ import com.pms.app.repo.KnitterRepository;
 import com.pms.app.schema.KnitterDto;
 import com.pms.app.service.KnitterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,11 +25,13 @@ public class KnitterServiceImpl implements KnitterService {
     }
 
     @Override
+    @Cacheable(cacheNames = "knitters")
     public List<Knitter> getAll() {
         return (List<Knitter>) knitterRepository.findAll();
     }
 
     @Override
+    @CacheEvict(cacheNames = "knitters",allEntries = true)
     public Knitter add(KnitterDto knitterDto) {
         if (knitterDto.getName() == null) {
             throw new RuntimeException("Knitter name not available");
@@ -51,6 +55,7 @@ public class KnitterServiceImpl implements KnitterService {
     }
 
     @Override
+    @CacheEvict(cacheNames = "knitters",allEntries = true)
     public Knitter edit(Long id, KnitterDto knitterDto) {
         if (knitterDto.getName() == null) {
             throw new RuntimeException("Knitter name not available");

@@ -1,12 +1,12 @@
 package com.pms.app.service.impl;
 
-import com.pms.app.domain.Customers;
 import com.pms.app.domain.Yarns;
-import com.pms.app.repo.CustomerRepository;
 import com.pms.app.repo.YarnRepository;
 import com.pms.app.schema.YarnDto;
 import com.pms.app.service.YarnService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,20 +16,20 @@ import java.util.List;
 public class YarnServiceImpl implements YarnService {
 
     private final YarnRepository yarnRepository;
-    private final CustomerRepository customerRepository;
 
     @Autowired
-    public YarnServiceImpl(YarnRepository yarnRepository, CustomerRepository customerRepository) {
+    public YarnServiceImpl(YarnRepository yarnRepository) {
         this.yarnRepository = yarnRepository;
-        this.customerRepository = customerRepository;
     }
 
     @Override
+    @Cacheable(cacheNames = "yarns")
     public List<Yarns> getYarns() {
         return  yarnRepository.findAllByOrderByNameAsc();
     }
 
     @Override
+    @CacheEvict(cacheNames = "yarns",allEntries = true)
     public Yarns addYarn(YarnDto yarnDto) {
 
         Yarns duplicateYarn = yarnRepository.findByName(yarnDto.getName());
@@ -55,6 +55,7 @@ public class YarnServiceImpl implements YarnService {
     }
 
     @Override
+    @CacheEvict(cacheNames = "yarns",allEntries = true)
     public Yarns updateYarn(Long id, YarnDto yarnDto) {
         Yarns yarns = yarnRepository.findOne(id);
         if (yarns == null) {

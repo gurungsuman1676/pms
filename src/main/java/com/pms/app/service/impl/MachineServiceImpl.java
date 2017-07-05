@@ -5,6 +5,8 @@ import com.pms.app.repo.MachineRepository;
 import com.pms.app.schema.MachineDto;
 import com.pms.app.service.MachineService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,11 +25,14 @@ public class MachineServiceImpl implements MachineService {
     }
 
     @Override
+    @Cacheable(cacheNames = "machines")
     public List<Machine> getAll() {
+        System.out.println("GET machine called");
         return (List<Machine>) machineRepository.findAll();
     }
 
     @Override
+    @CacheEvict(cacheNames = "machines",allEntries = true)
     public Machine add(MachineDto machineDto) {
         if (machineDto.getName() == null) {
             throw new RuntimeException("Machine name not available");
@@ -51,6 +56,7 @@ public class MachineServiceImpl implements MachineService {
     }
 
     @Override
+    @CacheEvict(cacheNames = "machines",allEntries = true)
     public Machine edit(Long id, MachineDto machineDto) {
         if (machineDto.getName() == null) {
             throw new RuntimeException("Machine name not available");

@@ -8,6 +8,8 @@ import com.pms.app.repo.SizeRepository;
 import com.pms.app.schema.PrintDto;
 import com.pms.app.service.PrintService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,11 +31,13 @@ public class PrintServiceImpl implements PrintService {
     }
 
     @Override
+    @Cacheable(cacheNames = "prints")
     public List<Prints> getPrints() {
         return  printRepository.findAllByOrderByNameAsc();
     }
 
     @Override
+    @CacheEvict(cacheNames = "prints",allEntries = true)
     public Prints addPrint(PrintDto printDto) {
 
         Currency currency = currencyRepository.findOne(printDto.getCurrencyId());
@@ -72,6 +76,7 @@ public class PrintServiceImpl implements PrintService {
     }
 
     @Override
+    @CacheEvict(cacheNames = "prints",allEntries = true)
     public Prints updatePrint(Long id, PrintDto printDto) {
 
         Prints existingPrints = printRepository.findOne(id);

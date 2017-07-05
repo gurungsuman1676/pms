@@ -3,6 +3,8 @@ package com.pms.app.upload;
 import com.pms.app.domain.Clothes;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,6 +43,14 @@ public class DannyTemplate extends AbstractTemplate implements TemplateService {
 
 
     @Override
+    @Caching( evict = {
+            @CacheEvict(value = "designs",allEntries = true),
+            @CacheEvict(value = "colors",allEntries = true),
+            @CacheEvict(value = "designs",allEntries = true),
+            @CacheEvict(value = "yarns",allEntries = true),
+            @CacheEvict(value = "sizes",allEntries = true),
+            @CacheEvict(value = "prices",allEntries = true)
+    })
     public void process() throws Exception {
         setExtractFormula(nameExtractFormula);
         getCustomerName(CUSTOMER_NAME_ALIAS);

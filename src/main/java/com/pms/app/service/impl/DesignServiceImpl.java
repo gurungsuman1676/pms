@@ -7,6 +7,8 @@ import com.pms.app.repo.DesignRepository;
 import com.pms.app.schema.DesignDto;
 import com.pms.app.service.DesignService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,11 +27,14 @@ public class DesignServiceImpl implements DesignService {
     }
 
     @Override
+    @Cacheable(cacheNames = "designs")
+
     public List<Designs> getDesigns() {
         return designRepository.findAllByOrderByNameAsc();
     }
 
     @Override
+    @CacheEvict(cacheNames = "designs",allEntries = true)
     public Designs addDesign(DesignDto designDto) {
 
 
@@ -79,6 +84,7 @@ public class DesignServiceImpl implements DesignService {
     }
 
     @Override
+    @CacheEvict(cacheNames = "designs",allEntries = true)
     public Designs updateDesign(Long id, DesignDto designDto) {
         Designs existingDesign = designRepository.findOne(id);
         if (existingDesign == null) {

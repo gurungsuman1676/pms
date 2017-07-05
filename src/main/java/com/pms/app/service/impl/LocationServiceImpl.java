@@ -6,6 +6,8 @@ import com.pms.app.repo.LocationRepository;
 import com.pms.app.schema.LocationDto;
 import com.pms.app.service.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,15 +24,22 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
+    @Cacheable(cacheNames = "locations")
     public List<Locations> getLocations(LocationType locationType) {
         if(locationType != null) {
-            return locationRepository.findAllByLocationTypeOrderByNameAsc(locationType);
+            return  getAllLocations();
         }else {
             return locationRepository.findAllByOrderByNameAsc();
         }
     }
 
+    public List< Locations> getAllLocations(){
+        return locationRepository.findAllByLocationTypeOrderByNameAsc(locationType);
+    }
+
+
     @Override
+    @CacheEvict(cacheNames = "locations",allEntries = true)
     public Locations addLocations(LocationDto locationDto) {
 
         Locations locations = locationRepository.findByName(locationDto.getName());
@@ -55,6 +64,7 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
+    @CacheEvict(cacheNames = "locations",allEntries = true)
     public Locations editLocation(Long id, LocationDto locationDto) {
         Locations locations = locationRepository.findByName(locationDto.getName());
         if (locations != null) {

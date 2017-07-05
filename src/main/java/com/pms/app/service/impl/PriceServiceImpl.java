@@ -5,6 +5,8 @@ import com.pms.app.repo.*;
 import com.pms.app.schema.PriceDto;
 import com.pms.app.service.PriceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,11 +29,13 @@ public class PriceServiceImpl implements PriceService {
 
 
     @Override
+    @Cacheable(cacheNames = "prices")
     public List<Prices> getPrices() {
         return (List<Prices>) priceRepository.findAll();
     }
 
     @Override
+    @CacheEvict(cacheNames = "prices",allEntries = true)
     public Prices addPrice(PriceDto priceDto) {
 
         if (priceDto.getSizeId() == null) {
@@ -77,6 +81,7 @@ public class PriceServiceImpl implements PriceService {
     }
 
     @Override
+    @CacheEvict(cacheNames = "prices",allEntries = true)
     public Prices getPrice(Long id) {
         Prices prices = priceRepository.findOne(id);
         if (prices == null) {

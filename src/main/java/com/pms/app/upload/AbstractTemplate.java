@@ -33,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityManager;
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.security.acl.LastOwnerException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -217,6 +218,12 @@ abstract class AbstractTemplate {
                 clothes.setReOrder(reOrder);
                 clothes.setStatus(Status.ACTIVE.toString());
                 Long designId = designRepository.findIdByNameAndCustomer(designName, customerId);
+                if (designId == null) {
+                    Long parentId = customerRepository.findCustomerParentById(customerId);
+                    if (parentId != null) {
+                        designId = designRepository.findIdByNameAndCustomer(designName, parentId);
+                    }
+                }
                 if (designId == null) {
                     Designs designs = new Designs();
                     designs.setGauge(0D);
