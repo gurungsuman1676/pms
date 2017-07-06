@@ -51,8 +51,8 @@ public class KnitterMachineHistoryController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public KnitterMachineHistoryResource addLocation(@RequestBody KnitterMachineHistoryDto knitterMachineHistoryDto) {
-        return knitterMachineHistoryConvert.convert(knitterMachineHistoryService.add(knitterMachineHistoryDto));
+    public void addLocation(@RequestBody KnitterMachineHistoryDto knitterMachineHistoryDto) {
+        knitterMachineHistoryService.add(knitterMachineHistoryDto);
     }
 
     @RequestMapping(value = "/report", method = RequestMethod.GET)

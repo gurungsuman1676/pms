@@ -664,5 +664,20 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .list(clothes.extraField);
     }
 
+    @Override
+    public List<Clothes> findByOrderNoAndCustomerAndPriceAndColorAndTypeAndStatusAndLocation(Integer order_no, Long customerId, Long priceId, Long colorId, Integer type, String status, Long locationId, int quantity) {
+        QClothes clothes = QClothes.clothes;
+        return from(clothes)
+                .where(clothes.order_no.eq(order_no)
+                        .and(clothes.customer.id.eq(customerId))
+                        .and(clothes.price.id.eq(priceId))
+                        .and(clothes.color.id.eq(colorId))
+                        .and(clothes.location.id.eq(locationId))
+                        .and(clothes.type.eq(type))
+                        .and(clothes.status.eq(status)))
+                .limit(quantity)
+                .list(clothes);
+    }
+
 
 }

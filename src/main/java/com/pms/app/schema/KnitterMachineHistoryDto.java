@@ -11,4 +11,5 @@ public class KnitterMachineHistoryDto {
     private Long knitterId;
     private Long machineId;
     private Long clothId;
+    private int quantity;
 }

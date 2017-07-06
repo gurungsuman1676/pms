@@ -9,6 +9,7 @@ import com.pms.app.domain.KnitterMachineHistory;
 import com.pms.app.domain.LocationEnum;
 import com.pms.app.domain.Locations;
 import com.pms.app.domain.Machine;
+import com.pms.app.domain.Status;
 import com.pms.app.repo.ClothActivityRepository;
 import com.pms.app.repo.ClothRepository;
 import com.pms.app.repo.KnitterMachineHistoryRepository;
@@ -47,6 +48,7 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by arjun on 6/21/2017.
@@ -73,12 +75,12 @@ public class KnitterMachineHistoryServiceImpl implements KnitterMachineHistorySe
 
     @Override
     public Page<KnitterMachineHistory> getAll(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, Pageable pageable) {
-        return knitterMachineHistoryRepository.getAll(knitterId, machineId, completedDate,dateFrom,dateTo, pageable);
+        return knitterMachineHistoryRepository.getAll(knitterId, machineId, completedDate, dateFrom, dateTo, pageable);
     }
 
     @Override
     @Transactional
-    public KnitterMachineHistory add(KnitterMachineHistoryDto knitterMachineHistoryDto) {
+    public void add(KnitterMachineHistoryDto knitterMachineHistoryDto) {
         if (knitterMachineHistoryDto.getKnitterId() == null) {
             throw new RuntimeException("No knitter available");
         }
@@ -96,30 +98,55 @@ public class KnitterMachineHistoryServiceImpl implements KnitterMachineHistorySe
         if (knitterMachineHistoryDto.getClothId() == null) {
             throw new RuntimeException("No Cloth available");
         }
-        Clothes clothes = clothRepository.findOne(knitterMachineHistoryDto.getClothId());
-        if (clothes == null) {
+        Clothes providedCloth = clothRepository.findOne(knitterMachineHistoryDto.getClothId());
+        if (providedCloth == null) {
             throw new RuntimeException("No such cloth available");
         }
+
+        Locations preKnitting = locationRepository.findByName(LocationEnum.PRE_KNITTING.getName());
+
+        List<Clothes> clothes = clothRepository.findByOrderNoAndCustomerAndPriceAndColorAndTypeAndStatusAndLocation(providedCloth.getOrder_no(),
+                providedCloth.getCustomer().getId(),
+                providedCloth.getPrice().getId(),
+                providedCloth.getColor().getId(),
+                providedCloth.getType(),
+                Status.ACTIVE.toString(),
+                preKnitting.getId(),
+                knitterMachineHistoryDto.getQuantity());
+
+        if (!Objects.equals(clothes.size(), knitterMachineHistoryDto.getQuantity())) {
+            throw new RuntimeException("Total available cloth for given values in pre knitting is " + clothes.size());
+        }
+
         Locations locations = locationRepository.findByName(LocationEnum.PRE_KNITTING_COMPLETED.getName());
-        clothes.setLocation(locations);
-        clothes = clothRepository.save(clothes);
-        KnitterMachineHistory knitterMachineHistory = new KnitterMachineHistory();
-        knitterMachineHistory.setCloth(clothes);
-        knitterMachineHistory.setKnitter(knitter);
-        knitterMachineHistory.setMachine(machine);
 
-        ClothActivity activity = new ClothActivity();
-        activity.setCloth(clothes);
-        activity.setLocation(locations);
-        activity.setUser(AuthUtil.getCurrentUser());
+        clothes.forEach(
+                cloth -> {
+                    if (cloth.getLocation().getName().equalsIgnoreCase(LocationEnum.PRE_KNITTING.getName())) {
+                        cloth.setLocation(locations);
+                        cloth = clothRepository.save(cloth);
+                    }
+                    KnitterMachineHistory knitterMachineHistory = new KnitterMachineHistory();
+                    knitterMachineHistory.setCloth(cloth);
+                    knitterMachineHistory.setKnitter(knitter);
+                    knitterMachineHistory.setMachine(machine);
 
-        clothActivityRepository.save(activity);
-        return knitterMachineHistoryRepository.save(knitterMachineHistory);
+                    ClothActivity activity = new ClothActivity();
+                    activity.setCloth(cloth);
+                    activity.setLocation(locations);
+                    activity.setUser(AuthUtil.getCurrentUser());
+
+                    clothActivityRepository.save(activity);
+                    knitterMachineHistoryRepository.save(knitterMachineHistory);
+
+                }
+        );
+
     }
 
     @Override
     public void getHistoryReport(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, HttpServletResponse httpServletResponse) {
-        List<KnitterHistoryReportResource> historyReportResources = knitterMachineHistoryRepository.getAllResource(knitterId, machineId, completedDate,dateFrom,dateTo);
+        List<KnitterHistoryReportResource> historyReportResources = knitterMachineHistoryRepository.getAllResource(knitterId, machineId, completedDate, dateFrom, dateTo);
         HSSFWorkbook workbook = new HSSFWorkbook();
 
         HSSFSheet sheet = getWithHeaderImage(workbook, "/images/pms-logo.png");

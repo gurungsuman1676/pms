@@ -14,7 +14,7 @@ import java.util.Date;
 public interface KnitterMachineHistoryService {
     Page<KnitterMachineHistory> getAll(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, Pageable pageable);
 
-    KnitterMachineHistory add(KnitterMachineHistoryDto knitterMachineHistoryDto);
+    void add(KnitterMachineHistoryDto knitterMachineHistoryDto);
 
     void getHistoryReport(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, HttpServletResponse httpServletResponse);
 

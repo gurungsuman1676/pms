@@ -11,14 +11,22 @@
                     <div class="form-group">
                         <label>Knitter</label>
                         <selectize config="{maxOptions: 100}" options="ctrl.options.knitters"
-                                   ng-model="ctrl.history.knitterId"></selectize>
+                                   ng-model="ctrl.history.knitterId" required></selectize>
                     </div>
 
                     <div class="form-group">
                         <label>Machine</label>
                         <selectize config="myConfig" options="ctrl.options.machines"
-                                   ng-model="ctrl.history.machineId"></selectize>
+                                   ng-model="ctrl.history.machineId" required></selectize>
                     </div>
+
+                    <div class="form-group">
+                        <label for="quantity">Quantity</label>
+                        <input class="form-control" ng-model="ctrl.history.quantity" type="text" id="quantity"
+                               autocomplete="off" required ng-init="ctrl.history.quantity =1">
+                    </div>
+
+
                     <div>
                         <input type="submit" class="btn btn-primary" value="Submit">
                     </div>
