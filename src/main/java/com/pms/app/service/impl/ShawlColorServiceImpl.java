@@ -30,11 +30,11 @@ public class ShawlColorServiceImpl implements ShawlColorService {
     @Override
     public ShawlColor add(ShawlColorDto shawlColorDto) {
         if (shawlColorDto.getName() == null) {
-            throw new RuntimeException("SHAWL Color name not available");
+            throw new RuntimeException("WEAVING Color name not available");
         }
         ShawlColor existingShawlColor = shawlColorRepository.findByName(shawlColorDto.getName());
         if (existingShawlColor != null) {
-            throw new RuntimeException("SHAWL Color with name " + shawlColorDto.getName() + " already exist");
+            throw new RuntimeException("WEAVING Color with name " + shawlColorDto.getName() + " already exist");
         }
         ShawlColor shawlColor = new ShawlColor();
         shawlColor.setName(shawlColorDto.getName());
@@ -45,7 +45,7 @@ public class ShawlColorServiceImpl implements ShawlColorService {
     public ShawlColor get(Long id) {
         ShawlColor shawlColor = shawlColorRepository.findOne(id);
         if (shawlColor == null) {
-            throw new RuntimeException("No SHAWL Color found ");
+            throw new RuntimeException("No WEAVING Color found ");
         }
         return shawlColor;
     }
@@ -53,11 +53,11 @@ public class ShawlColorServiceImpl implements ShawlColorService {
     @Override
     public ShawlColor edit(Long id, ShawlColorDto shawlColorDto) {
         if (shawlColorDto.getName() == null) {
-            throw new RuntimeException("SHAWL Color name not available");
+            throw new RuntimeException("WEAVING Color name not available");
         }
         ShawlColor existingShawlColor = shawlColorRepository.findByName(shawlColorDto.getName());
         if (existingShawlColor != null) {
-            throw new RuntimeException("SHAWL Color with same name " + shawlColorDto.getName() + " already exist");
+            throw new RuntimeException("WEAVING Color with same name " + shawlColorDto.getName() + " already exist");
         }
         ShawlColor shawlColor = shawlColorRepository.findOne(id);
         shawlColor.setName(shawlColorDto.getName());

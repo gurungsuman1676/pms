@@ -48,11 +48,11 @@ public class ClothServiceImpl implements ClothService {
         if (locationDate != null && locationId != null && locationId != -1) {
             return clothRepository.findAllForHistoryByDate(customerId,
                     locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom, orderDateTo, pageable,
-                    role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge,setting,reOrder,week,colorId);
+                    role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge, setting, reOrder, week, colorId);
         } else {
             return clothRepository.findAllClothes(customerId,
                     locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom, orderDateTo, pageable,
-                    role, shippingNumber, boxNumber, isReject, type, designId, locationDate, gauge,setting,reOrder,week,colorId);
+                    role, shippingNumber, boxNumber, isReject, type, designId, locationDate, gauge, setting, reOrder, week, colorId);
         }
     }
 
@@ -96,21 +96,26 @@ public class ClothServiceImpl implements ClothService {
         }
 
         List<Clothes> clothes = new ArrayList<>();
-        Locations locations = locationRepository.findByName(LocationEnum.PRE_KNITTING.getName());
+        Locations locations = null;
+        if (clothDto.getTypeId() == 0) {
+            locations = locationRepository.findByNameAndLocationType(LocationEnum.PRE_KNITTING.getName(), LocationType.KNITTING);
+        }
 
         for (int i = 0; i < clothDto.getQuantity(); i++) {
             Clothes cloth = new Clothes();
             cloth.setDeliver_date(clothDto.getDelivery_date());
-            cloth.setLocation(locationRepository.findOne(0L));
             cloth.setPrice(price);
             cloth.setPrint(prints);
             cloth.setOrder_no(clothDto.getOrderNo());
             cloth.setCustomer(customers);
-            clothes.add(cloth);
             cloth.setType(clothDto.getTypeId());
             cloth.setStatus(Status.ACTIVE.toString());
             cloth.setColor(color);
-            cloth.setLocation(locations);
+            if (cloth.getType() == 0) {
+                cloth.setLocation(locations);
+            }
+            clothes.add(cloth);
+
         }
         return (List<Clothes>) clothRepository.save(clothes);
     }
@@ -169,18 +174,20 @@ public class ClothServiceImpl implements ClothService {
 
     @Override
     public void updateWeavingCloth(WeavingShippingDTO weavingShippingDTO) {
-        Locations locations = getLocationsForCurrentUser();
+        Locations locations = locationRepository.findOne(weavingShippingDTO.getLocationId());
         List<Clothes> clothes = clothRepository.findForWeavingShipping(weavingShippingDTO, locations.getId());
 
         if (clothes.size() < weavingShippingDTO.getQuantity()) {
             throw new RuntimeException("Quantity of cloth (" + weavingShippingDTO.getQuantity() + " ) is less than available clothes (" + clothes.size() + ")");
         }
-        clothes.forEach(c -> {
-            c.setBoxNumber(weavingShippingDTO.getBoxNumber());
-            c.setShipping(weavingShippingDTO.getShipping());
-            c.setLocation(locations);
-        });
-        clothRepository.save(clothes);
+        if (locations.getName().equalsIgnoreCase(LocationEnum.SHIPPING.getName())) {
+            clothes.forEach(c -> {
+                c.setBoxNumber(weavingShippingDTO.getBoxNumber());
+                c.setShipping(weavingShippingDTO.getShipping());
+                c.setLocation(locations);
+            });
+            clothRepository.save(clothes);
+        }
     }
 
     @Override

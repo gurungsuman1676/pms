@@ -11,10 +11,12 @@ angular.module('sbAdminApp')
 
         var self = this;
         self.options = {};
-        self.roles = [{id:'ADMIN', name:'ADMIN'},{id:'USER', name:'SUPERVISOR'}];
+        self.roles = [{id: 'ADMIN', name: 'ADMIN'}, {id: 'USER', name: 'SUPERVISOR'}];
 
-        LocationsFactory.getLocations({},function (response) {
-            self.options.locations = response;
+        LocationsFactory.getLocations({}, function (response) {
+            self.options.locations = angular.forEach(response, function (l) {
+                l.name = l.name + " ( " + l.locationType + " )"
+            });
         }, function (response) {
             Flash.create('danger', response.message, 'custom-class');
         });

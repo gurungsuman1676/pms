@@ -5,6 +5,7 @@ import com.pms.app.domain.Colors;
 import com.pms.app.domain.Customers;
 import com.pms.app.domain.Designs;
 import com.pms.app.domain.LocationEnum;
+import com.pms.app.domain.LocationType;
 import com.pms.app.domain.Locations;
 import com.pms.app.domain.Prices;
 import com.pms.app.domain.Prints;
@@ -198,8 +199,10 @@ abstract class AbstractTemplate {
     List<Clothes> getCloth(String colorCode, String colorName, String yarnName,
                            Map<String, Integer> sizeAndNumberMap,
                            String designName, String printName, String... attrs) {
-        Locations preKnitting = locationRepository.findByName(LocationEnum.PRE_KNITTING.getName());
-
+        Locations preKnitting = null;
+        if(clothType == 0) {
+             preKnitting = locationRepository.findByNameAndLocationType(LocationEnum.PRE_KNITTING.getName(), LocationType.KNITTING);
+        }
         List<Clothes> clothesList = new ArrayList<>();
         for (String sizeName : sizeAndNumberMap.keySet()) {
             if (colorCode != null) {
@@ -260,7 +263,9 @@ abstract class AbstractTemplate {
                 }
 
                 clothes.setPrice(price);
-                clothes.setLocation(entityManager.getReference(Locations.class, preKnitting.getId()));
+                if(clothType == 0) {
+                    clothes.setLocation(entityManager.getReference(Locations.class, preKnitting.getId()));
+                }
                 clothesList.add(clothes);
             }
         }

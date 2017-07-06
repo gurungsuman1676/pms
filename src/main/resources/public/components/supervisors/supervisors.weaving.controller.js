@@ -7,11 +7,19 @@
  * Controller of the sbAdminApp
  */
 angular.module('sbAdminApp')
-    .controller('SupervisorsWeavingCtrl', function ($scope, SupervisorsFactory, Flash, ClothesFactory, $localStorage,$window) {
+    .controller('SupervisorsWeavingCtrl', function ($scope, SupervisorsFactory, Flash, ClothesFactory, $localStorage, $window, LocationsFactory) {
 
         var self = this;
         self.cloth = {};
         self.isShippingUser = ($localStorage.user.roles).indexOf("SHIPPING") != -1;
+
+        self.locations = [];
+        LocationsFactory.getLocations({type: 'WEAVING'},
+            function (response) {
+                self.locations = response;
+            }, function (response) {
+                Flash.create('danger', response.message, 'custom-class');
+            });
 
         $scope.fetchCustomer = function () {
             self.cloth.customerId = undefined;
@@ -21,7 +29,7 @@ angular.module('sbAdminApp')
             $scope.options.designs = [];
 
             self.cloth.sizeId = undefined;
-            $scope.options.sizes =[];
+            $scope.options.sizes = [];
 
             self.cloth.printId = undefined;
             $scope.options.prints = [];
@@ -42,7 +50,7 @@ angular.module('sbAdminApp')
             $scope.options.designs = [];
 
             self.cloth.sizeId = undefined;
-            $scope.options.sizes =[];
+            $scope.options.sizes = [];
 
             self.cloth.printId = undefined;
             $scope.options.prints = [];
@@ -74,7 +82,7 @@ angular.module('sbAdminApp')
         }
         $scope.fetchSizes = function () {
             self.cloth.sizeId = undefined;
-            $scope.options.sizes =[];
+            $scope.options.sizes = [];
 
             self.cloth.printId = undefined;
             $scope.options.prints = [];
@@ -107,7 +115,7 @@ angular.module('sbAdminApp')
         }
 
         self.submitCloth = function () {
-            ClothesFactory.updateWeavingShipping(self.cloth, function (response) {
+            ClothesFactory.updateWeavingLocation(self.cloth, function (response) {
                 self.cloth.extraField = undefined;
                 self.cloth.quantity = undefined;
                 Flash.create('success', 'Cloth added to shipped ', 'custom-class');

@@ -12,8 +12,8 @@ angular.module('sbAdminApp')
         var self = this;
         self.locationTypes = [
             {
-                id: 'SHAWL',
-                name: 'SHAWL'
+                id: 'WEAVING',
+                name: 'WEAVING'
             },
             {
                 id: 'KNITTING',

@@ -5,6 +5,7 @@ import com.pms.app.domain.Clothes;
 import com.pms.app.domain.Knitter;
 import com.pms.app.domain.KnitterMachineHistory;
 import com.pms.app.domain.LocationEnum;
+import com.pms.app.domain.LocationType;
 import com.pms.app.domain.Locations;
 import com.pms.app.domain.Machine;
 import com.pms.app.repo.ClothActivityRepository;
@@ -80,7 +81,7 @@ public class KnitterMachineHistoryServiceImpl implements KnitterMachineHistorySe
         if (clothes == null) {
             throw new RuntimeException("No such cloth available");
         }
-        Locations locations = locationRepository.findByName(LocationEnum.PRE_KNITTING_COMPLETED.getName());
+        Locations locations = locationRepository.findByNameAndLocationType(LocationEnum.PRE_KNITTING_COMPLETED.getName(), LocationType.KNITTING);
         clothes.setLocation(locations);
         clothes = clothRepository.save(clothes);
         KnitterMachineHistory knitterMachineHistory = new KnitterMachineHistory();

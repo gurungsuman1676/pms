@@ -8,11 +8,11 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface LocationRepository extends AbstractRepository<Locations> {
-    Locations findByName(String name);
 
     @Query("select l from Locations  l where l.locationType =:type order by l.name asc ")
     List<Locations> findAllByLocationTypeOrderByNameAsc(@Param("type") LocationType locationType);
 
     List<Locations> findAllByOrderByNameAsc();
 
+    Locations findByNameAndLocationType(String name, LocationType locationType);
 }

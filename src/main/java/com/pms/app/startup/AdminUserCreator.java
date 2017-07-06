@@ -66,10 +66,11 @@ public class AdminUserCreator {
     public void createShawlLocation() {
         for (LocationEnum location : LocationEnum.values()) {
             switch (location) {
-                case REJECTED: {
+                case REJECTED:
+                case SHIPPING: {
                     Locations locations = new Locations();
                     locations.setName(location.getName());
-                    locations.setLocationType(LocationType.SHAWL);
+                    locations.setLocationType(LocationType.WEAVING);
                     locationRepository.save(locations);
                     break;
                 }

@@ -24,17 +24,17 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    @Cacheable(cacheNames = "locations")
     public List<Locations> getLocations(LocationType locationType) {
         if(locationType != null) {
-            return  getAllLocations();
+          return   locationRepository.findAllByLocationTypeOrderByNameAsc(locationType);
         }else {
-            return locationRepository.findAllByOrderByNameAsc();
+            return getAllLocations();
         }
     }
 
+    @Cacheable(cacheNames = "locations")
     public List< Locations> getAllLocations(){
-        return locationRepository.findAllByLocationTypeOrderByNameAsc(locationType);
+        return locationRepository.findAllByOrderByNameAsc();
     }
 
 
@@ -42,7 +42,7 @@ public class LocationServiceImpl implements LocationService {
     @CacheEvict(cacheNames = "locations",allEntries = true)
     public Locations addLocations(LocationDto locationDto) {
 
-        Locations locations = locationRepository.findByName(locationDto.getName());
+        Locations locations = locationRepository.findByNameAndLocationType(locationDto.getName(),locationDto.getLocationType());
         if (locations != null) {
             throw new RuntimeException("Location already exists");
         }
@@ -66,7 +66,7 @@ public class LocationServiceImpl implements LocationService {
     @Override
     @CacheEvict(cacheNames = "locations",allEntries = true)
     public Locations editLocation(Long id, LocationDto locationDto) {
-        Locations locations = locationRepository.findByName(locationDto.getName());
+        Locations locations = locationRepository.findByNameAndLocationType(locationDto.getName(),locationDto.getLocationType());
         if (locations != null) {
             throw new RuntimeException("Location already exists");
         }

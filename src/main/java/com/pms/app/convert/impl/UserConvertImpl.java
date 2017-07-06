@@ -31,7 +31,9 @@ public class UserConvertImpl implements UserConvert {
                 .id(users.getId())
                 .username(users.getUsername())
                 .role(users.getRole())
-                .location(userService.findUserLocation(users).stream().map(Locations::getName).collect(Collectors.joining(", ")))
+                .location(userService.findUserLocation(users).stream()
+                        .map(e -> e.getName() + " ( " + e.getLocationType().name() + " )")
+                        .collect(Collectors.joining(", ")))
                 .build();
     }
 

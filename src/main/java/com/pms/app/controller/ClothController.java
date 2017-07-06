@@ -208,7 +208,7 @@ public class ClothController {
     }
 
 
-    @RequestMapping(value = "/shipping", method = RequestMethod.PUT)
+    @RequestMapping(value = "/weaving/locations", method = RequestMethod.PUT)
     public void addweavingShipping(@RequestBody WeavingShippingDTO weavingShippingDTO) {
         clothService.updateWeavingCloth(weavingShippingDTO);
     }

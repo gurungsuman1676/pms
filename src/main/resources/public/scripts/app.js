@@ -75,7 +75,7 @@ angular
         }
 
         $rootScope.loginSuccess = function () {
-            $localStorage.isShawlUser = $localStorage.user.type === 'SHAWL';
+            $localStorage.isShawlUser = $localStorage.user.type === 'WEAVING';
 
             if (($localStorage.user.roles).indexOf("ADMIN") != -1) {
                 $localStorage.isAdmin = true;
