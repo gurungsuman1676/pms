@@ -52,22 +52,22 @@
                     <div class="form-group" >
                         <label>Location</label>
                         <selectize ng-model="ctrl.cloth.locationId" config="{maxOptions: 100}"
-                                   options="options.locations" style="font-size: 8px" required></selectize>
+                                   options="options.locations" style="font-size: 8px" required ng-change="updateLocationValue(ctrl.cloth.locationId)"></selectize>
                     </div>
 
-                    <div class="form-group" ng-show="ctrl.isShippingUser">
+                    <div class="form-group" ng-show="isShippingUser">
                         <label> Shipping Number</label>
                         <input class="form-control" ng-model="ctrl.cloth.shippingNumber" type="text"
                                autocomplete="off" required>
                     </div>
 
-                    <div class="form-group" ng-show="ctrl.isShippingUser">
+                    <div class="form-group" ng-show="isShippingUser">
                         <label> Box Number:</label>
                         <input class="form-control" ng-model="ctrl.cloth.boxNumber" type="text"
                                autocomplete="off" required>
                     </div>
 
-                    <div class="form-group" ng-show="ctrl.isShippingUser">
+                    <div class="form-group" ng-show="isShippingUser">
                         <label> Weight:</label>
                         <input id="weight" class="form-control" ng-model="ctrl.cloth.weight" type="text"
                                autocomplete="off" autofocus>

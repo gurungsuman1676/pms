@@ -11,16 +11,29 @@ angular.module('sbAdminApp')
 
         var self = this;
         self.cloth = {};
-        self.isShippingUser = ($localStorage.user.roles).indexOf("SHIPPING") != -1;
+        var shippingId;
+        $scope.isShippingUser = false;
 
-        self.locations = [];
+
+        $scope.options = {};
+        $scope.options.locations = [];
         LocationsFactory.getLocations({type: 'WEAVING'},
             function (response) {
-                self.locations = response;
+                $scope.options.locations = response;
+                angular.forEach(response, function (l) {
+                    if (l.name === 'SHIPPING') {
+                        shippingId = l.id;
+                    }
+                })
             }, function (response) {
                 Flash.create('danger', response.message, 'custom-class');
             });
 
+        $scope.updateLocationValue = function (locationId) {
+            $scope.$apply(function(){
+                $scope.isShippingUser = angular.isDefined(locationId) && shippingId === Number(locationId);
+            });
+        };
         $scope.fetchCustomer = function () {
             self.cloth.customerId = undefined;
             $scope.options.customers = [];
