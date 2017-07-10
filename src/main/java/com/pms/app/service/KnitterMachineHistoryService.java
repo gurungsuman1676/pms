@@ -18,4 +18,9 @@ public interface KnitterMachineHistoryService {
 
     void getHistoryReport(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, HttpServletResponse httpServletResponse);
 
+    void delete(Long id);
+
+    void edit(Long id, KnitterMachineHistoryDto knitterMachineHistoryDto);
+
+    KnitterMachineHistoryDto get(Long id);
 }

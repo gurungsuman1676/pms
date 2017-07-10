@@ -29,7 +29,9 @@
                                 'components/prints/prints.factory.js',
                                 'components/yarns/yarns.factory.js',
                                 'components/shared/resources.js',
-                                'components/locations/locations.factory.js'
+                                'components/locations/locations.factory.js',
+                                'components/supervisors/ClothSearchParamFactory.js'
+
                             ]
                         })
                     }

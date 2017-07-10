@@ -17,6 +17,7 @@
                             files: [
                                 'components/knitterHistories/knittersHistoriesList.controller.js',
                                 'components/knitterHistories/knittersHistoriesNew.controller.js',
+                                'components/knitterHistories/knittersHistoriesEdit.controller.js',
                                 'components/knitterHistories/knittersHistories.factory.js',
                                 'components/machines/machines.factory.js',
                                 'components/knitters/knitters.factory.js',
@@ -36,6 +37,12 @@
                 url: '/knitterHistories/new/{:clothId:string}',
                 templateUrl: 'components/knitterHistories/new.html',
                 controller: 'KnittersHistoryNewCtrl',
+                controllerAs: 'ctrl'
+            })
+            .state('dashboard.knittingHistory.edit', {
+                url: '/knitterHistories/edit/{:historyId:string}',
+                templateUrl: 'components/knitterHistories/new.html',
+                controller: 'KnittersHistoryEditCtrl',
                 controllerAs: 'ctrl'
             })
     }

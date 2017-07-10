@@ -145,6 +145,57 @@ public class KnitterMachineHistoryServiceImpl implements KnitterMachineHistorySe
     }
 
     @Override
+    public void delete(Long id) {
+        KnitterMachineHistory knitterMachineHistory = knitterMachineHistoryRepository.findOne(id);
+        if (knitterMachineHistory == null) {
+            throw new RuntimeException("No history available");
+        }
+        if (Objects.equals(knitterMachineHistory.getCloth().getLocation().getName(), LocationEnum.PRE_KNITTING_COMPLETED.getName())) {
+            Clothes clothes = knitterMachineHistory.getCloth();
+            clothes.setLocation(locationRepository.findByName(LocationEnum.PRE_KNITTING.getName()));
+            clothes = clothRepository.save(clothes);
+            ClothActivity activity = new ClothActivity();
+            activity.setCloth(clothes);
+            activity.setLocation(clothes.getLocation());
+            activity.setUser(AuthUtil.getCurrentUser());
+            clothActivityRepository.save(activity);
+        }
+        knitterMachineHistory.setDeleted(true);
+        knitterMachineHistoryRepository.save(knitterMachineHistory);
+    }
+
+    @Override
+    public void edit(Long id, KnitterMachineHistoryDto knitterMachineHistoryDto) {
+
+        if (knitterMachineHistoryDto.getKnitterId() == null) {
+            throw new RuntimeException("No knitter available");
+        }
+        Knitter knitter = knitterRepository.findOne(knitterMachineHistoryDto.getKnitterId());
+        if (knitter == null) {
+            throw new RuntimeException("No such knitter available");
+        }
+        if (knitterMachineHistoryDto.getMachineId() == null) {
+            throw new RuntimeException("No Machine available");
+        }
+        Machine machine = machineRepository.findOne(knitterMachineHistoryDto.getMachineId());
+        if (machine == null) {
+            throw new RuntimeException("No such machine available");
+        }
+        KnitterMachineHistory knitterMachineHistory = knitterMachineHistoryRepository.findOne(id);
+        if (knitterMachineHistory == null) {
+            throw new RuntimeException("No history available");
+        }
+        knitterMachineHistory.setMachine(machine);
+        knitterMachineHistory.setKnitter(knitter);
+        knitterMachineHistoryRepository.save(knitterMachineHistory);
+    }
+
+    @Override
+    public KnitterMachineHistoryDto get(Long id) {
+        return knitterMachineHistoryRepository.getById(id);
+    }
+
+    @Override
     public void getHistoryReport(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, HttpServletResponse httpServletResponse) {
         List<KnitterHistoryReportResource> historyReportResources = knitterMachineHistoryRepository.getAllResource(knitterId, machineId, completedDate, dateFrom, dateTo);
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -212,17 +263,20 @@ public class KnitterMachineHistoryServiceImpl implements KnitterMachineHistorySe
             yarnCell.setCellValue("Yarn");
             yarnCell.setCellStyle(style);
 
+            Cell colorHeadCell = startRow.createCell(8);
+            colorHeadCell.setCellValue("Color");
+            colorHeadCell.setCellStyle(style);
 
-            Cell sizeHeadCell = startRow.createCell(8);
+            Cell sizeHeadCell = startRow.createCell(9);
             sizeHeadCell.setCellValue("Size");
             sizeHeadCell.setCellStyle(style);
-            Cell gaugeCell = startRow.createCell(9);
+            Cell gaugeCell = startRow.createCell(10);
             gaugeCell.setCellValue("Gauge");
             gaugeCell.setCellStyle(style);
-            Cell settingHead = startRow.createCell(10);
+            Cell settingHead = startRow.createCell(11);
             settingHead.setCellValue("Setting");
             settingHead.setCellStyle(style);
-            Cell reOrderCell = startRow.createCell(11);
+            Cell reOrderCell = startRow.createCell(12);
             reOrderCell.setCellValue("Re-Order");
             reOrderCell.setCellStyle(style);
 
@@ -254,18 +308,21 @@ public class KnitterMachineHistoryServiceImpl implements KnitterMachineHistorySe
                 designCellVal.setCellValue(historyReportResource.getDesignName());
 
                 Cell yarnCellVal = row.createCell(7);
-                yarnCellVal.setCellValue(historyReportResource.getYarnName());
+                yarnCellVal.setCellValue(historyReportResource.getYarnName() == null ? "N/A" : historyReportResource.getYarnName());
 
-                Cell sizeCell = row.createCell(8);
+                Cell colorCell = row.createCell(8);
+                colorCell.setCellValue(historyReportResource.getColorCode());
+
+                Cell sizeCell = row.createCell(9);
                 sizeCell.setCellValue(historyReportResource.getSizeName());
 
-                Cell gaugeCellVal = row.createCell(9);
-                gaugeCellVal.setCellValue(historyReportResource.getGauge());
+                Cell gaugeCellVal = row.createCell(10);
+                gaugeCellVal.setCellValue(historyReportResource.getGauge() == null ? "N/A" : historyReportResource.getGauge() + "");
 
-                Cell settingVal = row.createCell(10);
-                settingVal.setCellValue(historyReportResource.getSetting());
+                Cell settingVal = row.createCell(11);
+                settingVal.setCellValue(historyReportResource.getSetting() == null ? "N/A" : historyReportResource.getSetting());
 
-                Cell reOrderCellVal = row.createCell(11);
+                Cell reOrderCellVal = row.createCell(12);
                 reOrderCellVal.setCellValue(historyReportResource.getReOrder() == null ? " " : historyReportResource.getReOrder() ? " Re-Order" : "Bulk");
 
 
@@ -283,7 +340,7 @@ public class KnitterMachineHistoryServiceImpl implements KnitterMachineHistorySe
         }
 
 
-        for (int i = 0; i <= 11; i++) {
+        for (int i = 0; i <= 12; i++) {
             sheet.autoSizeColumn(i);
         }
         exportToExcel(httpServletResponse, workbook);

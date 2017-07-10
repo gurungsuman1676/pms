@@ -20,11 +20,46 @@
             });
         };
 
+
+        factory.getHistory = function (id, successCallback, errorCallback) {
+            $http({
+                method: 'GET',
+                url: RESOURCES.apiURL + '/knitters-history/' + id
+            }).success(function (response) {
+                successCallback(response);
+            }).error(function (response) {
+                errorCallback(response);
+            });
+        };
+
         factory.createKnittersHistory = function (knittersHistory, successCallback, errorCallback) {
             $http({
                 method: 'POST',
                 url: RESOURCES.apiURL + '/knitters-history',
                 data: knittersHistory
+            }).success(function (response) {
+                successCallback(response);
+            }).error(function (response) {
+                errorCallback(response);
+            });
+        };
+
+        factory.editHistory = function (historyId, knittersHistory, successCallback, errorCallback) {
+            $http({
+                method: 'PUT',
+                url: RESOURCES.apiURL + '/knitters-history/' + historyId,
+                data: knittersHistory
+            }).success(function (response) {
+                successCallback(response);
+            }).error(function (response) {
+                errorCallback(response);
+            });
+        };
+
+        factory.deleteHistory = function (id, successCallback, errorCallback) {
+            $http({
+                method: 'DELETE',
+                url: RESOURCES.apiURL + '/knitters-history/' + id,
             }).success(function (response) {
                 successCallback(response);
             }).error(function (response) {

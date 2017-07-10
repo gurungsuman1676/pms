@@ -6,7 +6,9 @@ import com.pms.app.domain.QKnitterMachineHistory;
 import com.pms.app.repo.KnitterMachineHistoryRepository;
 import com.pms.app.repo.repoCustom.KnitterMachineHistoryRepositoryCustom;
 import com.pms.app.schema.KnitterHistoryReportResource;
+import com.pms.app.schema.KnitterMachineHistoryDto;
 import com.pms.app.schema.QKnitterHistoryReportResource;
+import com.pms.app.schema.QKnitterMachineHistoryDto;
 import com.pms.app.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -49,6 +51,7 @@ public class KnitterMachineHistoryRepositoryImpl extends AbstractRepositoryImpl<
         if (dateTo != null) {
             where.and(machineHistory.created.loe(DateUtils.addDays(dateTo,1)));
         }
+        where.and(machineHistory.deleted.isFalse());
 
         if (completedDate != null) {
             Calendar gval = Calendar.getInstance();
@@ -97,6 +100,8 @@ public class KnitterMachineHistoryRepositoryImpl extends AbstractRepositoryImpl<
             Date endTime = gval.getTime();
             where.and(machineHistory.created.between(startDate, endTime));
         }
+        where.and(machineHistory.deleted.isFalse());
+
         return from(machineHistory)
                 .innerJoin(machineHistory.cloth)
                 .innerJoin(machineHistory.cloth.price)
@@ -115,7 +120,16 @@ public class KnitterMachineHistoryRepositoryImpl extends AbstractRepositoryImpl<
                         machineHistory.cloth.price.size.name,
                         machineHistory.cloth.price.design.gauge,
                         machineHistory.cloth.price.design.setting,
-                        machineHistory.cloth.reOrder)
+                        machineHistory.cloth.reOrder,
+                        machineHistory.cloth.color.code)
         );
+    }
+
+    @Override
+    public KnitterMachineHistoryDto getById(Long id) {
+        QKnitterMachineHistory knitterMachineHistory = QKnitterMachineHistory.knitterMachineHistory;
+        return from(knitterMachineHistory)
+                .where(knitterMachineHistory.id.eq(id))
+                .singleResult(new QKnitterMachineHistoryDto(knitterMachineHistory.knitter.id,knitterMachineHistory.machine.id));
     }
 }

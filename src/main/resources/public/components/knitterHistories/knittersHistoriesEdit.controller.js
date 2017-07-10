@@ -7,12 +7,11 @@
  * Controller of the sbAdminApp
  */
 angular.module('sbAdminApp')
-    .controller('KnittersHistoryNewCtrl', function (KnittersHistoryFactory, MachinesFactory,
-                                                    KnittersFactory, $state, $stateParams, Flash,ClothSearchParamFactory) {
-
-        console.log(ClothSearchParamFactory);
+    .controller('KnittersHistoryEditCtrl', function (KnittersHistoryFactory,
+                                                     MachinesFactory, KnittersFactory, $state, $stateParams, Flash) {
 
         var self = this;
+        self.isEdit = true;
         self.options = {};
         self.options.machines = [];
         MachinesFactory.getMachines(function (response) {
@@ -27,11 +26,17 @@ angular.module('sbAdminApp')
         }, function (response) {
             Flash.create('danger', response.message, 'custom-class');
         });
+
+        KnittersHistoryFactory.getHistory($stateParams.historyId, function (response) {
+            self.history = response;
+        }, function (response) {
+            Flash.create('danger', response.message, 'custom-class');
+        });
         self.submitHistory = function () {
-            self.history.clothId = $stateParams.clothId;
-            KnittersHistoryFactory.createKnittersHistory(self.history, function (response) {
-                $state.go('dashboard.supervisors.clothes');
-                Flash.create('success', 'New History added successfully', 'custom-class');
+            var historyId = $stateParams.historyId;
+            KnittersHistoryFactory.editHistory(historyId, self.history, function (response) {
+                $state.go('dashboard.knittingHistory.index');
+                Flash.create('success', ' History update successfully', 'custom-class');
             }, function (response) {
                 Flash.create('danger', response.message, 'custom-class');
             });

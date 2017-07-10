@@ -20,7 +20,7 @@
                                    ng-model="ctrl.history.machineId" required></selectize>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" ng-if="!ctrl.isEdit">
                         <label for="quantity">Quantity</label>
                         <input class="form-control" ng-model="ctrl.history.quantity" type="text" id="quantity"
                                autocomplete="off" required ng-init="ctrl.history.quantity =1">
