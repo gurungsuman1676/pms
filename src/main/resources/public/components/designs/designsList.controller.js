@@ -42,6 +42,8 @@ angular.module('sbAdminApp')
                 },
                 controller: ['$scope', 'DesignsPropertiesFactory', 'designId', '$modalInstance', 'Flash', function ($scope, DesignsPropertiesFactory, designId, $modalInstance, Flash) {
                     $scope.properties = [];
+
+                    $scope.isEdit = false;
                     DesignsPropertiesFactory.getProperties(designId, function (response) {
                         $scope.properties = response;
                     }, function (response) {
@@ -65,14 +67,16 @@ angular.module('sbAdminApp')
                     $scope.addData = function () {
                         $scope.properties.push({
                             name: '',
-                            value: ''
+                            value: '',
+                            isEdit: false,
+                            isAdd: true
                         });
                     };
 
                     $scope.canAddData = function () {
                         var valid = true;
                         angular.forEach($scope.properties, function (p) {
-                            valid = valid && p.name.length > 0 && p.value.length > 0;
+                            valid = valid && angular.isDefined(p.name) && p.name.length > 0 && angular.isDefined(p.value) && p.value.length > 0;
                         });
                         return valid;
                     };

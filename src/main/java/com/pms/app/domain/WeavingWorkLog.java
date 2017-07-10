@@ -36,8 +36,14 @@ public class WeavingWorkLog extends AbstractEntity {
     @ManyToOne
     @JoinColumn(nullable = false)
     private Prints print;
+
     private int quantity;
-    private String color;
+
+    @ManyToOne
+    private Colors color;
+
+    private String extraField;
+
     private String receiptNumber;
 
 

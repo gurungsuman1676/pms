@@ -18,18 +18,21 @@
                 <td class="center">
                     <div class="form-group">
                         <input class="form-control" ng-model="data.name" type="text" id="name" autocomplete="off"
-                               required>
+                               required ng-disabled="!(data.isAdd || data.isEdit)">
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
                         <input class="form-control" ng-model="data.value" type="text" id="value" autocomplete="off"
-                               required>
+                               required ng-disabled="!(data.isAdd || data.isEdit)">
                     </div>
                 </td>
                 <td>
                     <button class="btn btn-danger" data-ng-click="deleteData(data)">
                         Delete
+                    </button>
+                    <button class="btn btn-danger" data-ng-click="data.isEdit = true" ng-if="!(data.isAdd || data.isEdit)">
+                        Edit
                     </button>
                 </td>
             </tr>
