@@ -143,7 +143,7 @@ angular.module('sbAdminApp')
         }
 
         self.deleteCloth = function (cloth) {
-            if (cloth.locationName == "N/A") {
+            if (cloth.locationName == "N/A" || cloth.locationName ==='PRE-KNITTING') {
                 var r = confirm("Are you sure you want to delte the cloth?");
                 if (r == true) {
                     ClothesFactory.deleteCloth(cloth, function (response) {
@@ -219,7 +219,7 @@ angular.module('sbAdminApp')
             ClothesFactory.getClothesReport("?" +
                 (angular.isDefined(self.filterParams.orderNo) ? "&orderNo=" + self.filterParams.orderNo : "") +
                 (angular.isDefined(self.filterParams.customerId) && self.filterParams.customerId != 'All' ? "&customerId=" + self.filterParams.customerId : "") +
-                (angular.isDefined(self.filterParams.designId) && self.filterParams.designId != 'All' ? "&customerId=" + self.filterParams.designId : "") +
+                (angular.isDefined(self.filterParams.designId) && self.filterParams.designId != 'All' ? "&designId=" + self.filterParams.designId : "") +
                 (angular.isDefined(self.filterParams.locationId) && self.filterParams.locationId != 'All' ? "&locationId= " + self.filterParams.locationId : "") +
                 (angular.isDefined(self.filterParams.barcode) ? "&barcode=" + self.filterParams.barcode : "") +
                 (angular.isDefined(self.filterParams.deliverDateFrom) ? "&deliverDateFrom=" + self.filterParams.deliverDateFrom.toDateString() : "") +
