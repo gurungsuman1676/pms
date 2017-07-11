@@ -86,12 +86,13 @@
                             <th>Order No</th>
                             <th>Customer</th>
                             <th>Design</th>
+                            <th>Color</th>
                             <th>Yarn</th>
                             <th>Size</th>
                             <th>Gauge</th>
                             <th>Setting</th>
                             <th>Re-Order</th>
-
+                            <th>Action</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -108,11 +109,20 @@
                             <td>{{history.cloth.order_no}}</td>
                             <td>{{history.cloth.price.customer.name}}</td>
                             <td>{{history.cloth.price.designName}}</td>
+                            <td>{{history.cloth.colorCode}}</td>
                             <td>{{history.cloth.price.yarnName}}</td>
                             <td>{{history.cloth.price.sizeName}}</td>
                             <td>{{history.cloth.price.gauge}}</td>
                             <td>{{history.cloth.price.setting}}</td>
                             <td>{{cloth.reOrder ? 'Re-Order' : 'Bulk'}}
+                            </td>
+                            <td style="width: 100px">
+                                <button type="button" class="btn btn-xs btn-danger pull-left" ng-click="ctrl.deleteHistory(history.id)">
+                                    Delete
+                                </button>
+                                <button type="button" class="btn btn-xs btn-info pull-right" ui-sref="dashboard.knittingHistory.edit({historyId: history.id})">
+                                    Edit
+                                </button>
                             </td>
                         </tr>
                         </tbody>

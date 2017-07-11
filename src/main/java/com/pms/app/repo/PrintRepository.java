@@ -1,6 +1,7 @@
 package com.pms.app.repo;
 
 import com.pms.app.domain.Prints;
+import com.pms.app.repo.repoCustom.PrintRepositoryCustom;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface PrintRepository extends AbstractRepository<Prints> {
+public interface PrintRepository extends AbstractRepository<Prints> ,PrintRepositoryCustom {
 
     @Query("SELECT p FROM Prints p WHERE p.name=:name AND p.size.id =:sizeId AND p.currency.id =:currencyId")
     Prints findByNameAndSizeIdAndCurrencyId(@Param("name") String name, @Param("sizeId") Long sizeId, @Param("currencyId") Long currencyId);
@@ -17,8 +18,4 @@ public interface PrintRepository extends AbstractRepository<Prints> {
     List<Prints> findBySizeId(@Param("sizeId") Long sizeId);
 
     List<Prints> findAllByOrderByNameAsc();
-
-    @Query("SELECT p.id FROM Prints p WHERE p.name =:printName AND p.size.id =:sizeId")
-    List<Long> findByNameAndSizeId(@Param("printName") String printName,@Param("sizeId") Long sizeId);
-
 }

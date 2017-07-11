@@ -2,6 +2,7 @@ package com.pms.app.repo.repoCustom;
 
 import com.pms.app.domain.KnitterMachineHistory;
 import com.pms.app.schema.KnitterHistoryReportResource;
+import com.pms.app.schema.KnitterMachineHistoryDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,4 +16,6 @@ public interface KnitterMachineHistoryRepositoryCustom extends AbstractRepositor
     Page<KnitterMachineHistory> getAll(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, Pageable pageable);
 
     List<KnitterHistoryReportResource> getAllResource(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo);
+
+    KnitterMachineHistoryDto getById(Long id);
 }

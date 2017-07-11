@@ -286,9 +286,9 @@ abstract class AbstractTemplate {
     }
 
     public Colors getColorByName(String colorCode, String colorName, String yarnName) {
-        Colors color = colorRepository.findByCode(colorCode);
+        Colors color = colorRepository.findByCodeForImport(colorCode);
         if (color == null) {
-            Yarns yarns = yarnRepository.findByName(yarnName);
+            Yarns yarns = yarnRepository.findByNameForImport(yarnName);
             if (yarns == null) {
                 yarns = new Yarns();
                 yarns.setName(yarnName);

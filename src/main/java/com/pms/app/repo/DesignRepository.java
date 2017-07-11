@@ -1,12 +1,13 @@
 package com.pms.app.repo;
 
 import com.pms.app.domain.Designs;
+import com.pms.app.repo.repoCustom.DesignRepositoryCustom;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface DesignRepository extends AbstractRepository<Designs> {
+public interface DesignRepository extends AbstractRepository<Designs> ,DesignRepositoryCustom {
 
 
     @Query("SELECT d FROM Designs d WHERE d.name =:name AND d.parent.id =:parentId AND d.customer.id =:customerId")
@@ -26,10 +27,4 @@ public interface DesignRepository extends AbstractRepository<Designs> {
 
     @Query("SELECT d FROM Designs d WHERE d.name =:name  AND d.customer.id =:customerId")
     Designs findByNameAndCustomer(@Param("name") String name, @Param("customerId") Long customerId);
-
-
-    @Query("SELECT d.id FROM Designs d WHERE d.name =:name  AND d.customer.id =:customerId")
-    Long findIdByNameAndCustomer(@Param("name") String name, @Param("customerId") Long customerId);
-
-
 }

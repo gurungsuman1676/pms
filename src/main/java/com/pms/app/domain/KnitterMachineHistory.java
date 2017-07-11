@@ -23,6 +23,8 @@ public class KnitterMachineHistory extends AbstractEntity {
     private Machine machine;
     @ManyToOne
     @JoinColumn(nullable = false)
-    @QueryInit({"price.design","price.size","price.yarn","customer"})
+    @QueryInit({"price.design", "price.size", "price.yarn", "customer","color"})
     private Clothes cloth;
+
+    private boolean deleted;
 }

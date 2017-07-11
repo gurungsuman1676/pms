@@ -7,12 +7,19 @@
  * Controller of the sbAdminApp
  */
 angular.module('sbAdminApp')
-    .controller('ClothesListCtrl', function ($window, $scope, $state, ClothesFactory, CustomersFactory, Flash, ngTableParams, LocationsFactory, ngDialog, DesignsFactory, $localStorage, ColorsFactory) {
+    .controller('ClothesListCtrl', function ($window,
+                                             $scope,
+                                             $state,
+                                             ClothesFactory,
+                                             CustomersFactory,
+                                             Flash, ngTableParams, LocationsFactory, ngDialog,
+                                             DesignsFactory, $localStorage, ColorsFactory, ClothSearchParamFactory) {
 
         var self = this;
         self.orderNo = ''
         self.clothes = [];
         self.showContents = true;
+
 
         $scope.selectedType = 'Order No';
 
@@ -136,7 +143,7 @@ angular.module('sbAdminApp')
         }
 
         self.deleteCloth = function (cloth) {
-            if (cloth.locationName == "N/A") {
+            if (cloth.locationName == "N/A" || cloth.locationName ==='PRE-KNITTING') {
                 var r = confirm("Are you sure you want to delte the cloth?");
                 if (r == true) {
                     ClothesFactory.deleteCloth(cloth, function (response) {
@@ -212,7 +219,7 @@ angular.module('sbAdminApp')
             ClothesFactory.getClothesReport("?" +
                 (angular.isDefined(self.filterParams.orderNo) ? "&orderNo=" + self.filterParams.orderNo : "") +
                 (angular.isDefined(self.filterParams.customerId) && self.filterParams.customerId != 'All' ? "&customerId=" + self.filterParams.customerId : "") +
-                (angular.isDefined(self.filterParams.designId) && self.filterParams.designId != 'All' ? "&customerId=" + self.filterParams.designId : "") +
+                (angular.isDefined(self.filterParams.designId) && self.filterParams.designId != 'All' ? "&designId=" + self.filterParams.designId : "") +
                 (angular.isDefined(self.filterParams.locationId) && self.filterParams.locationId != 'All' ? "&locationId= " + self.filterParams.locationId : "") +
                 (angular.isDefined(self.filterParams.barcode) ? "&barcode=" + self.filterParams.barcode : "") +
                 (angular.isDefined(self.filterParams.deliveryDateFrom) ? "&deliveryDateFrom=" + self.filterParams.deliveryDateFrom.toDateString() : "") +
@@ -232,6 +239,7 @@ angular.module('sbAdminApp')
 
                 "&roles=" + $localStorage.user.roles);
         }
+
 
         self.minimum_date = new Date();
 
@@ -280,6 +288,12 @@ angular.module('sbAdminApp')
             {
                 total: 0,
                 getData: function ($defer, params) {
+                    if (angular.isDefined(ClothSearchParamFactory.params)) {
+                        self.filterParams = ClothSearchParamFactory.params;
+                        self.clothTable.$params.page = ClothSearchParamFactory.page;
+                        self.clothTable.$params.count = ClothSearchParamFactory.count;
+                        ClothSearchParamFactory.params = undefined;
+                    }
                     var page = params.page();
                     ClothesFactory.getClothes({
                             orderNo: self.filterParams.orderNo,
@@ -329,9 +343,12 @@ angular.module('sbAdminApp')
         self.onClothClicked = function (clothId) {
             if (self.isKnitter()) {
                 $state.go("dashboard.knittingHistory.new", {"clothId": clothId});
+                ClothSearchParamFactory.params = self.filterParams;
+                ClothSearchParamFactory.page = self.clothTable.$params.page;
+                ClothSearchParamFactory.count = self.clothTable.$params.count;
             }
-
         };
+
         self.importFromExcel = function (file, type) {
             if (file) {
                 console.log(file);

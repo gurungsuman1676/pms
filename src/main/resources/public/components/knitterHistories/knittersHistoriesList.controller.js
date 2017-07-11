@@ -63,7 +63,16 @@ angular.module('sbAdminApp')
                 (angular.isDefined(self.filterParams.dateTo) ? "&dateTo=" + self.filterParams.dateTo.toDateString() : "")
             );
 
-        }
+        };
+        self.deleteHistory = function (id) {
+            KnittersHistoryFactory.deleteHistory(id,function (response) {
+                self.historyTable.reload();
+                Flash.create('success', "History deleted successfully", 'custom-class');
+            },function (response) {
+                Flash.create('danger', response.message, 'custom-class');
+
+            })
+        };
 
         self.historyTable = new ngTableParams(
             {page: 1, count: 20},
