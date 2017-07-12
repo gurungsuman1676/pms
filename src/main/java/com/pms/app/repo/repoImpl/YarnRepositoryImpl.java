@@ -9,6 +9,8 @@ import com.pms.app.repo.repoCustom.YarnRepositoryCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
+import java.util.List;
+
 /**
  * Created by arjun on 7/11/2017.
  */
@@ -28,9 +30,12 @@ public class YarnRepositoryImpl extends AbstractRepositoryImpl<Yarns, YarnReposi
         QYarns yarns = QYarns.yarns;
         StringExpression nameExpression = Expressions.stringTemplate("replace({0},' ','')", yarns.name);
         StringExpression providedExpression = Expressions.stringTemplate("replace({0},' ','')", yarnName);
-        return from(yarns)
+        List<Yarns> yarnsList = from(yarns)
                 .where(nameExpression.equalsIgnoreCase(providedExpression))
-                .singleResult(yarns);
+                .list(yarns);
+
+
+        return yarnsList != null && yarnsList.size() > 0 ? yarnsList.get(0) : null;
     }
 
 }
