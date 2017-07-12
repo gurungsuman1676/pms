@@ -24,6 +24,8 @@ public interface Routes {
     public static final String SHAWL_COLOR = SHAWL + "/colors";
     public static final String DESIGN_PROPERTIES = DESIGN + "/{id}/properties";
     public static final String SHAWL_ENTRY = SHAWL + "/entries";
+    public static final String WEAVING_LOG = V1 + "/weaving/logs";
+
 
 
 }

@@ -21,10 +21,12 @@ import com.pms.app.service.ReportingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -100,7 +102,7 @@ public class ClothController {
         }
 
         Page<Clothes> page = clothService.getClothes(customerId, locationId, orderNo, barcode, deliveryDateFrom, deliveryDateTo, orderDateFrom,
-                orderDateTo, pageable, role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge, setting, reOrder,week,colorId);
+                orderDateTo, pageable, role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge, setting, reOrder, week, colorId);
         return new PageResult<>(page.getTotalElements(), page.getSize(), page.getNumber(), clothConvert.convert(page.getContent()));
     }
 
@@ -192,7 +194,7 @@ public class ClothController {
         }
 
         reportingService.getClothReport(customerId, locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom,
-                orderDateTo, role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge, setting, reOrder,week,colorId, httpServletResponse);
+                orderDateTo, role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge, setting, reOrder, week, colorId, httpServletResponse);
     }
 
     @RequestMapping(value = CLOTHS_WEAVING_ID, method = RequestMethod.GET)
@@ -247,4 +249,13 @@ public class ClothController {
     }
 
 
+    @RequestMapping(value = "/documents", method = RequestMethod.POST)
+    public Long addDocument(@RequestBody byte[] file) throws IOException {
+        return clothService.addDocument(file);
+    }
+
+    @RequestMapping(value = "/documents/workLogs/{workLogId}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
+    public byte[] getDocument(@PathVariable Long workLogId) {
+        return clothService.getDocument(workLogId);
+    }
 }

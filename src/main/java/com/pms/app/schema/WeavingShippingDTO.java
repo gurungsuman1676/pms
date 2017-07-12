@@ -21,6 +21,7 @@ public class WeavingShippingDTO {
     private String extraField;
     private Long locationId;
     private String receiptNumber;
-    private List<DesignPropertiesResource> properties;
+    private String remarks;
     private Long docId;
+//    private Long colorId;
 }

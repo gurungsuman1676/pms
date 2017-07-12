@@ -11,6 +11,8 @@ import com.pms.app.schema.WeavingShippingDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -39,4 +41,8 @@ public interface ClothService {
     List<Sizes> getSizesForCustomerAndOrderNumber(Integer orderNumber, Long customerId, Long designId);
 
     List<String> getExtraFieldByOrderNumberAndCustomer(Integer orderNumber, Long customerId, Long designId, Long sizeId, Long printId);
+
+    Long addDocument(byte[] file) throws IOException;
+
+    byte[] getDocument(Long workLogId);
 }

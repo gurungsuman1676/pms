@@ -8,11 +8,17 @@ import com.pms.app.schema.WeavingShippingDTO;
 import com.pms.app.security.AuthUtil;
 import com.pms.app.service.ClothService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,9 +33,15 @@ public class ClothServiceImpl implements ClothService {
     private final UserLocationRepository userLocationRepository;
     private final ColorRepository colorRepository;
     private final ClothActivityRepository clothActivityRepository;
+    private final EntityManager entityManager;
+    private final WeavingWorkLogRepository weavingWorkLogRepository;
+    private final RejectedDocumentRepository rejectedDocumentRepository;
+
+    @Value("${file.path}")
+    private String path;
 
     @Autowired
-    public ClothServiceImpl(ClothRepository clothRepository, PriceRepository priceRepository, PrintRepository printRepository, LocationRepository locationRepository, CustomerRepository customerRepository, UserLocationRepository userLocationRepository, ColorRepository colorRepository, ClothActivityRepository clothActivityRepository) {
+    public ClothServiceImpl(ClothRepository clothRepository, PriceRepository priceRepository, PrintRepository printRepository, LocationRepository locationRepository, CustomerRepository customerRepository, UserLocationRepository userLocationRepository, ColorRepository colorRepository, ClothActivityRepository clothActivityRepository, EntityManager entityManager, WeavingWorkLogRepository weavingWorkLogRepository, RejectedDocumentRepository rejectedDocumentRepository) {
         this.clothRepository = clothRepository;
         this.priceRepository = priceRepository;
         this.printRepository = printRepository;
@@ -38,6 +50,9 @@ public class ClothServiceImpl implements ClothService {
         this.userLocationRepository = userLocationRepository;
         this.colorRepository = colorRepository;
         this.clothActivityRepository = clothActivityRepository;
+        this.entityManager = entityManager;
+        this.weavingWorkLogRepository = weavingWorkLogRepository;
+        this.rejectedDocumentRepository = rejectedDocumentRepository;
     }
 
     @Override
@@ -188,6 +203,26 @@ public class ClothServiceImpl implements ClothService {
             });
             clothRepository.save(clothes);
         }
+        WeavingWorkLog weavingWorkLog = new WeavingWorkLog();
+//        weavingWorkLog.setColor(entityManager.getReference(Colors.class, weavingShippingDTO.getColorId()));
+        weavingWorkLog.setCustomer(entityManager.getReference(Customers.class, weavingShippingDTO.getCustomerId()));
+        weavingWorkLog.setDesign(entityManager.getReference(Designs.class, weavingShippingDTO.getDesignId()));
+        weavingWorkLog.setExtraField(weavingShippingDTO.getExtraField());
+        weavingWorkLog.setLocation(locations);
+        weavingWorkLog.setOrderNo(weavingShippingDTO.getOrderNo());
+        weavingWorkLog.setPrint(entityManager.getReference(Prints.class, weavingShippingDTO.getPrintId()));
+        weavingWorkLog.setQuantity(weavingShippingDTO.getQuantity());
+        weavingWorkLog.setReceiptNumber(weavingShippingDTO.getReceiptNumber());
+        weavingWorkLog.setRemarks(weavingShippingDTO.getRemarks());
+        weavingWorkLog.setSize(entityManager.getReference(Sizes.class, weavingShippingDTO.getSizeId()));
+        weavingWorkLog = weavingWorkLogRepository.save(weavingWorkLog);
+
+        if (locations.getName().equalsIgnoreCase(LocationEnum.REJECTED.getName()) && weavingShippingDTO.getDocId() != null) {
+            RejectedDocument rejectedDocument = rejectedDocumentRepository.findOne(weavingShippingDTO.getDocId());
+            rejectedDocument.setWeavingWorkLog(weavingWorkLog);
+            rejectedDocumentRepository.save(rejectedDocument);
+        }
+
     }
 
     @Override
@@ -221,6 +256,25 @@ public class ClothServiceImpl implements ClothService {
     @Override
     public List<String> getExtraFieldByOrderNumberAndCustomer(Integer orderNumber, Long customerId, Long designId, Long sizeId, Long printId) {
         return clothRepository.getExtraFieldByOrderNumberAndCustomer(orderNumber, customerId, designId, sizeId, printId);
+    }
+
+    @Override
+    public Long addDocument(byte[] file) throws IOException {
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+
+        FileOutputStream fos = new FileOutputStream(path + dateFormat.format(date));
+        fos.write(file);
+        fos.close();
+        RejectedDocument rejectedDocument = new RejectedDocument();
+        rejectedDocument.setDocPath(path + dateFormat.format(date));
+        rejectedDocument = rejectedDocumentRepository.save(rejectedDocument);
+        return rejectedDocument.getId();
+    }
+
+    @Override
+    public byte[] getDocument(Long workLogId) {
+        return new byte[0];
     }
 
 }

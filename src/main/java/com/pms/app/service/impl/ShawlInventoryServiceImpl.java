@@ -1,18 +1,14 @@
 package com.pms.app.service.impl;
 
-import com.pms.app.domain.Customers;
 import com.pms.app.domain.Designs;
-import com.pms.app.domain.Locations;
+import com.pms.app.domain.ShawlInventoryBatch;
 import com.pms.app.domain.ShawlColor;
-import com.pms.app.domain.ShawlEntryBatch;
-import com.pms.app.domain.ShawlExportBatch;
 import com.pms.app.domain.ShawlInventory;
 import com.pms.app.domain.Sizes;
-import com.pms.app.repo.LocationRepository;
-import com.pms.app.repo.ShawlEntryBatchRepository;
-import com.pms.app.repo.ShawlExportBatchRepository;
+import com.pms.app.repo.ShawlInventoryBatchRepository;
 import com.pms.app.repo.ShawlInventoryRepository;
-import com.pms.app.repo.repoCustom.ShawlInventoryRepositoryCustom;
+import com.pms.app.schema.PageResult;
+import com.pms.app.schema.ShawlInventoryBatchDetailResource;
 import com.pms.app.schema.ShawlInventoryDto;
 import com.pms.app.service.ShawlInventoryService;
 import com.pms.app.service.ShawlReportService;
@@ -23,8 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.print.attribute.standard.ReferenceUriSchemesSupported;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 
 /**
  * Created by arjun on 6/27/2017.
@@ -35,20 +31,17 @@ import javax.servlet.http.HttpServletResponse;
 public class ShawlInventoryServiceImpl implements ShawlInventoryService {
 
     private final ShawlInventoryRepository shawlInventoryRepository;
-    private final ShawlEntryBatchRepository shawlEntryBatchRepository;
-    private final ShawlExportBatchRepository shawlExportBatchRepository;
+    private final ShawlInventoryBatchRepository shawlInventoryBatchRepository;
     private final EntityManager entityManager;
     private final ShawlReportService shawlReportService;
 
     @Autowired
     public ShawlInventoryServiceImpl(ShawlInventoryRepository shawlInventoryRepository,
-                                     ShawlEntryBatchRepository shawlEntryBatchRepository,
-                                     ShawlExportBatchRepository shawlExportBatchRepository,
+                                     ShawlInventoryBatchRepository shawlInventoryBatchRepository,
                                      EntityManager entityManager,
                                      ShawlReportService shawlReportService) {
         this.shawlInventoryRepository = shawlInventoryRepository;
-        this.shawlEntryBatchRepository = shawlEntryBatchRepository;
-        this.shawlExportBatchRepository = shawlExportBatchRepository;
+        this.shawlInventoryBatchRepository = shawlInventoryBatchRepository;
         this.entityManager = entityManager;
         this.shawlReportService = shawlReportService;
     }
@@ -84,10 +77,12 @@ public class ShawlInventoryServiceImpl implements ShawlInventoryService {
 
         inventory.setCount(inventory.getCount() - shawlEntryDto.getQuantity());
         inventory = shawlInventoryRepository.save(inventory);
-        ShawlExportBatch exportBatch = new ShawlExportBatch();
-        exportBatch.setQuantity(shawlEntryDto.getQuantity());
-        exportBatch.setInventory(inventory);
-        shawlExportBatchRepository.save(exportBatch);
+        ShawlInventoryBatch shawlInventoryBatch = new ShawlInventoryBatch();
+        shawlInventoryBatch.setInventory(inventory);
+        shawlInventoryBatch.setQuantity(shawlEntryDto.getQuantity());
+        shawlInventoryBatch.setInventoryCount(inventory.getCount());
+        shawlInventoryBatch.setEntry(false);
+        shawlInventoryBatchRepository.save(shawlInventoryBatch);
 
 
     }
@@ -107,10 +102,12 @@ public class ShawlInventoryServiceImpl implements ShawlInventoryService {
         }
         inventory.setCount(inventory.getCount() + shawlEntryDto.getQuantity());
         inventory = shawlInventoryRepository.save(inventory);
-        ShawlEntryBatch shawlEntryBatch = new ShawlEntryBatch();
-        shawlEntryBatch.setInventory(inventory);
-        shawlEntryBatch.setQuantity(shawlEntryDto.getQuantity());
-        shawlEntryBatchRepository.save(shawlEntryBatch);
+        ShawlInventoryBatch shawlInventoryBatch = new ShawlInventoryBatch();
+        shawlInventoryBatch.setInventory(inventory);
+        shawlInventoryBatch.setQuantity(shawlEntryDto.getQuantity());
+        shawlInventoryBatch.setInventoryCount(inventory.getCount());
+        shawlInventoryBatch.setEntry(true);
+        shawlInventoryBatchRepository.save(shawlInventoryBatch);
     }
 
     @Override
@@ -121,6 +118,16 @@ public class ShawlInventoryServiceImpl implements ShawlInventoryService {
     @Override
     public void generateReport(Long sizeId, Long colorId, Long designId, HttpServletResponse httpServletResponse) {
         shawlReportService.generateReport(sizeId, colorId, designId, httpServletResponse);
+    }
+
+    @Override
+    public PageResult<ShawlInventoryBatchDetailResource> getBatchDetails(Long id, Date createdFrom, Date createdTo, Pageable pageable) {
+        return shawlInventoryRepository.getBatchDetails(id,createdFrom,createdTo, pageable);
+    }
+
+    @Override
+    public void getBatchDetailsReport(Long id, Date createdFrom, Date createdTo, HttpServletResponse httpServletResponse) {
+        shawlReportService.getBatchDetailReport(id,createdFrom,createdTo,httpServletResponse);
     }
 
 

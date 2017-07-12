@@ -1,5 +1,6 @@
 package com.pms.app.util;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -13,4 +14,10 @@ public class DateUtils {
         cal.add(Calendar.DATE, days); //minus number would decrement the days
         return cal.getTime();
     }
+
+    public static String getDateString(Date date) {
+        return new SimpleDateFormat("MM/dd/yyyy").format(new Date(date.getTime()));
+
+    }
+
 }

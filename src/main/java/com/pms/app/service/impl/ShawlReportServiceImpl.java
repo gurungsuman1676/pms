@@ -2,9 +2,13 @@ package com.pms.app.service.impl;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.pms.app.domain.ShawlInventory;
+import com.pms.app.repo.ShawlInventoryBatchRepository;
 import com.pms.app.repo.ShawlInventoryRepository;
+import com.pms.app.schema.ShawlInventoryBatchDetailResource;
 import com.pms.app.schema.ShawlInventoryResource;
 import com.pms.app.service.ShawlReportService;
+import com.pms.app.util.DateUtils;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -27,6 +31,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -131,6 +136,143 @@ public class ShawlReportServiceImpl implements ShawlReportService {
             sheet.autoSizeColumn(i);
         }
         exportToExcel(httpServletResponse, workbook);
+    }
+
+
+    @Override
+    public void getBatchDetailReport(Long id, Date createdFrom, Date createdTo, HttpServletResponse httpServletResponse) {
+        List<ShawlInventoryBatchDetailResource> entryResources = shawlEntryRepository.getAllForReport(id, createdFrom, createdTo);
+
+        HSSFWorkbook workbook = new HSSFWorkbook();
+
+        HSSFSheet sheet = getWithHeaderImage(workbook, "/images/pms-logo.png");
+
+        if (entryResources == null || entryResources.isEmpty()) {
+            Row headerRow = sheet.createRow(8);
+            Cell snHeadCell = headerRow.createCell(8);
+            snHeadCell.setCellValue("No shawl Batch available");
+        } else {
+            int rownum = 8;
+
+            HSSFCellStyle style = workbook.createCellStyle();
+            style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+            style.setBorderTop(HSSFCellStyle.BORDER_THIN);
+            style.setBorderRight(HSSFCellStyle.BORDER_THIN);
+            style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+
+
+            Row topHeaderRow = sheet.createRow(7);
+
+
+            Cell headerNameCell = topHeaderRow.createCell(2);
+            headerNameCell.setCellValue("Shawl Batch Report");
+            headerNameCell.setCellStyle(style);
+
+
+            Row headerRow = sheet.createRow(++rownum);
+
+
+            Cell headerDesign = headerRow.createCell(0);
+            headerDesign.setCellValue("Design");
+            headerDesign.setCellStyle(style);
+
+
+            Cell headerSize = headerRow.createCell(1);
+            headerSize.setCellValue("Size");
+            headerSize.setCellStyle(style);
+
+
+            Cell headerColor = headerRow.createCell(2);
+            headerColor.setCellValue("Color");
+            headerColor.setCellStyle(style);
+
+            Cell quantityHeader = headerRow.createCell(3);
+            quantityHeader.setCellValue("Quantity");
+            quantityHeader.setCellStyle(style);
+
+            ShawlInventory shawlInventory = shawlEntryRepository.findOne(id);
+
+
+            Row headerValueRow = sheet.createRow(++rownum);
+
+            Cell headerCellDesign = headerValueRow.createCell(0);
+            headerCellDesign.setCellValue(shawlInventory.getDesigns().getName());
+            headerCellDesign.setCellStyle(style);
+
+
+            Cell headerCellSize = headerValueRow.createCell(1);
+            headerCellSize.setCellValue(shawlInventory.getSizes().getName());
+            headerCellSize.setCellStyle(style);
+
+
+            Cell headerCellColor = headerValueRow.createCell(2);
+            headerCellColor.setCellValue(shawlInventory.getColor().getName());
+            headerCellColor.setCellStyle(style);
+
+            Cell quantityCellHeader = headerValueRow.createCell(3);
+            quantityCellHeader.setCellValue(shawlInventory.getCount());
+            quantityCellHeader.setCellStyle(style);
+            rownum++;
+            Row startRow = sheet.createRow(++rownum);
+
+
+            Cell createdHeader = startRow.createCell(0);
+            createdHeader.setCellValue("Created");
+            createdHeader.setCellStyle(style);
+
+
+            Cell typeHeaderCell = startRow.createCell(1);
+            typeHeaderCell.setCellValue("Type");
+            typeHeaderCell.setCellStyle(style);
+
+
+            Cell countHeaderCell = startRow.createCell(2);
+            countHeaderCell.setCellValue("Count");
+            countHeaderCell.setCellStyle(style);
+
+
+            Cell remainingHeaderCell = startRow.createCell(3);
+            remainingHeaderCell.setCellValue("Remaining Count");
+            remainingHeaderCell.setCellStyle(style);
+
+
+            for (ShawlInventoryBatchDetailResource shawlEntryResource : entryResources) {
+                rownum++;
+
+
+                Row row = sheet.createRow(rownum);
+                Cell createdCell = row.createCell(0);
+                createdCell.setCellValue(DateUtils.getDateString(shawlEntryResource.getCreated()));
+
+
+                Cell typeCell = row.createCell(1);
+                typeCell.setCellValue(shawlEntryResource.isEntry() ? "Import" : "Export");
+
+                Cell countCell = row.createCell(2);
+                countCell.setCellValue(shawlEntryResource.getCount());
+
+                Cell remainingCell = row.createCell(3);
+                remainingCell.setCellValue(shawlEntryResource.getRemainingCount());
+
+            }
+
+            rownum++;
+            rownum++;
+            Row lastRow = sheet.createRow(rownum);
+            Cell totalValueTextCell = lastRow.createCell(1);
+            totalValueTextCell.setCellStyle(style);
+            totalValueTextCell.setCellValue("Total");
+            Cell totalValueCell = lastRow.createCell(2);
+            totalValueCell.setCellStyle(style);
+            totalValueCell.setCellValue(entryResources.size());
+        }
+
+
+        for (int i = 0; i <= 3; i++) {
+            sheet.autoSizeColumn(i);
+        }
+        exportToExcel(httpServletResponse, workbook);
+
     }
 
 

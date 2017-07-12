@@ -254,17 +254,7 @@
             })
         };
 
-        factory.updateWeavingLocation = function (cloth, successCallback, errorCallback) {
-            $http({
-                method: 'PUT',
-                url: RESOURCES.apiURL + '/clothes/weaving/locations',
-                data: cloth
-            }).success(function (response) {
-                successCallback(response);
-            }).error(function (response) {
-                errorCallback(response);
-            });
-        }
+
 
         return factory;
     };

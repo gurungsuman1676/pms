@@ -85,7 +85,7 @@ public class KnitterMachineHistoryServiceImpl implements KnitterMachineHistorySe
             throw new RuntimeException("No such cloth available");
         }
 
-        Locations preKnitting = locationRepository.findByName(LocationEnum.PRE_KNITTING.getName());
+        Locations preKnitting = locationRepository.findByNameAndLocationType(LocationEnum.PRE_KNITTING.getName(),LocationType.KNITTING);
 
         List<Clothes> clothes = clothRepository.findByOrderNoAndCustomerAndPriceAndColorAndTypeAndStatusAndLocation(providedCloth.getOrder_no(),
                 providedCloth.getCustomer().getId(),
@@ -134,7 +134,7 @@ public class KnitterMachineHistoryServiceImpl implements KnitterMachineHistorySe
         }
         if (Objects.equals(knitterMachineHistory.getCloth().getLocation().getName(), LocationEnum.PRE_KNITTING_COMPLETED.getName())) {
             Clothes clothes = knitterMachineHistory.getCloth();
-            clothes.setLocation(locationRepository.findByName(LocationEnum.PRE_KNITTING.getName()));
+            clothes.setLocation(locationRepository.findByNameAndLocationType(LocationEnum.PRE_KNITTING.getName(),LocationType.KNITTING));
             clothes = clothRepository.save(clothes);
             ClothActivity activity = new ClothActivity();
             activity.setCloth(clothes);

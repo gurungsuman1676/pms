@@ -18,6 +18,10 @@ spring:
 backup:
   databaseName : pms_development
   mysqlDumppath: backup
+
+file:
+  path: H:\pms\build\img\
+
 server:
   port: 9090
 

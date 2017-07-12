@@ -3,14 +3,9 @@
     <div class="col-lg-12 panel-body">
         <div class="panel panel-default">
             <div class="panel-heading">
-                List of Shawls
+                List of Batches
             </div>
             <div class="action-buttons">
-
-                <div class="pull-left">
-                    <button type="button" class="btn btn-primary" ui-sref="dashboard.inventory.new">Add Entry
-                    </button>
-                </div>
 
                 <div class="pull-left">
                     <button class="btn btn btn-primary" ng-click="showFilter = !showFilter"><p ng-if="!showFilter">Show
@@ -23,16 +18,21 @@
 
 
                 <div class="col-sm-3 input-margin">
-                    <selectize placeholder="Design" ng-model="ctrl.filterParams.designId"
-                               config="{maxOptions: 100}" options="ctrl.filtersOptions.designs"></selectize>
+                    <input placeholder="Created Date From" type="text" id='createdDateFrom'
+                           class="form-control date-picker-new datepopup" name="date"
+                           data-ng-click="openCreatedDateFrom($event,'addCreatedDateFrom')"
+                           data-datepicker-popup="{{format}}" data-ng-model="ctrl.filterParams.createdDateFrom"
+                           data-is-open="datepickers.addCreatedDateFrom" data-min-date="self.minimum_date"
+                           data-close-text="Close" required/>
                 </div>
+
                 <div class="col-sm-3 input-margin">
-                    <selectize placeholder="Size" ng-model="ctrl.filterParams.sizeId"
-                               config="{maxOptions: 100}" options="ctrl.filtersOptions.sizes"></selectize>
-                </div>
-                <div class="col-sm-3 input-margin">
-                    <selectize placeholder="Color" ng-model="ctrl.filterParams.colorId"
-                               config="{maxOptions: 100}" options="ctrl.filtersOptions.colors"></selectize>
+                    <input placeholder="Created Date To" type="text" id='createdDateTo'
+                           class="form-control date-picker-new datepopup" name="date"
+                           data-ng-click="openCreatedDateTo($event,'addCreatedDateTo')"
+                           data-datepicker-popup="{{format}}" data-ng-model="ctrl.filterParams.createdDateTo"
+                           data-is-open="datepickers.addCreatedDateTo" data-min-date="self.minimum_date"
+                           data-close-text="Close" required/>
                 </div>
                 <div class="col-sm-12"></div>
 
@@ -58,20 +58,23 @@
                            id="dataTables-example">
                         <thead>
                         <tr>
-                            <th>Design</th>
-                            <th>Color</th>
-                            <th>Size</th>
+                            <th>Created</th>
+                            <th>Type</th>
                             <th>Count</th>
+                            <th>Remaining</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr class="odd gradeX clickable-td"
-                            ng-repeat="entry in $data | orderBy:'-id'"
-                            ui-sref="dashboard.inventory.batches.index({inventoryId: entry.id})">
-                            <td>{{entry.design.name}}</td>
-                            <td>{{entry.color.name}}</td>
-                            <td>{{entry.size.name}}</td>
+                        <tr class="odd gradeX"
+                            ng-repeat="entry in $data | orderBy:'id'">
+                            <td>{{entry.created | date: 'dd/MM/yyyy'}}
+                            </td>
+                            <td>
+                                <span ng-if="entry.entry">Import</span>
+                                <span ng-if="!entry.entry">Export</span>
+                            </td>
                             <td>{{entry.count}}</td>
+                            <td>{{entry.remainingCount}}</td>
                         </tr>
                         </tbody>
                     </table>
