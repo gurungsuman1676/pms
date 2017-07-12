@@ -4,6 +4,7 @@ import com.pms.app.repo.WeavingWorkLogRepository;
 import com.pms.app.schema.PageResult;
 import com.pms.app.schema.WeavingLogResource;
 import com.pms.app.service.WeavingLogService;
+import com.pms.app.service.WeavingReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,19 +19,22 @@ import java.util.Date;
 @Service
 public class WeavingLogServiceImpl implements WeavingLogService {
     private final WeavingWorkLogRepository weavingWorkLogRepository;
+    private final WeavingReportService weavingReportService;
 
     @Autowired
-    public WeavingLogServiceImpl(WeavingWorkLogRepository weavingWorkLogRepository) {
+    public WeavingLogServiceImpl(WeavingWorkLogRepository weavingWorkLogRepository, WeavingReportService weavingReportService) {
         this.weavingWorkLogRepository = weavingWorkLogRepository;
+        this.weavingReportService = weavingReportService;
     }
 
     @Override
     public PageResult<WeavingLogResource> getAll(Long customerId, Long locationId, Integer orderNo, String receiptNumber, Date createdDateFrom, Date createdDateTo, Long designId, Long printId, Long sizeId, Pageable pageable) {
-        return null;
+        return weavingWorkLogRepository.getAll(customerId,locationId,orderNo,receiptNumber,createdDateFrom,createdDateTo,designId,printId,sizeId,pageable);
     }
 
     @Override
     public void getReport(Long customerId, Long locationId, Integer orderNo, String receiptNumber, Date createdDateFrom, Date createdDateTo, Long designId, Long printId, Long sizeId, HttpServletResponse httpServletResponse) {
+         weavingReportService.getReport(customerId,locationId,orderNo,receiptNumber,createdDateFrom,createdDateTo,designId,printId,sizeId,httpServletResponse);
 
     }
 }

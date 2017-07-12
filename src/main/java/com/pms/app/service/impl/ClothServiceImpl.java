@@ -7,6 +7,7 @@ import com.pms.app.schema.ClothLocationDto;
 import com.pms.app.schema.WeavingShippingDTO;
 import com.pms.app.security.AuthUtil;
 import com.pms.app.service.ClothService;
+import org.bouncycastle.util.encoders.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -15,9 +16,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -267,14 +273,16 @@ public class ClothServiceImpl implements ClothService {
         fos.write(file);
         fos.close();
         RejectedDocument rejectedDocument = new RejectedDocument();
-        rejectedDocument.setDocPath(path + dateFormat.format(date));
+        rejectedDocument.setDocPath(dateFormat.format(date));
         rejectedDocument = rejectedDocumentRepository.save(rejectedDocument);
         return rejectedDocument.getId();
     }
 
     @Override
-    public byte[] getDocument(Long workLogId) {
-        return new byte[0];
+    public byte[] getDocument(Long workLogId) throws IOException {
+        RejectedDocument rejectedDocument = rejectedDocumentRepository.findByWeavingWorkLogId(workLogId);
+        Path path = Paths.get(this.path + rejectedDocument.getDocPath());
+        return Base64.encode(Files.readAllBytes(path));
     }
 
 }

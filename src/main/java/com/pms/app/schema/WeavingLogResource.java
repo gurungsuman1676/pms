@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 /**
  * Created by arjun on 7/11/2017.
  */
@@ -26,6 +28,7 @@ public class WeavingLogResource {
     private String sizeName;
     private int quantity;
     private String remarks;
+    private Date created;
 
     @QueryProjection
     public WeavingLogResource(Long id,
@@ -38,7 +41,8 @@ public class WeavingLogResource {
                               String colorName,
                               String sizeName,
                               int quantity,
-                              String remarks) {
+                              String remarks,
+                              Date created) {
         this.id = id;
         this.receiptNumber = receiptNumber;
         this.orderNo = orderNo;
@@ -50,6 +54,7 @@ public class WeavingLogResource {
         this.sizeName = sizeName;
         this.quantity = quantity;
         this.remarks = remarks;
+        this.created = created;
     }
 
 

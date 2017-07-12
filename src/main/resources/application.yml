@@ -20,7 +20,7 @@ backup:
   mysqlDumppath: backup
 
 file:
-  path: H:\pms\build\img\
+  path: C:\Users\arjun\Desktop\img\
 
 server:
   port: 9090

@@ -6,7 +6,6 @@
         </div>
 
 
-        <!-- /.panel-heading -->
         <div class="action-buttons">
 
             <div class="pull-left">
@@ -100,20 +99,17 @@
                 <button class="btn btn btn-primary" ng-click="ctrl.generateCSV()">Generate CSV</button>
             </div>
 
-            <!--<div class="pull-left">-->
-            <!--<button ng-disabled= "ctrl.filterParams.typeId != 1" class="btn btn btn-primary" ng-click="ctrl.generateWeavingInvoice()">Generate Weaving Invoice</button>-->
-            <!--</div>-->
-
         </div>
 
         <div class="panel-body">
             <div class="dataTable_wrapper no-padding horizontal-scroll" ng-show="ctrl.logs">
                 <table ng-table="ctrl.logTable"
-                       class="table table-striped table-bcreateded table-hover table-condensed"
+                       class="table table-striped table-bordered table-hover table-condensed"
                        id="dataTables-example">
                     <thead>
                     <tr>
                         <th>Receipt No</th>
+                        <th>Created On </th>
                         <th>ONo</th>
                         <th>Location</th>
                         <th>Customer</th>
@@ -127,8 +123,9 @@
                     </thead>
                     <tbody>
                     <tr class="odd gradeX"
-                        ng-repeat="log in $data | createdBy:'-id'">
+                        ng-repeat="log in $data" ng-class="{'clickable-td': log.locationName == 'REJECTED'}" data-ng-click="ctrl.getRejectedDocument(log.id,log.locationName)">
                         <td>{{log.receiptNumber}}</td>
+                        <td>{{log.created | date: 'dd/MM/yyyy'}}</td>
                         <td>{{log.orderNo}}</td>
                         <td>{{log.locationName}}</td>
                         <td>{{log.customerName}}</td>
@@ -143,11 +140,8 @@
                 </table>
             </div>
         </div>
-        <!-- /.panel-body -->
     </div>
-    <!-- /.panel -->
 </div>
-<!-- /.col-lg-12 -->
 
 <div class="col-lg-12" ng-show="ctrl.noResults">
     No results containing all your search terms were found.

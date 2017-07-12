@@ -44,5 +44,5 @@ public interface ClothService {
 
     Long addDocument(byte[] file) throws IOException;
 
-    byte[] getDocument(Long workLogId);
+    byte[] getDocument(Long workLogId) throws IOException;
 }

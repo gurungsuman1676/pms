@@ -2,7 +2,7 @@
 (function () {
     'use strict';
 
-    var WeavingFactory = function ($http, RESOURCES) {
+    var WeavingFactory = function ($http, RESOURCES,$window) {
         var factory = {};
 
         factory.updateWeavingLocation = function (cloth, successCallback, errorCallback) {
@@ -28,10 +28,40 @@
                 errorCallback(response);
             });
         };
+
+        factory.getRejectedDocument = function (id, successCallback, errorCallback) {
+            $http({
+                method: 'GET',
+                url: RESOURCES.apiURL + '/clothes/documents/workLogs/'+id,
+            }).success(function (response) {
+                successCallback(response);
+            }).error(function (response) {
+                errorCallback(response);
+            });
+        };
+
+        factory.getLogs = function (params, successCallback, errorCallback) {
+            $http({
+                method: 'GET',
+                url: RESOURCES.apiURL + '/weaving/logs',
+                params: params
+            }).success(function (response) {
+                successCallback(response);
+            }).error(function (response) {
+                errorCallback(response);
+            })
+        };
+
+
+
+        factory.getReport = function (params) {
+            $window.open(RESOURCES.apiURL + '/weaving/logs' + '/report' + params);
+        };
+
         return factory;
     };
 
-    WeavingFactory.$inject = ['$http', 'RESOURCES'];
+    WeavingFactory.$inject = ['$http', 'RESOURCES','$window'];
     angular.module('sbAdminApp')
         .factory('WeavingFactory', WeavingFactory);
 

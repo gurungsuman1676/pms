@@ -255,7 +255,7 @@ public class ClothController {
     }
 
     @RequestMapping(value = "/documents/workLogs/{workLogId}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
-    public byte[] getDocument(@PathVariable Long workLogId) {
+    public byte[] getDocument(@PathVariable Long workLogId) throws IOException {
         return clothService.getDocument(workLogId);
     }
 }
