@@ -20,7 +20,13 @@ public interface ShawlInventoryService {
 
     void generateReport(Long locationId, Long sizeId, Long designId, HttpServletResponse httpServletResponse);
 
-    PageResult<ShawlInventoryBatchDetailResource> getBatchDetails(Long id, Date createdFrom, Date createdTo, Pageable pageable);
+    PageResult<ShawlInventoryBatchDetailResource> getBatchDetails(Long id, Date createdFrom, Date createdTo,String receiptNumber, Pageable pageable);
 
-    void getBatchDetailsReport(Long id, Date createdFrom, Date createdTo, HttpServletResponse httpServletResponse);
+    void getBatchDetailsReport(Long id, Date createdFrom, Date createdTo,String receiptNumber,HttpServletResponse httpServletResponse);
+
+    ShawlInventoryDto get(Long batchId);
+
+    void delete(Long batchId);
+
+    void edit(Long batchId, ShawlInventoryDto shawlInventoryDto);
 }

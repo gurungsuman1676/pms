@@ -119,22 +119,28 @@
                         <th>Size</th>
                         <th>Quantity</th>
                         <th>Remark</th>
+                        <th>Action</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr class="odd gradeX"
-                        ng-repeat="log in $data" ng-class="{'clickable-td': log.locationName == 'REJECTED'}" data-ng-click="ctrl.getRejectedDocument(log.id,log.locationName)">
-                        <td>{{log.receiptNumber}}</td>
-                        <td>{{log.created | date: 'dd/MM/yyyy'}}</td>
-                        <td>{{log.orderNo}}</td>
-                        <td>{{log.locationName}}</td>
-                        <td>{{log.customerName}}</td>
-                        <td>{{log.designName}}</td>
-                        <td>{{log.printName}}</td>
-                        <td>{{log.colorName}}</td>
-                        <td>{{log.sizeName}}</td>
-                        <td>{{log.quantity}}</td>
-                        <td>{{log.remarks}}</td>
+                        ng-repeat="log in $data" >
+                        <td ng-class="{'clickable-td': log.locationName == 'REJECTED'}" data-ng-click="ctrl.getRejectedDocument(log.id,log.locationName)">{{log.receiptNumber}}</td>
+                        <td ng-class="{'clickable-td': log.locationName == 'REJECTED'}" data-ng-click="ctrl.getRejectedDocument(log.id,log.locationName)">{{log.created | date: 'dd/MM/yyyy'}}</td>
+                        <td ng-class="{'clickable-td': log.locationName == 'REJECTED'}" data-ng-click="ctrl.getRejectedDocument(log.id,log.locationName)">{{log.orderNo}}</td>
+                        <td ng-class="{'clickable-td': log.locationName == 'REJECTED'}" data-ng-click="ctrl.getRejectedDocument(log.id,log.locationName)"> {{log.locationName}}</td>
+                        <td ng-class="{'clickable-td': log.locationName == 'REJECTED'}" data-ng-click="ctrl.getRejectedDocument(log.id,log.locationName)">{{log.customerName}}</td>
+                        <td ng-class="{'clickable-td': log.locationName == 'REJECTED'}" data-ng-click="ctrl.getRejectedDocument(log.id,log.locationName)">{{log.designName}}</td>
+                        <td ng-class="{'clickable-td': log.locationName == 'REJECTED'}" data-ng-click="ctrl.getRejectedDocument(log.id,log.locationName)">{{log.printName}}</td>
+                        <td ng-class="{'clickable-td': log.locationName == 'REJECTED'}" data-ng-click="ctrl.getRejectedDocument(log.id,log.locationName)">{{log.colorName}}</td>
+                        <td ng-class="{'clickable-td': log.locationName == 'REJECTED'}" data-ng-click="ctrl.getRejectedDocument(log.id,log.locationName)">{{log.sizeName}}</td>
+                        <td ng-class="{'clickable-td': log.locationName == 'REJECTED'}" data-ng-click="ctrl.getRejectedDocument(log.id,log.locationName)">{{log.quantity}}</td>we
+                        <td ng-class="{'clickable-td': log.locationName == 'REJECTED'}" data-ng-click="ctrl.getRejectedDocument(log.id,log.locationName)">{{log.remarks}}</td>
+                        <td style="width: 100px">
+                            <button type="button" class="btn btn-xs btn-danger pull-left" ng-click="ctrl.deleteLog(log.id)">
+                                Delete
+                            </button>
+                        </td>
                     </tr>
                     </tbody>
                 </table>

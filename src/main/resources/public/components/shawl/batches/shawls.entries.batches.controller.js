@@ -7,7 +7,8 @@
  * Controller of the sbAdminApp
  */
 angular.module('sbAdminApp')
-    .controller('ShawlsEntriesBatchesCtrl', function ($scope, $stateParams, ShawlsEntriesBatchesFactory, Flash, ngTableParams) {
+    .controller('ShawlsEntriesBatchesCtrl', function ($scope, $stateParams, ShawlsEntriesBatchesFactory, Flash,
+                                                      ngTableParams) {
 
         var self = this;
         self.filterParams = {};
@@ -36,9 +37,21 @@ angular.module('sbAdminApp')
         self.generateCSV = function () {
             ShawlsEntriesBatchesFactory.getReport($stateParams.inventoryId, "?" +
                 (angular.isDefined(self.filterParams.createdDateFrom) ? "&createdDateFrom=" + self.filterParams.createdDateFrom.toDateString() : "") +
-                (angular.isDefined(self.filterParams.createdDateTo) ? "&createdDateTo=" + self.filterParams.createdDateTo.toDateString() : ""));
+                (angular.isDefined(self.filterParams.createdDateTo) ? "&createdDateTo=" + self.filterParams.createdDateTo.toDateString() : "") +
+                (angular.isDefined(self.filterParams.receiptNumber) ? "&receiptNumber=" + self.filterParams.receiptNumber : "")
+            );
         };
 
+        self.deleteEntry = function (entryId) {
+            ShawlsEntriesBatchesFactory.deleteBatch(entryId, function () {
+                self.entryListTable.reload();
+                Flash.create('success', 'Entry deleted successfully', 'custom-class');
+
+            }, function (response) {
+                Flash.create('danger', response.message, 'custom-class');
+
+            })
+        };
 
         self.entryListTable = new ngTableParams(
             {page: 1, count: 20},
@@ -49,6 +62,7 @@ angular.module('sbAdminApp')
                     ShawlsEntriesBatchesFactory.getBatches($stateParams.inventoryId, {
                             createdDateFrom: self.filterParams.createdDateFrom ? self.filterParams.createdDateFrom.toDateString() : undefined,
                             createdDateTo: self.filterParams.createdDateTo ? self.filterParams.createdDateTo.toDateString() : undefined,
+                            receiptNumber: self.filterParams.receiptNumber,
                             sort: 'id,desc',
                             page: page - 1,
                             size: params.count()

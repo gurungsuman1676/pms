@@ -132,6 +132,7 @@ public class WeavingWorkLogRepositoryImpl extends AbstractRepositoryImpl<Weaving
             where.and(weavingWorkLog.created.loe(DateUtils.addDays(createdDateTo, 1)));
         }
 
+        where.and(weavingWorkLog.deleted.isFalse());
         return where;
     }
 }

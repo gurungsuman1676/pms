@@ -27,4 +27,8 @@ public class ShawlInventoryBatch extends AbstractEntity {
 
     private boolean isEntry;
 
+    private String receiptNumber;
+
+    private boolean deleted;
+
 }

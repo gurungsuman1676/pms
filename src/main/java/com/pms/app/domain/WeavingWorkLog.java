@@ -47,4 +47,10 @@ public class WeavingWorkLog extends AbstractEntity {
 
     private String remarks;
 
+    private boolean deleted;
+
+    private String boxNumber;
+
+    private String shipping;
+
 }

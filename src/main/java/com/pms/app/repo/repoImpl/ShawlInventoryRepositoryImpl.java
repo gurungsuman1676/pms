@@ -2,14 +2,17 @@ package com.pms.app.repo.repoImpl;
 
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.jpa.JPQLQuery;
+import com.mysema.query.types.expr.CaseBuilder;
 import com.pms.app.domain.QShawlInventory;
 import com.pms.app.domain.QShawlInventoryBatch;
 import com.pms.app.domain.ShawlInventory;
 import com.pms.app.repo.ShawlInventoryRepository;
 import com.pms.app.schema.PageResult;
 import com.pms.app.schema.QShawlInventoryBatchDetailResource;
+import com.pms.app.schema.QShawlInventoryDto;
 import com.pms.app.schema.QShawlInventoryResource;
 import com.pms.app.schema.ShawlInventoryBatchDetailResource;
+import com.pms.app.schema.ShawlInventoryDto;
 import com.pms.app.schema.ShawlInventoryResource;
 import com.pms.app.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +38,7 @@ public class ShawlInventoryRepositoryImpl extends AbstractRepositoryImpl<ShawlIn
     }
 
     @Override
-    public ShawlInventory findCountForExportBySizeIdAndColorIdAndDesignId(Long sizeId, Long colorId, Long designId) {
+    public ShawlInventory findForExportBySizeIdAndColorIdAndDesignId(Long sizeId, Long colorId, Long designId) {
         QShawlInventory shawlInventory = QShawlInventory.shawlInventory;
 
         BooleanBuilder where = getBooleanBuilder(sizeId, colorId, designId, shawlInventory);
@@ -81,11 +84,13 @@ public class ShawlInventoryRepositoryImpl extends AbstractRepositoryImpl<ShawlIn
     }
 
     @Override
-    public PageResult<ShawlInventoryBatchDetailResource> getBatchDetails(Long id, Date createdFrom, Date createdTo, Pageable pageable) {
+    public PageResult<ShawlInventoryBatchDetailResource> getBatchDetails(Long id, Date createdFrom,
+                                                                         Date createdTo, String receiptNumber,
+                                                                         Pageable pageable) {
         QShawlInventoryBatch shawlInventoryBatch = QShawlInventoryBatch.shawlInventoryBatch;
 
 
-        JPQLQuery query = getQuery(shawlInventoryBatch, getWhereCondition(shawlInventoryBatch, id, createdFrom, createdTo));
+        JPQLQuery query = getQuery(shawlInventoryBatch, getWhereCondition(shawlInventoryBatch, id, createdFrom, createdTo, receiptNumber));
         Long totalCount = query.count();
 
         List<ShawlInventoryBatchDetailResource> batchEntries = query.limit(pageable.getPageSize())
@@ -94,28 +99,49 @@ public class ShawlInventoryRepositoryImpl extends AbstractRepositoryImpl<ShawlIn
                         shawlInventoryBatch.created,
                         shawlInventoryBatch.quantity,
                         shawlInventoryBatch.inventoryCount,
-                        shawlInventoryBatch.isEntry
+                        shawlInventoryBatch.isEntry,
+                        shawlInventoryBatch.receiptNumber,
+                        shawlInventoryBatch.id
                 ));
         return new PageResult<>(totalCount, pageable.getPageSize(), pageable.getPageNumber(), batchEntries);
     }
 
     @Override
-    public List<ShawlInventoryBatchDetailResource> getAllForReport(Long id, Date createdFrom, Date createdTo) {
+    public List<ShawlInventoryBatchDetailResource> getAllForReport(Long id, Date createdFrom, Date createdTo, String receiptNumber) {
         QShawlInventoryBatch shawlInventoryBatch = QShawlInventoryBatch.shawlInventoryBatch;
 
 
-        JPQLQuery query = getQuery(shawlInventoryBatch, getWhereCondition(shawlInventoryBatch, id, createdFrom, createdTo));
+        JPQLQuery query = getQuery(shawlInventoryBatch, getWhereCondition(shawlInventoryBatch, id, createdFrom, createdTo, receiptNumber));
 
         return query
                 .list(new QShawlInventoryBatchDetailResource(
                         shawlInventoryBatch.created,
                         shawlInventoryBatch.quantity,
                         shawlInventoryBatch.inventoryCount,
-                        shawlInventoryBatch.isEntry
+                        shawlInventoryBatch.isEntry,
+                        shawlInventoryBatch.receiptNumber,
+                        shawlInventoryBatch.id
                 ));
     }
 
-    private BooleanBuilder getWhereCondition(QShawlInventoryBatch shawlInventoryBatch, Long id, Date createdFrom, Date createdTo) {
+    @Override
+    public ShawlInventoryDto findByBatchId(Long batchId) {
+        QShawlInventoryBatch shawlInventoryBatch = QShawlInventoryBatch.shawlInventoryBatch;
+
+        return from(shawlInventoryBatch)
+                .where(shawlInventoryBatch.id.eq(batchId))
+                .singleResult(new QShawlInventoryDto(
+                        shawlInventoryBatch.quantity,
+                        shawlInventoryBatch.inventory.sizes.id,
+                        shawlInventoryBatch.inventory.designs.id,
+                        shawlInventoryBatch.inventory.color.id,
+                        new CaseBuilder().when(shawlInventoryBatch.isEntry.isTrue()).then("ORDER-IN")
+                                .otherwise("ORDER-OUT"),
+                        shawlInventoryBatch.receiptNumber
+                ));
+    }
+
+    private BooleanBuilder getWhereCondition(QShawlInventoryBatch shawlInventoryBatch, Long id, Date createdFrom, Date createdTo, String receiptNumber) {
         BooleanBuilder where = new BooleanBuilder();
         where.and(shawlInventoryBatch.inventory.id.eq(id));
 
@@ -126,6 +152,11 @@ public class ShawlInventoryRepositoryImpl extends AbstractRepositoryImpl<ShawlIn
         if (createdTo != null) {
             where.and(shawlInventoryBatch.created.loe(DateUtils.addDays(createdTo, 1)));
         }
+
+        if (receiptNumber != null) {
+            where.and(shawlInventoryBatch.receiptNumber.eq(receiptNumber));
+        }
+        where.and(shawlInventoryBatch.deleted.isFalse());
         return where;
     }
 

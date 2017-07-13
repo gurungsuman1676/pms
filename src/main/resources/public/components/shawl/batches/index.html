@@ -34,6 +34,14 @@
                            data-is-open="datepickers.addCreatedDateTo" data-min-date="self.minimum_date"
                            data-close-text="Close" required/>
                 </div>
+
+                <div class="col-sm-3 input-margin">
+                    <input type="text" class="form-control" ng-model="ctrl.filterParams.receiptNumber"
+                           placeholder="Receipt Number">
+                </div>
+
+
+
                 <div class="col-sm-12"></div>
 
 
@@ -58,15 +66,19 @@
                            id="dataTables-example">
                         <thead>
                         <tr>
+                            <th>Receipt No.</th>
                             <th>Created</th>
                             <th>Type</th>
                             <th>Count</th>
                             <th>Remaining</th>
+                            <th>Action</th>
+
                         </tr>
                         </thead>
                         <tbody>
                         <tr class="odd gradeX"
                             ng-repeat="entry in $data | orderBy:'id'">
+                            <td>{{entry.receiptNumber}}</td>
                             <td>{{entry.created | date: 'dd/MM/yyyy'}}
                             </td>
                             <td>
@@ -75,6 +87,15 @@
                             </td>
                             <td>{{entry.count}}</td>
                             <td>{{entry.remainingCount}}</td>
+
+                            <td style="width: 100px">
+                                <button type="button" class="btn btn-xs btn-danger pull-left" ng-click="ctrl.deleteEntry(entry.id)">
+                                    Delete
+                                </button>
+                                <button type="button" class="btn btn-xs btn-info pull-right" ui-sref="dashboard.inventory.edit({entryId: entry.id})">
+                                    Edit
+                                </button>
+                            </td>
                         </tr>
                         </tbody>
                     </table>

@@ -215,6 +215,12 @@ public class ClothController {
         clothService.updateWeavingCloth(weavingShippingDTO);
     }
 
+
+    @RequestMapping(value = "/weaving/logs/{id}", method = RequestMethod.DELETE)
+    public void deleteLog(@PathVariable Long id) {
+        clothService.deleteWorkLog(id);
+    }
+
     @RequestMapping(value = "/customers", method = RequestMethod.GET)
     public List<CustomerResource> getCustomerOfOrderNumber(@RequestParam Integer orderNumber) {
         return customerConvert.convertCustomer(clothService.getCustomerByOrderNumber(orderNumber));

@@ -64,7 +64,7 @@ public class ShawlInventoryServiceImpl implements ShawlInventoryService {
 
 
     private void addExportBatch(ShawlInventoryDto shawlEntryDto) {
-        ShawlInventory inventory = shawlInventoryRepository.findCountForExportBySizeIdAndColorIdAndDesignId(shawlEntryDto.getSizeId(),
+        ShawlInventory inventory = shawlInventoryRepository.findForExportBySizeIdAndColorIdAndDesignId(shawlEntryDto.getSizeId(),
                 shawlEntryDto.getColorId(),
                 shawlEntryDto.getDesignId());
 
@@ -82,6 +82,7 @@ public class ShawlInventoryServiceImpl implements ShawlInventoryService {
         shawlInventoryBatch.setQuantity(shawlEntryDto.getQuantity());
         shawlInventoryBatch.setInventoryCount(inventory.getCount());
         shawlInventoryBatch.setEntry(false);
+        shawlInventoryBatch.setReceiptNumber(shawlEntryDto.getReceiptNumber());
         shawlInventoryBatchRepository.save(shawlInventoryBatch);
 
 
@@ -89,7 +90,7 @@ public class ShawlInventoryServiceImpl implements ShawlInventoryService {
 
     private void addEntryBatch(ShawlInventoryDto shawlEntryDto) {
 
-        ShawlInventory inventory = shawlInventoryRepository.findCountForExportBySizeIdAndColorIdAndDesignId(shawlEntryDto.getSizeId(),
+        ShawlInventory inventory = shawlInventoryRepository.findForExportBySizeIdAndColorIdAndDesignId(shawlEntryDto.getSizeId(),
                 shawlEntryDto.getColorId(),
                 shawlEntryDto.getDesignId());
 
@@ -107,6 +108,7 @@ public class ShawlInventoryServiceImpl implements ShawlInventoryService {
         shawlInventoryBatch.setQuantity(shawlEntryDto.getQuantity());
         shawlInventoryBatch.setInventoryCount(inventory.getCount());
         shawlInventoryBatch.setEntry(true);
+        shawlInventoryBatch.setReceiptNumber(shawlEntryDto.getReceiptNumber());
         shawlInventoryBatchRepository.save(shawlInventoryBatch);
     }
 
@@ -121,13 +123,76 @@ public class ShawlInventoryServiceImpl implements ShawlInventoryService {
     }
 
     @Override
-    public PageResult<ShawlInventoryBatchDetailResource> getBatchDetails(Long id, Date createdFrom, Date createdTo, Pageable pageable) {
-        return shawlInventoryRepository.getBatchDetails(id,createdFrom,createdTo, pageable);
+    public PageResult<ShawlInventoryBatchDetailResource> getBatchDetails(Long id,
+                                                                         Date createdFrom, Date createdTo,
+                                                                         String receiptNumber, Pageable pageable) {
+        return shawlInventoryRepository.getBatchDetails(id, createdFrom, createdTo, receiptNumber, pageable);
     }
 
     @Override
-    public void getBatchDetailsReport(Long id, Date createdFrom, Date createdTo, HttpServletResponse httpServletResponse) {
-        shawlReportService.getBatchDetailReport(id,createdFrom,createdTo,httpServletResponse);
+    public void getBatchDetailsReport(Long id, Date createdFrom, Date createdTo,
+                                      String receiptNumber, HttpServletResponse httpServletResponse) {
+        shawlReportService.getBatchDetailReport(id, createdFrom, createdTo, receiptNumber, httpServletResponse);
+    }
+
+    @Override
+    public ShawlInventoryDto get(Long batchId) {
+        return shawlInventoryRepository.findByBatchId(batchId);
+    }
+
+    @Override
+    public void delete(Long batchId) {
+        ShawlInventoryBatch batch = shawlInventoryBatchRepository.findOne(batchId);
+        ShawlInventory inventory = batch.getInventory();
+        if (batch.isEntry()) {
+            inventory.setCount(inventory.getCount() - batch.getQuantity());
+        } else {
+            inventory.setCount(inventory.getCount() + batch.getQuantity());
+        }
+        shawlInventoryRepository.save(inventory);
+        batch.setDeleted(true);
+        shawlInventoryBatchRepository.save(batch);
+    }
+
+    @Override
+    public void edit(Long batchId, ShawlInventoryDto shawlInventoryDto) {
+        ShawlInventoryBatch shawlInventoryBatch = shawlInventoryBatchRepository.findOne(batchId);
+        ShawlInventory inventory = shawlInventoryBatch.getInventory();
+
+        if (shawlInventoryBatch.isEntry()) {
+            inventory.setCount(inventory.getCount() - shawlInventoryBatch.getQuantity());
+        } else {
+            inventory.setCount(inventory.getCount() + shawlInventoryBatch.getQuantity());
+        }
+
+        shawlInventoryRepository.save(inventory);
+
+        ShawlInventory newInventory = shawlInventoryRepository.findForExportBySizeIdAndColorIdAndDesignId(shawlInventoryDto.getSizeId(),
+                shawlInventoryDto.getColorId(),
+                shawlInventoryDto.getDesignId());
+
+        if (newInventory == null) {
+            newInventory = new ShawlInventory();
+            newInventory.setCount(0);
+            newInventory.setColor(entityManager.getReference(ShawlColor.class, shawlInventoryDto.getColorId()));
+            newInventory.setDesigns(entityManager.getReference(Designs.class, shawlInventoryDto.getDesignId()));
+            newInventory.setSizes(entityManager.getReference(Sizes.class, shawlInventoryDto.getSizeId()));
+        }
+        newInventory = shawlInventoryRepository.save(newInventory);
+        if (shawlInventoryDto.getLocation().equalsIgnoreCase("ORDER-IN")) {
+            newInventory.setCount(newInventory.getCount() + shawlInventoryDto.getQuantity());
+        } else {
+            if (shawlInventoryDto.getQuantity() < newInventory.getCount()) {
+                throw new RuntimeException("Available shawls for provided values on update is " + newInventory.getCount());
+            }
+            newInventory.setCount(newInventory.getCount() - shawlInventoryDto.getQuantity());
+        }
+        newInventory = shawlInventoryRepository.save(newInventory);
+        shawlInventoryBatch.setInventory(newInventory);
+        shawlInventoryBatch.setReceiptNumber(shawlInventoryDto.getReceiptNumber());
+        shawlInventoryBatch.setQuantity(shawlInventoryDto.getQuantity());
+        shawlInventoryBatch.setInventoryCount(inventory.getCount());
+        shawlInventoryBatchRepository.save(shawlInventoryBatch);
     }
 
 

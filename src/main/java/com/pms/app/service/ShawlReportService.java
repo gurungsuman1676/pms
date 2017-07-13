@@ -9,5 +9,5 @@ import java.util.Date;
 public interface ShawlReportService {
     void generateReport(Long sizeId, Long colorId, Long designId, HttpServletResponse httpServletResponse);
 
-    void getBatchDetailReport(Long id, Date createdFrom, Date createdTo, HttpServletResponse httpServletResponse);
+    void getBatchDetailReport(Long id, Date createdFrom, Date createdTo, String receiptNumber,HttpServletResponse httpServletResponse);
 }

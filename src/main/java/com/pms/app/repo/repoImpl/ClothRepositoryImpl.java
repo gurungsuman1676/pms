@@ -604,6 +604,25 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .list(clothes);
     }
 
+
+    @Override
+    public List<Clothes> findForEnteredWeavingShipping(WeavingShippingDTO weavingShippingDTO) {
+        QClothes clothes = QClothes.clothes;
+        return from(clothes).where(clothes.order_no.eq(weavingShippingDTO.getOrderNo())
+                .and(clothes.customer.id.eq(weavingShippingDTO.getCustomerId())
+                        .and(clothes.print.id.eq(weavingShippingDTO.getPrintId()))
+                        .and(clothes.price.design.id.eq(weavingShippingDTO.getDesignId()))
+                        .and(clothes.type.eq(1))
+                        .and(clothes.status.eq(Status.ACTIVE.toString()))
+                        .and(clothes.price.size.id.eq(weavingShippingDTO.getSizeId()))
+                        .and(clothes.extraField.eq(weavingShippingDTO.getExtraField()))
+                        .and(clothes.shipping.eq(weavingShippingDTO.getShipping()))
+                        .and(clothes.boxNumber.eq(weavingShippingDTO.getBoxNumber()))
+                        .and(clothes.location.id.isNotNull())))
+                .limit(weavingShippingDTO.getQuantity())
+                .list(clothes);
+    }
+
     @Override
     public List<Customers> findRemaingWeavingCustomerByOrderNumber(Integer orderNumber, Long locationId) {
         QClothes clothes = QClothes.clothes;

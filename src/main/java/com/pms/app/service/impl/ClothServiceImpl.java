@@ -194,6 +194,7 @@ public class ClothServiceImpl implements ClothService {
     }
 
     @Override
+    @Transactional
     public void updateWeavingCloth(WeavingShippingDTO weavingShippingDTO) {
         Locations locations = locationRepository.findOne(weavingShippingDTO.getLocationId());
         List<Clothes> clothes = clothRepository.findForWeavingShipping(weavingShippingDTO, locations.getId());
@@ -210,6 +211,8 @@ public class ClothServiceImpl implements ClothService {
             clothRepository.save(clothes);
         }
         WeavingWorkLog weavingWorkLog = new WeavingWorkLog();
+        weavingWorkLog.setBoxNumber(weavingShippingDTO.getBoxNumber());
+        weavingWorkLog.setShipping(weavingShippingDTO.getShipping());
 //        weavingWorkLog.setColor(entityManager.getReference(Colors.class, weavingShippingDTO.getColorId()));
         weavingWorkLog.setCustomer(entityManager.getReference(Customers.class, weavingShippingDTO.getCustomerId()));
         weavingWorkLog.setDesign(entityManager.getReference(Designs.class, weavingShippingDTO.getDesignId()));
@@ -283,6 +286,33 @@ public class ClothServiceImpl implements ClothService {
         RejectedDocument rejectedDocument = rejectedDocumentRepository.findByWeavingWorkLogId(workLogId);
         Path path = Paths.get(this.path + rejectedDocument.getDocPath());
         return Base64.encode(Files.readAllBytes(path));
+    }
+
+    @Override
+    @Transactional
+    public void deleteWorkLog(Long id) {
+        WeavingWorkLog weavingWorkLog = weavingWorkLogRepository.findOne(id);
+        weavingWorkLog.setDeleted(true);
+        weavingWorkLogRepository.save(weavingWorkLog);
+        if (weavingWorkLog.getLocation().getName().equalsIgnoreCase(LocationEnum.SHIPPING.getName())) {
+            WeavingShippingDTO weavingShippingDTO = new WeavingShippingDTO();
+            weavingShippingDTO.setBoxNumber(weavingWorkLog.getBoxNumber());
+            weavingShippingDTO.setShipping(weavingWorkLog.getShipping());
+            weavingShippingDTO.setCustomerId(weavingWorkLog.getCustomer().getId());
+            weavingShippingDTO.setDesignId(weavingWorkLog.getDesign().getId());
+            weavingShippingDTO.setExtraField(weavingWorkLog.getExtraField());
+            weavingShippingDTO.setOrderNo(weavingWorkLog.getOrderNo());
+            weavingShippingDTO.setPrintId(weavingWorkLog.getPrint().getId());
+            weavingShippingDTO.setSizeId(weavingWorkLog.getSize().getId());
+            weavingShippingDTO.setQuantity(weavingWorkLog.getQuantity());
+            List<Clothes> clothes = clothRepository.findForEnteredWeavingShipping(weavingShippingDTO);
+            clothes.forEach(c -> {
+                c.setBoxNumber(null);
+                c.setShipping(null);
+                c.setLocation(null);
+            });
+            clothRepository.save(clothes);
+        }
     }
 
 }

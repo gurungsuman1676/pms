@@ -51,6 +51,21 @@ public class ShawlInventoryController {
         shawlInventoryService.update(shawlInventoryDto);
     }
 
+    @RequestMapping(value = "/batches/{batchId}",method = RequestMethod.GET)
+    public ShawlInventoryDto getEntry(@PathVariable Long batchId) {
+       return shawlInventoryService.get(batchId);
+    }
+
+    @RequestMapping(value = "/batches/{batchId}",method = RequestMethod.DELETE)
+    public void deleteEntry(@PathVariable Long batchId) {
+        shawlInventoryService.delete(batchId);
+    }
+
+    @RequestMapping(value = "/batches/{batchId}",method = RequestMethod.PUT)
+    public void editEntry(@PathVariable Long batchId,@RequestBody ShawlInventoryDto shawlInventoryDto) {
+        shawlInventoryService.edit(batchId,shawlInventoryDto);
+    }
+
 
     @RequestMapping(method = RequestMethod.GET, value = "/report")
     public void generateExcel(
@@ -63,18 +78,20 @@ public class ShawlInventoryController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/{id}/batches")
     public PageResult<ShawlInventoryBatchDetailResource> getItemBatchDetails(@PathVariable Long id,
-                                                                       @RequestParam(required = false, value = "createdDateFrom") Date createdFrom,
-                                                                       @RequestParam(required = false, value = "createdDateTo") Date createdTo,
-                                                                       Pageable pageable) {
-        return shawlInventoryService.getBatchDetails(id, createdFrom, createdTo, pageable);
+                                                                             @RequestParam(required = false, value = "createdDateFrom") Date createdFrom,
+                                                                             @RequestParam(required = false, value = "createdDateTo") Date createdTo,
+                                                                             @RequestParam(required = false, value = "receiptNumber") String receiptNumber,
+                                                                             Pageable pageable) {
+        return shawlInventoryService.getBatchDetails(id, createdFrom, createdTo, receiptNumber,pageable);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{id}/batches/report")
     public void getItemBatchDetailsReport(@PathVariable Long id,
                                           @RequestParam(required = false, value = "createdDateFrom") Date createdFrom,
                                           @RequestParam(required = false, value = "createdDateTo") Date createdTo,
+                                          @RequestParam(required = false, value = "receiptNumber") String receiptNumber,
                                           HttpServletResponse httpServletResponse) {
-        shawlInventoryService.getBatchDetailsReport(id, createdFrom, createdTo, httpServletResponse);
+        shawlInventoryService.getBatchDetailsReport(id, createdFrom, createdTo,receiptNumber, httpServletResponse);
     }
 
 }

@@ -79,4 +79,6 @@ public interface ClothRepositoryCustom extends AbstractRepositoryCustom<Clothes>
                                                                                       String status,
                                                                                       Long locationId,
                                                                                       int quantity);
+
+    List<Clothes> findForEnteredWeavingShipping(WeavingShippingDTO weavingShippingDTO);
 }

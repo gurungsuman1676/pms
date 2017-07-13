@@ -72,6 +72,18 @@ angular.module('sbAdminApp')
             self.logTable.reload();
         };
 
+        self.deleteLog = function (id) {
+            WeavingFactory.deleteLog(id, function () {
+                self.logTable.reload();
+                Flash.create('success', 'Log deleted successfully', 'custom-class');
+
+            }, function (response) {
+                Flash.create('danger', response.message, 'custom-class');
+
+            })
+
+        };
+
 
         self.generateCSV = function () {
             WeavingFactory.getReport("?" +

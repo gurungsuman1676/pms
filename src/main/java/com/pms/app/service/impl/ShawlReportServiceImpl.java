@@ -140,8 +140,8 @@ public class ShawlReportServiceImpl implements ShawlReportService {
 
 
     @Override
-    public void getBatchDetailReport(Long id, Date createdFrom, Date createdTo, HttpServletResponse httpServletResponse) {
-        List<ShawlInventoryBatchDetailResource> entryResources = shawlEntryRepository.getAllForReport(id, createdFrom, createdTo);
+    public void getBatchDetailReport(Long id, Date createdFrom, Date createdTo,String receiptNumber, HttpServletResponse httpServletResponse) {
+        List<ShawlInventoryBatchDetailResource> entryResources = shawlEntryRepository.getAllForReport(id, createdFrom, createdTo,receiptNumber);
 
         HSSFWorkbook workbook = new HSSFWorkbook();
 
@@ -215,25 +215,31 @@ public class ShawlReportServiceImpl implements ShawlReportService {
             rownum++;
             Row startRow = sheet.createRow(++rownum);
 
+            Cell receiptHeader = startRow.createCell(0);
+            receiptHeader.setCellValue("Receipt No");
+            receiptHeader.setCellStyle(style);
 
-            Cell createdHeader = startRow.createCell(0);
+            Cell createdHeader = startRow.createCell(1);
             createdHeader.setCellValue("Created");
             createdHeader.setCellStyle(style);
 
 
-            Cell typeHeaderCell = startRow.createCell(1);
+            Cell typeHeaderCell = startRow.createCell(2);
             typeHeaderCell.setCellValue("Type");
             typeHeaderCell.setCellStyle(style);
 
 
-            Cell countHeaderCell = startRow.createCell(2);
+            Cell countHeaderCell = startRow.createCell(3);
             countHeaderCell.setCellValue("Count");
             countHeaderCell.setCellStyle(style);
 
 
-            Cell remainingHeaderCell = startRow.createCell(3);
+            Cell remainingHeaderCell = startRow.createCell(4);
             remainingHeaderCell.setCellValue("Remaining Count");
             remainingHeaderCell.setCellStyle(style);
+
+            int exportCount = 0;
+            int importCount = 0;
 
 
             for (ShawlInventoryBatchDetailResource shawlEntryResource : entryResources) {
@@ -241,19 +247,29 @@ public class ShawlReportServiceImpl implements ShawlReportService {
 
 
                 Row row = sheet.createRow(rownum);
-                Cell createdCell = row.createCell(0);
+
+
+                Cell receiptCell = row.createCell(0);
+                receiptCell.setCellValue(shawlEntryResource.getReceiptNumber());
+
+                Cell createdCell = row.createCell(1);
                 createdCell.setCellValue(DateUtils.getDateString(shawlEntryResource.getCreated()));
 
 
-                Cell typeCell = row.createCell(1);
+                Cell typeCell = row.createCell(2);
                 typeCell.setCellValue(shawlEntryResource.isEntry() ? "Import" : "Export");
 
-                Cell countCell = row.createCell(2);
+                Cell countCell = row.createCell(3);
                 countCell.setCellValue(shawlEntryResource.getCount());
 
-                Cell remainingCell = row.createCell(3);
+                Cell remainingCell = row.createCell(4);
                 remainingCell.setCellValue(shawlEntryResource.getRemainingCount());
 
+                if(shawlEntryResource.isEntry()){
+                    importCount += shawlEntryResource.getCount();
+                }else{
+                    exportCount += shawlEntryResource.getCount();
+                }
             }
 
             rownum++;
@@ -265,10 +281,26 @@ public class ShawlReportServiceImpl implements ShawlReportService {
             Cell totalValueCell = lastRow.createCell(2);
             totalValueCell.setCellStyle(style);
             totalValueCell.setCellValue(entryResources.size());
+
+            Cell totalImportTextCell = lastRow.createCell(3);
+            totalImportTextCell.setCellStyle(style);
+            totalImportTextCell.setCellValue("Total Import");
+            Cell totalImportValueCell = lastRow.createCell(4);
+            totalImportValueCell.setCellStyle(style);
+            totalImportValueCell.setCellValue(importCount);
+
+
+            Cell totalExportTextCell = lastRow.createCell(5);
+            totalExportTextCell.setCellStyle(style);
+            totalExportTextCell.setCellValue("Total Export");
+            Cell totalExportCell = lastRow.createCell(6);
+            totalExportCell.setCellStyle(style);
+            totalExportCell.setCellValue(exportCount);
+
         }
 
 
-        for (int i = 0; i <= 3; i++) {
+        for (int i = 0; i <= 6; i++) {
             sheet.autoSizeColumn(i);
         }
         exportToExcel(httpServletResponse, workbook);

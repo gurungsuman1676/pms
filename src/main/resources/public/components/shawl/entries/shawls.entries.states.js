@@ -17,6 +17,7 @@
                             files: [
                                 'components/shawl/entries/shawls.entries.controller.js',
                                 'components/shawl/entries/shawls.entriesNew.controller.js',
+                                'components/shawl/entries/shawls.entriesEdit.controller.js',
                                 'components/shawl/entries/shawls.entries.factory.js',
                                 'components/shawl/colors/shawls.colors.factory.js',
                                 'components/designs/designs.factory.js',
@@ -39,6 +40,13 @@
                 url: '/inventory/new',
                 templateUrl: 'components/shawl/entries/new.html',
                 controller: 'ShawlsEntriesNewCtrl',
+                controllerAs: 'ctrl'
+            })
+
+            .state('dashboard.inventory.edit', {
+                url: '/inventory/edit/{entryId:string}',
+                templateUrl: 'components/shawl/entries/new.html',
+                controller: 'ShawlsEntriesEditCtrl',
                 controllerAs: 'ctrl'
             })
     }
