@@ -10,5 +10,5 @@ import java.text.ParseException;
  * Created by anepal on 2/20/2017.
  */
 public interface ExcelUploadService {
-    void uploadClothes(MultipartFile file, HttpServletResponse httpServletResponse,String type) throws IOException, ParseException, Exception;
+    void uploadClothes(MultipartFile file, HttpServletResponse httpServletResponse, String type, String templateType, String orderType) throws IOException, ParseException, Exception;
 }

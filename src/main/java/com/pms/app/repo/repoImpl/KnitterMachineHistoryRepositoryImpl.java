@@ -120,7 +120,7 @@ public class KnitterMachineHistoryRepositoryImpl extends AbstractRepositoryImpl<
                         machineHistory.cloth.price.size.name,
                         machineHistory.cloth.price.design.gauge,
                         machineHistory.cloth.price.design.setting,
-                        machineHistory.cloth.reOrder,
+                        machineHistory.cloth.orderType.stringValue(),
                         machineHistory.cloth.color.code)
         );
     }

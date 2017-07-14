@@ -12,7 +12,7 @@ angular.module('sbAdminApp')
         var self = this;
         self.filterOptions = {};
         self.filterParams = {};
-
+        self.showContents = true;
         self.filterOptions.machines = [];
         MachinesFactory.getMachines(function (response) {
             self.filterOptions.machines = response;
@@ -92,6 +92,7 @@ angular.module('sbAdminApp')
                         },
                         function (response) {
                             self.historyTable.total(response.totalElements);
+                            self.histories = response.data;
                             if (response.data.length === 0) {
                                 self.noResults = true;
                             }
@@ -105,5 +106,39 @@ angular.module('sbAdminApp')
                 }
             }
         );
+
+        self.generateBarcode = function () {
+            var noClothSelected = false;
+            angular.forEach(self.histories, function (value) {
+                if (value.isChecked == true) {
+                    noClothSelected = true;
+                }
+            });
+            if (!noClothSelected)
+                Flash.create('danger', 'No Clothes Selected', 'custom-class');
+            else {
+                self.showBarcode = true;
+                self.showContents = false;
+            }
+        }
+
+        self.hideBarcode = function () {
+            self.showBarcode = false;
+            self.showContents = true;
+
+        }
+
+        self.allSelected = function () {
+            if (self.selectAll == true) {
+                angular.forEach(self.histories, function (value) {
+                    value.isChecked = true;
+                })
+            }
+            else {
+                angular.forEach(self.histories, function (value) {
+                    value.isChecked = false;
+                })
+            }
+        };
 
     });

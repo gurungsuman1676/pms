@@ -47,7 +47,7 @@ public class Clothes extends AbstractEntity {
 
     private String extraField;
 
-    private boolean openFringe = false;
+    private String fringe;
 
-    private boolean reOrder;
+    private OrderType orderType;
 }

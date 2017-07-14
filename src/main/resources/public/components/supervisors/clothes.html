@@ -51,8 +51,8 @@
                 </div>
 
                 <div class="col-sm-3 input-margin">
-                    <selectize placeholder="Order" ng-model="ctrl.filterParams.reOrder"
-                               options="ctrl.reOrders">
+                    <selectize placeholder="Order" ng-model="ctrl.filterParams.orderType"
+                               options="ctrl.orderTypes">
                     </selectize>
                 </div>
 
@@ -160,7 +160,7 @@
                                 data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.price.setting}}
                             </td>
                             <td ng-class="{'clickable-td': ctrl.isKnitter()}"
-                                data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.reOrder ? 'Re-Order' : 'Bulk'}}
+                                data-ng-click="ctrl.onClothClicked(cloth.id)">{{cloth.orderType}}
                             </td>
                             <td>
                                 <button type="button" class="btn btn-xs btn-primary" ng-click="ctrl.viewHistory(cloth)">

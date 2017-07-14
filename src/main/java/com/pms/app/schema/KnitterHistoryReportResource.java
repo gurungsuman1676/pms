@@ -24,7 +24,7 @@ public class KnitterHistoryReportResource {
     private String sizeName;
     private Double gauge;
     private String setting;
-    private Boolean reOrder;
+    private String orderType;
     private  String colorCode;
 
     @QueryProjection
@@ -39,7 +39,7 @@ public class KnitterHistoryReportResource {
                                         String sizeName,
                                         Double gauge,
                                         String setting,
-                                        Boolean reOrder,
+                                        String orderType,
                                         String colorCode) {
 
         this.completedOn = completedOn;
@@ -53,7 +53,7 @@ public class KnitterHistoryReportResource {
         this.sizeName = sizeName;
         this.gauge = gauge;
         this.setting = setting;
-        this.reOrder = reOrder;
+        this.orderType = orderType;
         this.colorCode = colorCode;
     }
 }

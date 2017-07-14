@@ -40,24 +40,26 @@ public class RukelTemplate extends AbstractTemplate implements TemplateService {
     private static final String PRINT_ALIAS = "PRINT";
     private static final String QUANTITY_ALIAS = "QTY";
     private static final String TOTAL_ALIAS = "TOTAL";
-    private static final String FRINGE_ALIAS = "OPEN FRINGE";
+    private static final String FRINGE_ALIAS = "FRINGE";
     private static final String LABEL_ALIAS = "LABEL";
+    private static final String BASE_ALIAS = "BASE";
+
     private boolean completed = false;
 
-    public RukelTemplate(MultipartFile file) throws IOException {
-        super(file, 1);
+    public RukelTemplate(MultipartFile file, int type, String orderType) throws IOException {
+        super(file, type, orderType);
     }
 
     @Override
-    @Caching( evict = {
-            @CacheEvict(value = "designs",allEntries = true),
-            @CacheEvict(value = "prints",allEntries = true),
-            @CacheEvict(value = "designs",allEntries = true),
-            @CacheEvict(value = "sizes",allEntries = true),
-            @CacheEvict(value = "prices",allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "designs", allEntries = true),
+            @CacheEvict(value = "colors", allEntries = true),
+            @CacheEvict(value = "yarns", allEntries = true),
+            @CacheEvict(value = "sizes", allEntries = true),
+            @CacheEvict(value = "prints", allEntries = true),
+            @CacheEvict(value = "prices", allEntries = true)
     })
     public void process() throws IOException {
-        setExtractFormula(nameExtractFormula);
         getCustomerName(CUSTOMER_NAME_ALIAS);
         getDeliveryDate(DELIVERY_DATE);
         getOrderNo(ORDER_NO);
@@ -74,14 +76,15 @@ public class RukelTemplate extends AbstractTemplate implements TemplateService {
             throw new RuntimeException("Design Name Header not available");
         }
         int sizeIndex = getIndexForAlias(SIZE_ALIAS, true);
-        int printIndex = getIndexForAlias(PRINT_ALIAS, true);
-        Map<String, Integer> printFinalIndex = getFinalIndexForPrint(printIndex);
+        int printIndex = getIndexForAlias(PRINT_ALIAS, clothType == 1);
+        int baseIndex = getIndexForAlias(BASE_ALIAS, true);
+        Map<String, Integer> printFinalIndex = getFinalIndexForPrint(baseIndex);
         int quantityIndex = getIndexForAlias(QUANTITY_ALIAS, true);
 
         Map<String, List<Clothes>> clothesMap = new HashMap<>();
         while (rowsIterator.hasNext() && !completed) {
             currentRow = rowsIterator.next();
-            clothesMap.putAll(getClothListMap(designIndex, sizeIndex, printIndex, printFinalIndex, quantityIndex));
+            clothesMap.putAll(getClothListMap(designIndex, sizeIndex, printIndex, printFinalIndex, quantityIndex, baseIndex));
         }
         validateTotal(clothesMap.values().stream().mapToInt(List::size).sum(), quantityIndex);
         clothesMap.keySet().forEach(k -> {
@@ -97,7 +100,7 @@ public class RukelTemplate extends AbstractTemplate implements TemplateService {
 
     }
 
-    private Map<String, List<Clothes>> getClothListMap(int designIndex, int sizeIndex, int printIndex, Map<String, Integer> printFinalIndex, int quantityIndex) {
+    private Map<String, List<Clothes>> getClothListMap(int designIndex, int sizeIndex, int printIndex, Map<String, Integer> printFinalIndex, int quantityIndex, int baseIndex) {
         if (hasTotal()) {
             completed = true;
             return new HashMap<>();
@@ -108,7 +111,7 @@ public class RukelTemplate extends AbstractTemplate implements TemplateService {
         clothMap.put(headerValue, new ArrayList<>());
         System.out.println(headerValue);
         try {
-            List<Clothes> clothForRow = getClothForRow(designIndex, sizeIndex, printIndex, printFinalIndex, quantityIndex);
+            List<Clothes> clothForRow = getClothForRow(designIndex, sizeIndex, printIndex, printFinalIndex, quantityIndex, baseIndex);
             clothMap.get(headerValue).addAll(clothForRow);
             return clothMap;
         } catch (Exception e) {
@@ -117,10 +120,10 @@ public class RukelTemplate extends AbstractTemplate implements TemplateService {
 
     }
 
-    public List<Clothes> getClothForRow(int designIndex, int sizeIndex, int printIndex, Map<String, Integer> printFinalIndex, int quantityIndex) {
+    public List<Clothes> getClothForRow(int designIndex, int sizeIndex, int printIndex, Map<String, Integer> printFinalIndex, int quantityIndex, int baseIndex) {
         List<ClothMini> clothMinis = new ArrayList<>();
         while (true) {
-            ClothMini clothes = getClothes(designIndex, sizeIndex, printIndex, printFinalIndex, quantityIndex);
+            ClothMini clothes = getClothes(designIndex, sizeIndex, printIndex, printFinalIndex, quantityIndex, baseIndex);
             if (clothes == null) {
                 break;
             }
@@ -129,7 +132,7 @@ public class RukelTemplate extends AbstractTemplate implements TemplateService {
         validateTotal(
                 clothMinis.stream().mapToInt(cm -> cm.getClothes().size()).sum(), quantityIndex);
         clothMinis.forEach(cm -> cm.getClothes().forEach(c -> {
-            c.setOpenFringe(cm.isOpenFringe());
+            c.setFringe(cm.getFringe());
         }));
         List<Clothes> clothes = new ArrayList<>();
         clothMinis.forEach(cm -> {
@@ -138,7 +141,7 @@ public class RukelTemplate extends AbstractTemplate implements TemplateService {
         return clothes;
     }
 
-    private ClothMini getClothes(int designIndex, int sizeIndex, int printIndex, Map<String, Integer> printFinalIndex, int quantityIndex) {
+    private ClothMini getClothes(int designIndex, int sizeIndex, int printIndex, Map<String, Integer> printFinalIndex, int quantityIndex, int baseIndex) {
         if (hasTotal()) {
             return null;
         }
@@ -157,38 +160,52 @@ public class RukelTemplate extends AbstractTemplate implements TemplateService {
                 if (!clothMini.isDesignColumnCompleted()) {
                     if (clothMini.getDesignName() == null) {
                         clothMini.setDesignName(designName);
+                        Row yarnRowSheet = sheet.getRow(currentRow.getRowNum() + 1);
+                        if (yarnRowSheet == null || yarnRowSheet.getCell(designIndex) == null) {
+                            throw new RuntimeException("Invalid Yarn Name");
+                        }
+
+                        Cell yarnCell = yarnRowSheet.getCell(designIndex);
+                        yarnCell.setCellType(Cell.CELL_TYPE_STRING);
+                        if (yarnCell.getStringCellValue() == null || yarnCell.getStringCellValue().isEmpty() || yarnCell.getStringCellValue().toUpperCase().contains(FRINGE_ALIAS)) {
+                            throw new RuntimeException("Invalid Yarn Name");
+                        }
+                        clothMini.setYarnName(yarnCell.getStringCellValue());
                     } else if (designName.toUpperCase().contains(FRINGE_ALIAS)) {
-                        clothMini.setOpenFringe(true);
-                    } else {
-                        clothMini.setYarnName(designName);
+                        clothMini.setFringe(designName);
                     }
                 } else {
                     clothMini.setCurrentBlockCompleted(true);
                     continue;
+
+//                    throw new RuntimeException("Invalid Data.Cannot find total for design name " + clothMini.getDesignName());
                 }
             } else {
                 clothMini.setDesignColumnCompleted(true);
             }
 
 
-            String printName = getCellValueByIndex(printIndex, PRINT_ALIAS, false);
-            if (printName.isEmpty()) {
+
+            String colorName = getCellValueByIndex(baseIndex, BASE_ALIAS, false);
+            if (colorName.isEmpty()) {
                 currentRow = rowsIterator.next();
                 continue;
             }
+            String printName = getCellValueByIndex(printIndex, PRINT_ALIAS, clothType == 1);
+
             if (clothMini.getSize() == null) {
                 String sizeName = getCellValueByIndex(sizeIndex, SIZE_ALIAS, true);
                 clothMini.setSize(sizeName);
             }
             String extraField = getCellValuesForAdditionalPrint(printFinalIndex);
             String quantity = getCellValueByIndex(quantityIndex, QUANTITY_ALIAS, true);
-            if (printName.isEmpty()) {
+            if (colorName.isEmpty()) {
                 currentRow = rowsIterator.next();
                 continue;
             }
             Map<String, Integer> sizes = new HashMap<>();
             sizes.put(clothMini.getSize(), Integer.parseInt(quantity));
-            clothMini.getClothes().addAll(getCloth(null, null, null, sizes, clothMini.getDesignName(), printName, extraField));
+            clothMini.getClothes().addAll(getCloth(colorName, colorName, clothMini.getYarnName(), sizes, clothMini.getDesignName(), printName, extraField));
             currentRow = rowsIterator.next();
         }
         return clothMini;
@@ -200,7 +217,12 @@ public class RukelTemplate extends AbstractTemplate implements TemplateService {
             throw new RuntimeException("Error in total value " + currentRow.getRowNum());
         }
         cell.setCellType(Cell.CELL_TYPE_STRING);
-        int total = Integer.valueOf(cell.getStringCellValue());
+        int total;
+        try {
+            total = Integer.valueOf(cell.getStringCellValue());
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid total value at " + currentRow.getRowNum());
+        }
         if (total != size) {
             throw new RuntimeException(" Total number  of clothes (" + size + ") is not equal to Given  total" + " (" + total + ") at row " + currentRow.getRowNum());
         }
@@ -262,23 +284,6 @@ public class RukelTemplate extends AbstractTemplate implements TemplateService {
     }
 
 
-    BiFunction<Row, String, String> nameExtractFormula =
-            (Row row, String alias) -> {
-                String name = null;
-                Iterator<Cell> cells = row.cellIterator();
-                while (cells.hasNext()) {
-                    Cell cell = cells.next();
-                    cell.setCellType(Cell.CELL_TYPE_STRING);
-                    if (cell.getStringCellValue() != null && cell.getStringCellValue().toUpperCase().contains(alias)) {
-                        String[] cellValues = cell.getStringCellValue().split(cell.getStringCellValue().contains(":") ? ":" : " ");
-                        name = cellValues[1].trim();
-                        break;
-                    }
-                }
-                return name;
-            };
-
-
     private String getCellValuesForAdditionalPrint(Map<String, Integer> printFinalIndex) {
         return printFinalIndex
                 .keySet()
@@ -316,30 +321,15 @@ public class RukelTemplate extends AbstractTemplate implements TemplateService {
         return stringCellValue;
     }
 
-    @Override
-    public Prices getPrices(String designName, String sizeName, Colors color, Long designId, Long sizeId) {
-        Prices price = priceRepository.findByDesignAndSize(designId, sizeId);
-        if (price == null) {
-            price = new Prices();
-            price.setDesign(entityManager.getReference(Designs.class, designId));
-            price.setSize(entityManager.getReference(Sizes.class, sizeId));
-            price = priceRepository.save(price);
-        }
-        return price;
-    }
-
-    @Override
-    public Colors getColorByName(String colorCode, String colorName, String yarnName) {
-        return null;
-    }
 
     @Data
     class ClothMini {
         String designName;
-        boolean openFringe;
+        String fringe;
         String yarnName;
         boolean designColumnCompleted = false;
         boolean currentBlockCompleted = false;
+        String colorCode;
         String size;
         List<Clothes> clothes = new ArrayList<>();
     }

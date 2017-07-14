@@ -22,16 +22,23 @@ public class ExcelUploadServiceImpl implements ExcelUploadService {
 
 
     @Override
-    public void uploadClothes(MultipartFile file, HttpServletResponse httpServletResponse, String type) throws Exception {
+    public void uploadClothes(MultipartFile file, HttpServletResponse httpServletResponse, String type, String templateType, String orderType) throws Exception {
 
-        TemplateService templateService = null;
-        if (type.equals("KNITTING_MULTIPLE")) {
-            templateService = (TemplateService) beanFactory.getBean("dannyTemplate", file);
-        } else if (type.equals("KNITTING_SINGLE")) {
-            templateService = (TemplateService) beanFactory.getBean("phillipeTemplate", file);
-        } else {
-            templateService = (TemplateService) beanFactory.getBean("rukelTemplate", file);
+        if (orderType.isEmpty()) {
+            throw new RuntimeException("Invalid order type selected");
         }
+
+        if (templateType.isEmpty()) {
+            throw new RuntimeException("Invalid Template selected");
+        }
+        int clothType;
+        try {
+            clothType = Integer.valueOf(type);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid Cloth Type selected");
+        }
+        TemplateService templateService = (TemplateService) beanFactory.getBean(templateType, file, clothType, orderType);
         templateService.process();
     }
 }

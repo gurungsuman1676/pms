@@ -164,14 +164,14 @@
             $window.open(RESOURCES.apiURL + '/clothes' + '/weaving/' + id);
         }
 
-        factory.uploadExcel = function (excel, type, successCallback, errorCallback) {
+        factory.uploadExcel = function (excel, type, orderType, templateType, successCallback, errorCallback) {
             var file = excel;
             if (file) {
 
                 $http({
                     method: 'POST',
                     url: RESOURCES.apiURL + '/clothes' + '/excel-upload',
-                    data: {file: file, type: type},
+                    data: {file: file, type: type, orderType: orderType, templateType: templateType},
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     },
@@ -236,10 +236,29 @@
             })
         };
 
-        factory.getExtraFieldsForWeaving = function (orderNumber, customerId, designId, sizeId, printId, successCallback, errorCallback) {
+        factory.getExtraFieldsForWeaving = function (orderNumber, customerId, designId, sizeId, printId, colorId, successCallback, errorCallback) {
             $http({
                 method: 'GET',
                 url: RESOURCES.apiURL + '/clothes/extraFields',
+                params: {
+                    orderNumber: orderNumber,
+                    customerId: customerId,
+                    designId: designId,
+                    sizeId: sizeId,
+                    printId: printId,
+                    colorId: colorId
+                }
+            }).success(function (response) {
+                successCallback(response);
+            }).error(function (response) {
+                errorCallback(response);
+            })
+        };
+
+        factory.getColorsForWeaving = function (orderNumber, customerId, designId, sizeId, printId, successCallback, errorCallback) {
+            $http({
+                method: 'GET',
+                url: RESOURCES.apiURL + '/clothes/colors',
                 params: {
                     orderNumber: orderNumber,
                     customerId: customerId,
@@ -264,7 +283,7 @@
             }).error(function (response) {
                 errorCallback(response);
             });
-        }
+        };
 
         return factory;
     };

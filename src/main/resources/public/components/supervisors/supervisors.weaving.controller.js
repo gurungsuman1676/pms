@@ -26,6 +26,9 @@ angular.module('sbAdminApp')
             self.cloth.printId = undefined;
             $scope.options.prints = [];
 
+            self.cloth.colorId = undefined;
+            $scope.options.colors = [];
+
             self.cloth.extraField = undefined;
             $scope.options.extraFields = [];
 
@@ -47,6 +50,9 @@ angular.module('sbAdminApp')
             self.cloth.printId = undefined;
             $scope.options.prints = [];
 
+            self.cloth.colorId = undefined;
+            $scope.options.colors = [];
+
             self.cloth.extraField = undefined;
             $scope.options.extraFields = [];
 
@@ -61,6 +67,9 @@ angular.module('sbAdminApp')
         $scope.fetchPrints = function () {
             self.cloth.printId = undefined;
             $scope.options.prints = [];
+
+            self.cloth.colorId = undefined;
+            $scope.options.colors = [];
 
             self.cloth.extraField = undefined;
             $scope.options.extraFields = [];
@@ -79,6 +88,9 @@ angular.module('sbAdminApp')
             self.cloth.printId = undefined;
             $scope.options.prints = [];
 
+            self.cloth.colorId = undefined;
+            $scope.options.colors = [];
+
             self.cloth.extraField = undefined;
             $scope.options.extraFields = [];
 
@@ -88,12 +100,36 @@ angular.module('sbAdminApp')
                 Flash.create('danger', response.message, 'custom-class');
             })
         }
+
+
+        $scope.fetchColors = function () {
+
+            self.cloth.extraField = undefined;
+            $scope.options.extraFields = [];
+
+            self.cloth.colorId = undefined;
+            $scope.options.colors = [];
+
+            ClothesFactory.getColorsForWeaving(self.cloth.orderNo, self.cloth.customerId, self.cloth.designId, self.cloth.sizeId, self.cloth.printId, function (response) {
+                $scope.options.colors = [];
+                angular.forEach(response, function (r) {
+                    $scope.options.colors.push({
+                        id: r.id,
+                        name: r.code
+                    })
+                });
+
+            }, function (response) {
+                Flash.create('danger', response.message, 'custom-class');
+            })
+
+        };
         $scope.fetchExtraFields = function () {
 
             self.cloth.extraField = undefined;
             $scope.options.extraFields = [];
 
-            ClothesFactory.getExtraFieldsForWeaving(self.cloth.orderNo, self.cloth.customerId, self.cloth.designId, self.cloth.sizeId, self.cloth.printId, function (response) {
+            ClothesFactory.getExtraFieldsForWeaving(self.cloth.orderNo, self.cloth.customerId, self.cloth.designId, self.cloth.sizeId, self.cloth.printId,self.cloth.colorId, function (response) {
                 $scope.options.extraFields = [];
                 angular.forEach(response, function (r) {
                     $scope.options.extraFields.push({
@@ -104,7 +140,7 @@ angular.module('sbAdminApp')
             }, function (response) {
                 Flash.create('danger', response.message, 'custom-class');
             })
-        }
+        };
 
         self.submitCloth = function () {
             ClothesFactory.updateWeavingShipping(self.cloth, function (response) {

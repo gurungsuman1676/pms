@@ -44,7 +44,7 @@ public class ClothServiceImpl implements ClothService {
     @Transactional(readOnly = true)
     public Page<Clothes> getClothes(Long customerId, Long locationId, Integer orderNo, Long barcode, Date deliverDateFrom, Date deliveryDateTo, Date orderDateFrom,
                                     Date orderDateTo, Pageable pageable, String role, String shippingNumber, String boxNumber,
-                                    Boolean isReject, Integer type, Date locationDate, Long designId, Double gauge, String setting, Boolean reOrder, String week, Long colorId) {
+                                    Boolean isReject, Integer type, Date locationDate, Long designId, Double gauge, String setting, String reOrder, String week, Long colorId) {
         if (locationDate != null && locationId != null && locationId != -1) {
             return clothRepository.findAllForHistoryByDate(customerId,
                     locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom, orderDateTo, pageable,
@@ -212,8 +212,13 @@ public class ClothServiceImpl implements ClothService {
     }
 
     @Override
-    public List<String> getExtraFieldByOrderNumberAndCustomer(Integer orderNumber, Long customerId, Long designId, Long sizeId, Long printId) {
-        return clothRepository.getExtraFieldByOrderNumberAndCustomer(orderNumber, customerId, designId, sizeId, printId);
+    public List<String> getExtraFieldByOrderNumberAndCustomer(Integer orderNumber, Long customerId, Long designId, Long sizeId, Long printId, Long colorId) {
+        return clothRepository.getExtraFieldByOrderNumberAndCustomer(orderNumber, customerId, designId, sizeId, printId ,colorId);
+    }
+
+    @Override
+    public List<Colors> getColorsForForCustomerAndOrderNumber(Integer orderNumber, Long customerId, Long designId, Long sizeId, Long printId) {
+        return clothRepository.getColorsByOrderNumberAndCustomer(orderNumber, customerId, designId, sizeId, printId);
     }
 
 }

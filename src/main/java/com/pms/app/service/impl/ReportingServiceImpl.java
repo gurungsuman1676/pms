@@ -270,7 +270,7 @@ public class ReportingServiceImpl implements ReportingService {
                                Date locationDate,
                                Long designId,
                                Double gauge, String setting,
-                               Boolean reOrder, String week, Long colorId, HttpServletResponse httpServletResponse) {
+                               String orderType, String week, Long colorId, HttpServletResponse httpServletResponse) {
         List<ClothResource> clothResources = null;
         if (locationDate == null || locationId == null || locationId == -1) {
             clothResources = clothRepository.findClothResource(customerId,
@@ -286,7 +286,7 @@ public class ReportingServiceImpl implements ReportingService {
                     boxNumber,
                     isReject,
                     type,
-                    designId, gauge, locationDate, setting, reOrder,week,colorId);
+                    designId, gauge, locationDate, setting, orderType,week,colorId);
         } else {
             clothResources = clothRepository.findClothResourceByLocation(customerId,
                     locationId,
@@ -302,7 +302,7 @@ public class ReportingServiceImpl implements ReportingService {
                     isReject,
                     type,
                     locationDate,
-                    designId, gauge, setting, reOrder,week,colorId);
+                    designId, gauge, setting, orderType,week,colorId);
         }
 
 

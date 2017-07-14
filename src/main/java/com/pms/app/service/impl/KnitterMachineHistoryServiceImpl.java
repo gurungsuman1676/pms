@@ -277,7 +277,7 @@ public class KnitterMachineHistoryServiceImpl implements KnitterMachineHistorySe
             settingHead.setCellValue("Setting");
             settingHead.setCellStyle(style);
             Cell reOrderCell = startRow.createCell(12);
-            reOrderCell.setCellValue("Re-Order");
+            reOrderCell.setCellValue("Order Type");
             reOrderCell.setCellStyle(style);
 
 
@@ -323,7 +323,7 @@ public class KnitterMachineHistoryServiceImpl implements KnitterMachineHistorySe
                 settingVal.setCellValue(historyReportResource.getSetting() == null ? "N/A" : historyReportResource.getSetting());
 
                 Cell reOrderCellVal = row.createCell(12);
-                reOrderCellVal.setCellValue(historyReportResource.getReOrder() == null ? " " : historyReportResource.getReOrder() ? " Re-Order" : "Bulk");
+                reOrderCellVal.setCellValue(historyReportResource.getOrderType() == null ? " " : historyReportResource.getOrderType());
 
 
             }

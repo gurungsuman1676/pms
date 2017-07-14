@@ -9,7 +9,7 @@ public interface ReportingService {
     void getClothReport(Long customerId, Long locationId, Integer orderNo, Long barcode, Date deliverDateFrom,
                         Date deliveryDateTo, Date orderDateFrom, Date orderDateTo,
                         String role, String shippingNumber, String boxNumber, Boolean isReject,
-                        Integer type, Date locationDate, Long designId, Double gauge, String setting, Boolean reOrder, String week, Long colorId, HttpServletResponse httpServletResponse);
+                        Integer type, Date locationDate, Long designId, Double gauge, String setting, String reOrder, String week, Long colorId, HttpServletResponse httpServletResponse);
 
     void createOrderSheet(Long orderNo, Long customerId, HttpServletResponse httpServletResponse);
 

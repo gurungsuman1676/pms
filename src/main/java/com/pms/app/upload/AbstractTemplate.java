@@ -6,6 +6,7 @@ import com.pms.app.domain.Customers;
 import com.pms.app.domain.Designs;
 import com.pms.app.domain.LocationEnum;
 import com.pms.app.domain.Locations;
+import com.pms.app.domain.OrderType;
 import com.pms.app.domain.Prices;
 import com.pms.app.domain.Prints;
 import com.pms.app.domain.Sizes;
@@ -23,6 +24,7 @@ import com.pms.app.repo.YarnRepository;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +35,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityManager;
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.security.acl.LastOwnerException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -90,22 +91,19 @@ abstract class AbstractTemplate {
 
     Integer orderNumber;
 
-    boolean reOrder = false;
+    private final String orderType;
 
-    BiFunction<Row, String, String> nameExtractFormula;
+    final Sheet sheet;
 
-    private final static String REORDER_ALIAS = "REORDER";
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
-    public AbstractTemplate(MultipartFile file, int clothType) throws IOException {
+    public AbstractTemplate(MultipartFile file, int clothType, String orderType) throws IOException {
         wb = getWorkbook(file);
         this.clothType = clothType;
-        this.rowsIterator = wb.getSheetAt(0).rowIterator();
-    }
-
-    public void setExtractFormula(BiFunction<Row, String, String> nameExtractFormula) {
-        this.nameExtractFormula = nameExtractFormula;
+        this.orderType = orderType;
+        sheet = wb.getSheetAt(0);
+        this.rowsIterator = sheet.rowIterator();
     }
 
 
@@ -160,39 +158,32 @@ abstract class AbstractTemplate {
             if (orderNo != null) {
                 try {
                     this.orderNumber = Integer.valueOf(orderNo);
-                    Iterator<Cell> cellIterator = currentRow.cellIterator();
-                    while (cellIterator.hasNext()) {
-                        Cell cell = cellIterator.next();
-                        cell.setCellType(Cell.CELL_TYPE_STRING);
-                        if (cell.getStringCellValue().toUpperCase().contains(alias)) {
-                            if (clothType == 0) {
-                                cellIterator.next();
-                            }
-                            if (!cellIterator.hasNext()) {
-                                reOrder = false;
-                                return;
-                            }
-                            Cell next = cellIterator.next();
-                            if (next == null) {
-                                reOrder = false;
-                                return;
-                            }
-                            next.setCellType(Cell.CELL_TYPE_STRING);
-
-                            if (next.getStringCellValue() != null && next.getStringCellValue().toUpperCase().replaceAll(" ", "").contains(REORDER_ALIAS)) {
-                                reOrder = true;
-                            }
-                            return;
-                        }
-                    }
-
+                    return;
                 } catch (Exception e) {
-                    throw new RuntimeException("Invalid Re order field ");
+                    throw new RuntimeException("Invalid Order number ");
                 }
             }
         }
         throw new RuntimeException("Order number  field is not available");
     }
+
+
+    BiFunction<Row, String, String> nameExtractFormula =
+            (Row row, String alias) -> {
+                String name = null;
+                Iterator<Cell> cells = row.cellIterator();
+                while (cells.hasNext()) {
+                    Cell cell = cells.next();
+                    cell.setCellType(Cell.CELL_TYPE_STRING);
+                    if (cell.getStringCellValue() != null && cell.getStringCellValue().toUpperCase().contains(alias)) {
+                        Cell next = cells.next();
+                        next.setCellType(Cell.CELL_TYPE_STRING);
+                        name = next.getStringCellValue();
+                        break;
+                    }
+                }
+                return name;
+            };
 
 
     List<Clothes> getCloth(String colorCode, String colorName, String yarnName,
@@ -215,7 +206,7 @@ abstract class AbstractTemplate {
                 clothes.setCustomer(entityManager.getReference(Customers.class, customerId));
                 clothes.setExtraField(String.join("-", attrs));
                 clothes.setType(clothType);
-                clothes.setReOrder(reOrder);
+                clothes.setOrderType(OrderType.valueOf(orderType));
                 clothes.setStatus(Status.ACTIVE.toString());
                 Long designId = designRepository.findIdByNameAndCustomer(designName, customerId);
                 if (designId == null) {
@@ -240,27 +231,33 @@ abstract class AbstractTemplate {
                 }
                 Prices price = getPrices(designName, sizeName, color, designId, sizeId);
 
-                if (printName != null) {
-                    printName = printName.trim();
-                    List<Long> printId = printRepository.findByNameAndSizeId(printName, sizeId);
-                    if (printId == null || printId.isEmpty()) {
-                        Prints prints = new Prints();
-                        prints.setAmount(0D);
-                        prints.setCurrency(customerRepository.findCurrencyByCustomer(customerId));
-                        prints.setName(printName);
-                        prints.setSize(entityManager.getReference(Sizes.class, sizeId));
-                        prints = printRepository.save(prints);
-                        printId = Collections.singletonList(prints.getId());
-                    }
-                    if (printId.size() > 1) {
-                        throw new RuntimeException("Multiple print available by name " + printName);
-                    }
-                    clothes.setPrint(entityManager.getReference(Prints.class, printId.get(0)));
+                if(clothType == 1) {
+                    if (printName != null && !printName.toUpperCase().equalsIgnoreCase("PRINTLESS")) {
+                        printName = printName.trim();
+                        List<Long> printId = printRepository.findByNameAndSizeId(printName, sizeId);
+                        if (printId == null || printId.isEmpty()) {
+                            Prints prints = new Prints();
+                            prints.setAmount(0D);
+                            prints.setCurrency(customerRepository.findCurrencyByCustomer(customerId));
+                            prints.setName(printName);
+                            prints.setSize(entityManager.getReference(Sizes.class, sizeId));
+                            prints = printRepository.save(prints);
+                            printId = Collections.singletonList(prints.getId());
+                        }
+                        if (printId.size() > 1) {
+                            throw new RuntimeException("Multiple print available by name " + printName);
+                        }
+                        clothes.setPrint(entityManager.getReference(Prints.class, printId.get(0)));
 
+                    }else {
+                        clothes.setPrint(entityManager.getReference(Prints.class, printRepository.getDefaultPrintLessPrint()));
+                    }
                 }
 
                 clothes.setPrice(price);
-                clothes.setLocation(entityManager.getReference(Locations.class, preKnitting.getId()));
+                if(clothType == 0) {
+                    clothes.setLocation(entityManager.getReference(Locations.class, preKnitting.getId()));
+                }
                 clothesList.add(clothes);
             }
         }

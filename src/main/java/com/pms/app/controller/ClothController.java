@@ -1,6 +1,7 @@
 package com.pms.app.controller;
 
 import com.pms.app.convert.ClothConvert;
+import com.pms.app.convert.ColorConvert;
 import com.pms.app.convert.CustomerConvert;
 import com.pms.app.convert.DesignConvert;
 import com.pms.app.convert.PrintConvert;
@@ -9,6 +10,7 @@ import com.pms.app.domain.Clothes;
 import com.pms.app.schema.ClothDto;
 import com.pms.app.schema.ClothLocationDto;
 import com.pms.app.schema.ClothResource;
+import com.pms.app.schema.ColorResource;
 import com.pms.app.schema.CustomerResource;
 import com.pms.app.schema.DesignResource;
 import com.pms.app.schema.PageResult;
@@ -16,12 +18,18 @@ import com.pms.app.schema.PrintResource;
 import com.pms.app.schema.SizeResource;
 import com.pms.app.schema.WeavingShippingDTO;
 import com.pms.app.service.ClothService;
-import com.pms.app.upload.ExcelUploadService;
 import com.pms.app.service.ReportingService;
+import com.pms.app.upload.ExcelUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -44,6 +52,8 @@ public class ClothController {
     private final DesignConvert designConvert;
     private final PrintConvert printConvert;
     private final SizeConvert sizeConvert;
+    private final ColorConvert colorConvert;
+
     private static final String CLOTHS_INVOICE = "/invoice";
     private static final String CLOTHS_PENDING_LIST = "/pending_list";
     private static final String CLOTHS_SHIPPING = "/shipping_list";
@@ -55,7 +65,7 @@ public class ClothController {
     private static final String CLOTHS_REPORT = "/report";
 
     @Autowired
-    public ClothController(ClothConvert clothConvert, ClothService clothService, ReportingService reportingService, ExcelUploadService excelUploadService, CustomerConvert customerConvert, DesignConvert designConvert, PrintConvert printConvert, SizeConvert sizeConvert) {
+    public ClothController(ClothConvert clothConvert, ClothService clothService, ReportingService reportingService, ExcelUploadService excelUploadService, CustomerConvert customerConvert, DesignConvert designConvert, PrintConvert printConvert, SizeConvert sizeConvert, ColorConvert colorConvert) {
         this.clothConvert = clothConvert;
         this.clothService = clothService;
         this.reportingService = reportingService;
@@ -64,6 +74,7 @@ public class ClothController {
         this.designConvert = designConvert;
         this.printConvert = printConvert;
         this.sizeConvert = sizeConvert;
+        this.colorConvert = colorConvert;
     }
 
 
@@ -85,7 +96,7 @@ public class ClothController {
                                                 @RequestParam(required = false, value = "designId") Long designId,
                                                 @RequestParam(required = false, value = "gauge") Double gauge,
                                                 @RequestParam(required = false, value = "setting") String setting,
-                                                @RequestParam(required = false, value = "reOrder") Boolean reOrder,
+                                                @RequestParam(required = false, value = "orderType") String orderType,
                                                 @RequestParam(required = false, value = "week") String week,
                                                 @RequestParam(required = false, value = "colorId") Long colorId,
                                                 Pageable pageable) {
@@ -100,7 +111,7 @@ public class ClothController {
         }
 
         Page<Clothes> page = clothService.getClothes(customerId, locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom,
-                orderDateTo, pageable, role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge, setting, reOrder,week,colorId);
+                orderDateTo, pageable, role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge, setting, orderType,week,colorId);
         return new PageResult<>(page.getTotalElements(), page.getSize(), page.getNumber(), clothConvert.convert(page.getContent()));
     }
 
@@ -176,7 +187,7 @@ public class ClothController {
                           @RequestParam(required = false, value = "designId") Long designId,
                           @RequestParam(required = false, value = "gauge") Double gauge,
                           @RequestParam(required = false, value = "setting") String setting,
-                          @RequestParam(required = false, value = "reOrder") Boolean reOrder,
+                          @RequestParam(required = false, value = "orderType") String orderType,
                           @RequestParam(required = false, value = "week") String week,
                           @RequestParam(required = false, value = "colorId") Long colorId,
 
@@ -192,7 +203,7 @@ public class ClothController {
         }
 
         reportingService.getClothReport(customerId, locationId, orderNo, barcode, deliverDateFrom, deliveryDateTo, orderDateFrom,
-                orderDateTo, role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge, setting, reOrder,week,colorId, httpServletResponse);
+                orderDateTo, role, shippingNumber, boxNumber, isReject, type, locationDate, designId, gauge, setting, orderType,week,colorId, httpServletResponse);
     }
 
     @RequestMapping(value = CLOTHS_WEAVING_ID, method = RequestMethod.GET)
@@ -203,8 +214,10 @@ public class ClothController {
     @RequestMapping(value = CLOTHS_EXCEL_UPLOAD, method = RequestMethod.POST)
     public void uploadEcelFile(@RequestParam("file") MultipartFile file,
                                @RequestParam String type,
+                               @RequestParam String templateType,
+                               @RequestParam String orderType,
                                HttpServletResponse httpServletResponse) throws Exception {
-        excelUploadService.uploadClothes(file, httpServletResponse, type);
+        excelUploadService.uploadClothes(file, httpServletResponse, type,templateType,orderType);
     }
 
 
@@ -237,13 +250,23 @@ public class ClothController {
         return printConvert.convert(clothService.getPrintByOrderNumberAndCustomer(orderNumber, customerId, designId, sizeId));
     }
 
+    @RequestMapping(value = "/colors", method = RequestMethod.GET)
+    public List<ColorResource> getColorsForForCustomerAndOrderNumber(@RequestParam Integer orderNumber,
+                                                                     @RequestParam Long customerId,
+                                                                     @RequestParam Long designId,
+                                                                     @RequestParam Long sizeId,
+                                                                     @RequestParam Long printId) {
+        return colorConvert.convert(clothService.getColorsForForCustomerAndOrderNumber(orderNumber, customerId, designId, sizeId, printId));
+    }
+
     @RequestMapping(value = "/extraFields", method = RequestMethod.GET)
     public Set<String> getExtraFieldForForCustomerAndOrderNumber(@RequestParam Integer orderNumber,
                                                                  @RequestParam Long customerId,
                                                                  @RequestParam Long designId,
                                                                  @RequestParam Long sizeId,
-                                                                 @RequestParam Long printId) {
-        return new HashSet<>(clothService.getExtraFieldByOrderNumberAndCustomer(orderNumber, customerId, designId, sizeId, printId));
+                                                                 @RequestParam Long printId,
+                                                                 @RequestParam Long colorId) {
+        return new HashSet<>(clothService.getExtraFieldByOrderNumberAndCustomer(orderNumber, customerId, designId, sizeId, printId,colorId));
     }
 
 
