@@ -18,7 +18,8 @@ public class WeavingShippingDTO {
     private Long designId;
     private Long printId;
     private int quantity;
-    private String extraField;
+    private Long colorId;
+     private String extraField;
     private Long locationId;
     private String receiptNumber;
     private String remarks;

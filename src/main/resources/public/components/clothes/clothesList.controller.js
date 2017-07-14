@@ -20,6 +20,27 @@ angular.module('sbAdminApp')
         self.clothes = [];
         self.showContents = true;
 
+        self.orderTypes = [
+            {
+                id: 'RE_ORDER',
+                name: 'RE_ORDER'
+            },
+            {
+                id: 'BULK',
+                name: 'BULK'
+            },
+            {
+                id: 'PHOTO_SHOOT',
+                name: 'PHOTO_SHOOT'
+            },
+            {
+                id: 'SAMPLE',
+                name: 'SAMPLE'
+            }
+        ];
+
+
+
 
         $scope.selectedType = 'Order No';
 
@@ -63,7 +84,6 @@ angular.module('sbAdminApp')
         };
 
         self.statuses = [{id: 1, name: "Accepted"}, {id: 2, name: "Rejected"}];
-        self.reOrders = [{id: 2, name: "Re Order"}, {id: 1, name: "Bulk"}];
 
 
         self.types = [{id: 0, name: "Knitting"}, {id: 1, name: "Weaving"}, {id: 2, name: "All"}];
@@ -143,7 +163,7 @@ angular.module('sbAdminApp')
         }
 
         self.deleteCloth = function (cloth) {
-            if (cloth.locationName == "N/A" || cloth.locationName ==='PRE-KNITTING') {
+            if (cloth.locationName == "N/A" || cloth.locationName === 'PRE-KNITTING') {
                 var r = confirm("Are you sure you want to delte the cloth?");
                 if (r == true) {
                     ClothesFactory.deleteCloth(cloth, function (response) {
@@ -235,7 +255,7 @@ angular.module('sbAdminApp')
                 (angular.isDefined(self.filterParams.gauge) ? "&gauge=" + self.filterParams.gauge : "") +
                 (angular.isDefined(self.filterParams.setting) ? "&setting=" + self.filterParams.setting : "") +
                 (angular.isDefined(self.filterParams.week) ? "&week=" + self.filterParams.week : "") +
-                (angular.isDefined(self.filterParams.statusId) ? "&reOrder=" + (Number(self.filterParams.reOrder) === 1 ? false : true) : "") +
+                (angular.isDefined(self.filterParams.orderType) ? "&orderType=" + self.filterParams.orderType : "") +
 
                 "&roles=" + $localStorage.user.roles);
         }
@@ -312,7 +332,7 @@ angular.module('sbAdminApp')
                             locationDate: self.filterParams.locationDate ? self.filterParams.locationDate.toDateString() : undefined,
                             gauge: self.filterParams.gauge,
                             setting: self.filterParams.setting,
-                            reOrder: angular.isDefined(self.filterParams.reOrder) ? (Number(self.filterParams.reOrder) === 1 ? false : true) : null,
+                            orderType: self.filterParams.orderType,
                             week: self.filterParams.week,
                             colorId: self.filterParams.colorId,
                             sort: 'lastModified,desc',
@@ -349,19 +369,6 @@ angular.module('sbAdminApp')
             }
         };
 
-        self.importFromExcel = function (file, type) {
-            if (file) {
-                console.log(file);
-                ClothesFactory.uploadExcel(file, type, function (success) {
-                        Flash.create('success', 'Cloth added successfully', 'custom-class');
-                        self.reloadTable();
-                    }, function (error) {
-                        Flash.create('danger', error.message, 'custom-class');
-                    }
-                )
 
-            }
-
-        }
 
     });

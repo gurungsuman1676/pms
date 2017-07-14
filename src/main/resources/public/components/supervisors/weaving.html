@@ -38,13 +38,19 @@
                     <div class="form-group">
                         <label>Print</label>
                         <selectize ng-model="ctrl.cloth.printId" config="{maxOptions: 100}"
-                                   ng-change="fetchExtraFields()"
+                                   ng-change="fetchColors()"
                                    required
                                    options="options.prints"></selectize>
                     </div>
 
                     <div class="form-group">
                         <label>Color</label>
+                        <selectize ng-model="ctrl.cloth.colorId" config="{maxOptions: 100}"
+                                  ng-change="fetchExtraFields()" options="options.colors" style="font-size: 8px" required></selectize>
+                    </div>
+
+                    <div class="form-group" >
+                        <label>Other Field</label>
                         <selectize ng-model="ctrl.cloth.extraField" config="{maxOptions: 100}"
                                    options="options.extraFields" style="font-size: 8px" required></selectize>
                     </div>

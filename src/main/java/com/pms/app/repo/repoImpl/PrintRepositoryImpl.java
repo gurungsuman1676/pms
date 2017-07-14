@@ -34,4 +34,12 @@ public class PrintRepositoryImpl extends AbstractRepositoryImpl<Prints, PrintRep
                 .where(nameExpression.equalsIgnoreCase(providedExpression).and(prints.size.id.eq(sizeId)))
                 .list(prints.id);
     }
+
+    @Override
+    public Long getDefaultPrintLessPrint() {
+        QPrints prints = QPrints.prints;
+        return from(prints)
+                .where(prints.name.eq("Printless"))
+                .singleResult(prints.id);
+    }
 }

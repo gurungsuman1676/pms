@@ -54,27 +54,27 @@
                 </div>
                 <div class="col-sm-12" style="padding-top: 1em"></div>
                 <div class="pull-left">
-                    <button type="file" ngf-select="ctrl.importFromExcel($file,'WEAVING')" class="btn btn-success"
-                            accept="application/xls">
-                        Import Weaving
+                    <button class="btn btn-success" ui-sref="dashboard.clothes.import.index">
+                        Import File
                     </button>
                 </div>
 
-                <div class="pull-left">
-                    <button type="file" ngf-select="ctrl.importFromExcel($file,'KNITTING_MULTIPLE')"
-                            class="btn btn-success"
-                            accept="application/xls">
-                        Import Knitting Multiple
-                    </button>
-                </div>
 
-                <div class="pull-left">
-                    <button type="file" ngf-select="ctrl.importFromExcel($file,'KNITTING_SINGLE')"
-                            class="btn btn-success"
-                            accept="application/xls">
-                        Import Knitting Single
-                    </button>
-                </div>
+                <!--<div class="pull-left">-->
+                <!--<button type="file" ngf-select="ctrl.importFromExcel($file,'KNITTING_MULTIPLE')"-->
+                <!--class="btn btn-success"-->
+                <!--accept="application/xls">-->
+                <!--Import Knitting Multiple-->
+                <!--</button>-->
+                <!--</div>-->
+
+                <!--<div class="pull-left">-->
+                <!--<button type="file" ngf-select="ctrl.importFromExcel($file,'KNITTING_SINGLE')"-->
+                <!--class="btn btn-success"-->
+                <!--accept="application/xls">-->
+                <!--Import Knitting Single-->
+                <!--</button>-->
+                <!--</div>-->
 
                 <div class="col-sm-12"></div>
             </div>
@@ -186,8 +186,8 @@
                 </div>
 
                 <div class="col-sm-3 input-margin">
-                    <selectize placeholder="Order" ng-model="ctrl.filterParams.reOrder"
-                               options="ctrl.reOrders">
+                    <selectize placeholder="Order Type" ng-model="ctrl.filterParams.orderType"
+                               options="ctrl.orderTypes">
                     </selectize>
                 </div>
 
@@ -234,7 +234,7 @@
                             <th>Price</th>
                             <th>Shipping No</th>
                             <th>Box Number</th>
-                            <th>Re-Order</th>
+                            <th>Order Type</th>
                             <th>Actions</th>
                             <th>Select <input type="checkbox" ng-model="ctrl.selectAll"
                                               ng-change="ctrl.allSelected()"></th>
@@ -263,7 +263,7 @@
                             <td>{{cloth.price.amount | currency: cloth.customer.currencyName}}</td>
                             <td>{{cloth.shippingNumber}}</td>
                             <td>{{cloth.boxNumber}}</td>
-                            <td>{{cloth.reOrder ? 'Re-Order' : 'Bulk'}}</td>
+                            <td>{{cloth.orderType}}</td>
                             <td style="width:165px">
 
                                 <!--<button type="button" class="btn btn-xs btn-primary" ui-sref="dashboard.clothes.edit({clothId: cloth.id})">-->
@@ -307,7 +307,8 @@
         <button type="button" class="btn btn-primary" ng-click="ctrl.hideBarcode()">Back</button>
     </div>
     <div print-section class="barcode-container">
-        <div class="barcode-wrapper" ng-repeat="cloth in ctrl.clothes | orderBy:['price.designId','colorCode','price.sizeId']">
+        <div class="barcode-wrapper"
+             ng-repeat="cloth in ctrl.clothes | orderBy:['price.designId','colorCode','price.sizeId']">
             <div ng-show="cloth.isChecked">
                 <div class="barcode-details">
                     <p>{{cloth.order_no}}/ {{cloth.customer.name}}/ {{cloth.price.designName}}/

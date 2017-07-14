@@ -32,7 +32,7 @@ public class ClothResource {
     private Boolean isReturn;
     private String weight;
     private Integer type;
-    private boolean reOrder;
+    private String orderType;
     private String colorName;
 
 
@@ -54,7 +54,8 @@ public class ClothResource {
             String printName,
             String shippingNumber,
             String boxNumber,
-            String weight,Boolean isReturn,
+            String weight,
+            Boolean isReturn,
             Date created,
             Integer type,
             String colorName){

@@ -2,7 +2,6 @@ package com.pms.app.upload;
 
 import com.pms.app.domain.Clothes;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.context.annotation.Scope;
@@ -13,10 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
 
 /**
  * Created by arjun on 6/14/2017.
@@ -37,24 +34,25 @@ public class PhillipeTemplate extends AbstractTemplate implements TemplateServic
     private static final String YARN_ALIAS = "YARN";
     private static final String BARCODE_ALIAS = "BARCODE";
     private static final String QUANTITY_ALIAS = "QTY";
+    private static final String PRINT_ALIAS = "PRINT";
+
 
     boolean completed = false;
 
-    public PhillipeTemplate(MultipartFile file) throws IOException {
-        super(file, 0);
+    public PhillipeTemplate(MultipartFile file, int type, String orderType) throws IOException {
+        super(file, type, orderType);
     }
 
     @Override
-    @Caching( evict = {
-            @CacheEvict(value = "designs",allEntries = true),
-            @CacheEvict(value = "colors",allEntries = true),
-            @CacheEvict(value = "designs",allEntries = true),
-            @CacheEvict(value = "yarns",allEntries = true),
-            @CacheEvict(value = "sizes",allEntries = true),
-            @CacheEvict(value = "prices",allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "designs", allEntries = true),
+            @CacheEvict(value = "colors", allEntries = true),
+            @CacheEvict(value = "yarns", allEntries = true),
+            @CacheEvict(value = "sizes", allEntries = true),
+            @CacheEvict(value = "prints", allEntries = true),
+            @CacheEvict(value = "prices", allEntries = true)
     })
     public void process() throws IOException {
-        setExtractFormula(nameExtractFormula);
         getCustomerName(CUSTOMER_NAME_ALIAS);
         getDeliveryDate(DELIVERY_DATE_ALIAS);
         getOrderNo(ORDER_NO_ALIAS);
@@ -78,10 +76,12 @@ public class PhillipeTemplate extends AbstractTemplate implements TemplateServic
         int yarnIndex = getIndexForAlias(YARN_ALIAS, true);
         int barcodeIndex = getIndexForAlias(BARCODE_ALIAS, false);
         int quantityIndex = getIndexForAlias(QUANTITY_ALIAS, true);
+        int printIndex = getIndexForAlias(PRINT_ALIAS, clothType == 1);
+
         List<Clothes> clothes = new ArrayList<>();
         while (rowsIterator.hasNext() && !completed) {
             currentRow = rowsIterator.next();
-            clothes.addAll(getClothForRow(designIndex, bagNameIndex, colorIndex, sizeIndex, yarnIndex, barcodeIndex, quantityIndex, colorNameIndex));
+            clothes.addAll(getClothForRow(designIndex, bagNameIndex, colorIndex, sizeIndex, yarnIndex, barcodeIndex, quantityIndex, colorNameIndex, printIndex));
         }
         try {
             if (Integer.valueOf(getCellValueByIndex(quantityIndex, QUANTITY_ALIAS, true)) != clothes.size()) {
@@ -95,7 +95,7 @@ public class PhillipeTemplate extends AbstractTemplate implements TemplateServic
     }
 
 
-    private List<Clothes> getClothForRow(int designIndex, int bagNameIndex, int colorIndex, int sizeIndex, int yarnIndex, int barcodeIndex, int quantityIndex, int colorNameIndex) {
+    private List<Clothes> getClothForRow(int designIndex, int bagNameIndex, int colorIndex, int sizeIndex, int yarnIndex, int barcodeIndex, int quantityIndex, int colorNameIndex, int printIndex) {
         String quantity = getCellValueByIndex(quantityIndex, QUANTITY_ALIAS, false);
         String designName = getCellValueByIndex(designIndex, DESIGN_ALIAS, false);
 
@@ -114,10 +114,12 @@ public class PhillipeTemplate extends AbstractTemplate implements TemplateServic
         String yarn = getCellValueByIndex(yarnIndex, YARN_ALIAS, true);
         String barcode = getCellValueByIndex(barcodeIndex, BARCODE_ALIAS, false);
         String colorName = getCellValueByIndex(colorNameIndex, COLOR_NAME_ALIAS, true);
+        String printName = clothType == 1 ? getCellValueByIndex(printIndex, PRINT_ALIAS,true) : null;
+
 
         Map<String, Integer> sizes = new HashMap<>();
         sizes.put(size, Integer.parseInt(quantity));
-        return getCloth(colorCode, colorName, yarn, sizes, designName, null, bagName.isEmpty() ? "" : "Name ::" + bagName, barcode.isEmpty() ? "" : "Barcode::" + barcode);
+        return getCloth(colorCode, colorName, yarn, sizes, designName, printName, bagName.isEmpty() ? "" : "Name ::" + bagName, barcode.isEmpty() ? "" : "Barcode::" + barcode);
     }
 
     private String getCellValueByIndex(int index, String alias, boolean required) {
@@ -161,22 +163,5 @@ public class PhillipeTemplate extends AbstractTemplate implements TemplateServic
         return -1;
     }
 
-
-    BiFunction<Row, String, String> nameExtractFormula =
-            (Row row, String alias) -> {
-                String name = null;
-                Iterator<Cell> cells = row.cellIterator();
-                while (cells.hasNext()) {
-                    Cell cell = cells.next();
-                    cell.setCellType(Cell.CELL_TYPE_STRING);
-                    if (cell.getStringCellValue() != null && cell.getStringCellValue().toUpperCase().contains(alias)) {
-                        Cell next = cells.next();
-                        next.setCellType(Cell.CELL_TYPE_STRING);
-                        name = next.getStringCellValue();
-                        break;
-                    }
-                }
-                return name;
-            };
 
 }

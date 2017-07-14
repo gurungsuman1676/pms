@@ -10,4 +10,7 @@ import java.util.List;
 public interface PrintRepositoryCustom extends AbstractRepositoryCustom<Prints> {
 
     List<Long> findByNameAndSizeId(String printName, Long sizeId);
+
+    Long getDefaultPrintLessPrint();
+
 }

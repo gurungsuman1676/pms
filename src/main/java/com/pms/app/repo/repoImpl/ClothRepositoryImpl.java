@@ -42,7 +42,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                                         String role,
                                         String shippingNumber,
                                         String boxNumber,
-                                        Boolean isRejected, Integer type, Long designId, Date locationDate, Double gauge, String setting, Boolean reOrder, String week, Long colorId) {
+                                        Boolean isRejected, Integer type, Long designId, Date locationDate, Double gauge, String setting, String reOrder, String week, Long colorId) {
 
         QClothes clothes = QClothes.clothes;
         BooleanBuilder where = getBooleanBuilder(customerId,
@@ -121,7 +121,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                                                  String shippingNumber,
                                                  String boxNumber,
                                                  Boolean isReject,
-                                                 Integer type, Long designId, Double gauge, Date locationDate, String setting, Boolean reOrder, String week, Long colorId) {
+                                                 Integer type, Long designId, Double gauge, Date locationDate, String setting, String reOrder, String week, Long colorId) {
 
         QClothes clothes = QClothes.clothes;
         BooleanBuilder where = getBooleanBuilder(customerId,
@@ -369,7 +369,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
     public Page<Clothes> findAllForHistoryByDate(Long customerId, Long locationId, Integer orderNo, Long barcode, Date deliverDateFrom,
                                                  Date deliveryDateTo, Date orderDateFrom, Date orderDateTo, Pageable pageable,
                                                  String role, String shippingNumber, String boxNumber, Boolean isReject, Integer type,
-                                                 Date locationDate, Long designId, Double gauge, String setting, Boolean reOrder, String week, Long colorId) {
+                                                 Date locationDate, Long designId, Double gauge, String setting, String reOrder, String week, Long colorId) {
         QClothActivity activity = QClothActivity.clothActivity;
         QClothes clothes = activity.cloth;
         BooleanBuilder where = getBooleanBuilder(customerId,
@@ -420,7 +420,8 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
     private BooleanBuilder getBooleanBuilder(Long customerId, Long locationId, Integer orderNo, Long barcode,
                                              Date deliverDateFrom, Date deliveryDateTo, Date orderDateFrom,
                                              Date orderDateTo, String role, String shippingNumber,
-                                             String boxNumber, Boolean isReject, QClothes clothes, Integer type, Long designId, Double gauge, String setting, Boolean reOrder, String week, Long colorId) {
+                                             String boxNumber, Boolean isReject, QClothes clothes, Integer type, Long designId, Double gauge,
+                                             String setting, String orderType, String week, Long colorId) {
         BooleanBuilder where = new BooleanBuilder();
         if (role != null) {
             where.and(clothes.location.name.eq(role));
@@ -472,8 +473,8 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
             if (setting != null) {
                 where.and(clothes.price.design.setting.eq(setting));
             }
-            if (reOrder != null) {
-                where.and(clothes.reOrder.eq(reOrder));
+            if (orderType != null) {
+                where.and(clothes.orderType.eq(OrderType.valueOf(orderType)));
             }
             if (isReject != null) {
                 where.and(clothes.isReturn.isFalse());
@@ -525,7 +526,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                                                            String boxNumber,
                                                            Boolean isReject,
                                                            Integer type,
-                                                           Date locationDate, Long designId, Double gauge, String setting, Boolean reOrder, String week, Long colorId) {
+                                                           Date locationDate, Long designId, Double gauge, String setting, String reOrder, String week, Long colorId) {
 
         QClothActivity activity = QClothActivity.clothActivity;
         QClothes clothes = QClothes.clothes;
@@ -598,6 +599,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                         .and(clothes.type.eq(1))
                         .and(clothes.status.eq(Status.ACTIVE.toString()))
                         .and(clothes.price.size.id.eq(weavingShippingDTO.getSizeId()))
+                        .and(clothes.color.id.eq(weavingShippingDTO.getColorId()))
                         .and(clothes.extraField.eq(weavingShippingDTO.getExtraField()))
                         .and(clothes.location.id.isNull())))
                 .limit(weavingShippingDTO.getQuantity())
@@ -671,7 +673,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
     }
 
     @Override
-    public List<String> getExtraFieldByOrderNumberAndCustomer(Integer orderNumber, Long customerId, Long designId, Long sizeId, Long printId) {
+    public List<String> getExtraFieldByOrderNumberAndCustomer(Integer orderNumber, Long customerId, Long designId, Long sizeId, Long printId, Long colorId) {
         QClothes clothes = QClothes.clothes;
         return from(clothes).where(clothes.order_no.eq(orderNumber)
                 .and(clothes.price.design.id.eq(designId))
@@ -680,12 +682,14 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .and(clothes.location.isNull())
                 .and(clothes.type.eq(1))
                 .and(clothes.status.eq(Status.ACTIVE.toString()))
+                .and(clothes.color.id.eq(colorId))
                 .and(clothes.print.id.eq(printId)))
                 .list(clothes.extraField);
     }
 
     @Override
-    public List<Clothes> findByOrderNoAndCustomerAndPriceAndColorAndTypeAndStatusAndLocation(Integer order_no, Long customerId, Long priceId, Long colorId, Integer type, String status, Long locationId, int quantity) {
+    public List<Clothes> findByOrderNoAndCustomerAndPriceAndColorAndTypeAndStatusAndLocation(Integer order_no,
+                                                                                             Long customerId, Long priceId, Long colorId, Integer type, String status, Long locationId, int quantity) {
         QClothes clothes = QClothes.clothes;
         return from(clothes)
                 .where(clothes.order_no.eq(order_no)
@@ -697,6 +701,20 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                         .and(clothes.status.eq(status)))
                 .limit(quantity)
                 .list(clothes);
+    }
+
+    @Override
+    public List<Colors> getColorsByOrderNumberAndCustomer(Integer orderNumber, Long customerId, Long designId, Long sizeId, Long printId) {
+        QClothes clothes = QClothes.clothes;
+        return from(clothes).where(clothes.order_no.eq(orderNumber)
+                .and(clothes.price.design.id.eq(designId))
+                .and(clothes.customer.id.eq(customerId))
+                .and(clothes.price.size.id.eq(sizeId))
+                .and(clothes.location.isNull())
+                .and(clothes.type.eq(1))
+                .and(clothes.status.eq(Status.ACTIVE.toString()))
+                .and(clothes.print.id.eq(printId)))
+                .list(clothes.color);
     }
 
 

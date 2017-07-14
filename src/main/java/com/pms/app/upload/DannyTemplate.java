@@ -33,49 +33,31 @@ public class DannyTemplate extends AbstractTemplate implements TemplateService {
     private static final String YARN_ALIAS = "YARN";
     private static final String TOTAL_ALIAS = "TOTAL";
     private static final String GRAND_TOTAL_ALIAS = "GRAND TOTAL";
+    private static final String PRINT_ALIAS = "PRINT";
 
     private boolean completed = false;
 
 
-    public DannyTemplate(MultipartFile file) throws IOException {
-        super(file, 0);
+    public DannyTemplate(MultipartFile file, int type, String orderType) throws IOException {
+        super(file, type, orderType);
     }
 
 
     @Override
-    @Caching( evict = {
-            @CacheEvict(value = "designs",allEntries = true),
-            @CacheEvict(value = "colors",allEntries = true),
-            @CacheEvict(value = "designs",allEntries = true),
-            @CacheEvict(value = "yarns",allEntries = true),
-            @CacheEvict(value = "sizes",allEntries = true),
-            @CacheEvict(value = "prices",allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "designs", allEntries = true),
+            @CacheEvict(value = "colors", allEntries = true),
+            @CacheEvict(value = "yarns", allEntries = true),
+            @CacheEvict(value = "sizes", allEntries = true),
+            @CacheEvict(value = "prints", allEntries = true),
+            @CacheEvict(value = "prices", allEntries = true)
     })
     public void process() throws Exception {
-        setExtractFormula(nameExtractFormula);
         getCustomerName(CUSTOMER_NAME_ALIAS);
         getDeliveryDate(DELIVERY_DATE_ALIAS);
         getOrderNo(ORDER_NO_ALIAS);
         addClothes();
     }
-
-
-    BiFunction<Row, String, String> nameExtractFormula =
-            (Row row, String alias) -> {
-                String name = null;
-                Iterator<Cell> cells = row.cellIterator();
-                while (cells.hasNext()) {
-                    Cell cell = cells.next();
-                    cell.setCellType(Cell.CELL_TYPE_STRING);
-                    if (cell.getStringCellValue() != null && cell.getStringCellValue().toUpperCase().contains(alias)) {
-                        Cell next = cells.next();
-                        next.setCellType(Cell.CELL_TYPE_STRING);
-                        name = next.getStringCellValue();
-                        break;
-                    }
-                }
-                return name;
-            };
 
 
     private void addClothes() throws Exception {
@@ -106,11 +88,12 @@ public class DannyTemplate extends AbstractTemplate implements TemplateService {
         int colorNameIndex = getColorNameIndex();
         int colorCodeIndex = getColorCodeIndex();
         int yarnIndex = getColorYarnIndex();
-        Map<Integer, String> sizeIndexes = getSizeIndex(yarnIndex);
+        int printIndex = clothType == 1 ? getPrintIndex() : -1;
+        Map<Integer, String> sizeIndexes = getSizeIndex(printIndex == -1 ? yarnIndex : printIndex);
         List<Clothes> clothesMap = new ArrayList<>();
         currentRow = rowsIterator.next();
         while (!hasTotal(TOTAL_ALIAS)) {
-            clothesMap.addAll(getClothByColorIndexAndSizeIndexAndSizeIndex(colorCodeIndex, sizeIndexes, yarnIndex, colorNameIndex, designName));
+            clothesMap.addAll(getClothByColorIndexAndSizeIndexAndSizeIndex(colorCodeIndex, sizeIndexes, yarnIndex, colorNameIndex, designName, printIndex));
             try {
                 currentRow = rowsIterator.next();
             } catch (Exception e) {
@@ -129,7 +112,8 @@ public class DannyTemplate extends AbstractTemplate implements TemplateService {
             Cell next = iterator.next();
             if (next != null) {
                 try {
-                    int t = (int) next.getNumericCellValue();
+                    next.setCellType(Cell.CELL_TYPE_STRING);
+                    int t = Integer.valueOf(next.getStringCellValue());
                     if (t != 0) {
                         total = t;
                     }
@@ -143,9 +127,7 @@ public class DannyTemplate extends AbstractTemplate implements TemplateService {
         }
     }
 
-    private List<Clothes> getClothByColorIndexAndSizeIndexAndSizeIndex(int colorCodeIndex, Map<Integer, String> sizeIndexes, int yarnIndex, int colorNameIndex, String designName) throws Exception {
-
-
+    private List<Clothes> getClothByColorIndexAndSizeIndexAndSizeIndex(int colorCodeIndex, Map<Integer, String> sizeIndexes, int yarnIndex, int colorNameIndex, String designName, int printIndex) throws Exception {
         Map<String, Integer> sizeAndNumberMap = new HashMap<>();
         for (Integer sizeEntryColum : sizeIndexes.keySet()) {
             Cell sizeCell = currentRow.getCell(sizeEntryColum);
@@ -169,7 +151,8 @@ public class DannyTemplate extends AbstractTemplate implements TemplateService {
         String colorCode = getCellValueByIndex(colorCodeIndex, COLOR_CODE_ALIAS);
         String yarnName = getCellValueByIndex(yarnIndex, YARN_ALIAS);
         String colorName = getCellValueByIndex(colorNameIndex, COLOR_NAME_ALIAS);
-        return getCloth(colorCode, colorName, yarnName, sizeAndNumberMap, designName, null);
+        String printName = printIndex == -1 ? null : getCellValueByIndex(printIndex, PRINT_ALIAS);
+        return getCloth(colorCode, colorName, yarnName, sizeAndNumberMap, designName, printName);
     }
 
 
@@ -271,6 +254,15 @@ public class DannyTemplate extends AbstractTemplate implements TemplateService {
     }
 
 
+    private int getPrintIndex() {
+        for (Cell cell : currentRow) {
+            cell.setCellType(Cell.CELL_TYPE_STRING);
+            if (cell.getStringCellValue() != null && cell.getStringCellValue().toUpperCase().contains(PRINT_ALIAS)) {
+                return cell.getColumnIndex();
+            }
+        }
+        throw new RuntimeException("No Print header available");
+    }
 }
 
 

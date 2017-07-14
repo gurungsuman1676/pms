@@ -1,6 +1,7 @@
 package com.pms.app.service;
 
 import com.pms.app.domain.Clothes;
+import com.pms.app.domain.Colors;
 import com.pms.app.domain.Customers;
 import com.pms.app.domain.Designs;
 import com.pms.app.domain.Prints;
@@ -20,7 +21,7 @@ public interface ClothService {
     Page<Clothes> getClothes(Long customerId, Long locationId, Integer orderNo, Long barcode, Date deliverDateFrom,
                              Date deliveryDateTo, Date orderDateFrom, Date orderDateTo,
                              Pageable pageable, String number, String shippingNumber, String boxNumber,
-                             Boolean isReject, Integer type, Date locationDate, Long designId, Double gauge, String setting, Boolean reOrder, String week, Long colorId);
+                             Boolean isReject, Integer type, Date locationDate, Long designId, Double gauge, String setting, String reOrder, String week, Long colorId);
 
     List<Clothes> addCloth(ClothDto clothDto);
 
@@ -40,7 +41,9 @@ public interface ClothService {
 
     List<Sizes> getSizesForCustomerAndOrderNumber(Integer orderNumber, Long customerId, Long designId);
 
-    List<String> getExtraFieldByOrderNumberAndCustomer(Integer orderNumber, Long customerId, Long designId, Long sizeId, Long printId);
+    List<String> getExtraFieldByOrderNumberAndCustomer(Integer orderNumber, Long customerId, Long designId, Long sizeId, Long printId, Long colorId);
+
+    List<Colors> getColorsForForCustomerAndOrderNumber(Integer orderNumber, Long customerId, Long designId, Long sizeId, Long printId);
 
     Long addDocument(byte[] file) throws IOException;
 
