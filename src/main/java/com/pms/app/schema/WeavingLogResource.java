@@ -25,6 +25,7 @@ public class WeavingLogResource {
     private String designName;
     private String printName;
     private String colorName;
+    private String extraField;
     private String sizeName;
     private int quantity;
     private String remarks;
@@ -42,7 +43,8 @@ public class WeavingLogResource {
                               String sizeName,
                               int quantity,
                               String remarks,
-                              Date created) {
+                              Date created,
+                              String extraField) {
         this.id = id;
         this.receiptNumber = receiptNumber;
         this.orderNo = orderNo;
@@ -55,6 +57,7 @@ public class WeavingLogResource {
         this.quantity = quantity;
         this.remarks = remarks;
         this.created = created;
+        this.extraField = extraField;
     }
 
 

@@ -38,8 +38,8 @@ public class WeavingWorkLog extends AbstractEntity {
 
     private int quantity;
 
-//    @ManyToOne
-//    private Colors color;
+    @ManyToOne
+    private Colors color;
 
     private String extraField;
 

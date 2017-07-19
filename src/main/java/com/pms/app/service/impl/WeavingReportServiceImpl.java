@@ -113,16 +113,20 @@ public class WeavingReportServiceImpl implements WeavingReportService {
             colorHeadCell.setCellValue("Color");
             colorHeadCell.setCellStyle(style);
 
-            Cell sizeHeadCell = startRow.createCell(8);
+            Cell extraHeadCell = startRow.createCell(8);
+            extraHeadCell.setCellValue("Extra Field");
+            extraHeadCell.setCellStyle(style);
+
+            Cell sizeHeadCell = startRow.createCell(9);
             sizeHeadCell.setCellValue("Size");
             sizeHeadCell.setCellStyle(style);
 
-            Cell quantityHeadCell = startRow.createCell(9);
+            Cell quantityHeadCell = startRow.createCell(10);
             quantityHeadCell.setCellValue("Quantity");
             quantityHeadCell.setCellStyle(style);
 
 
-            Cell remarkHeadCellHeadCell = startRow.createCell(10);
+            Cell remarkHeadCellHeadCell = startRow.createCell(11);
             remarkHeadCellHeadCell.setCellValue("Remark");
             remarkHeadCellHeadCell.setCellStyle(style);
 
@@ -160,14 +164,17 @@ public class WeavingReportServiceImpl implements WeavingReportService {
                 Cell colorCell = row.createCell(7);
                 colorCell.setCellValue(log.getColorName());
 
-                Cell sizeCell = row.createCell(8);
+                Cell extraCell = row.createCell(8);
+                extraCell.setCellValue(log.getExtraField());
+
+                Cell sizeCell = row.createCell(9);
                 sizeCell.setCellValue(log.getSizeName());
 
 
-                Cell quantityCell = row.createCell(9);
+                Cell quantityCell = row.createCell(10);
                 quantityCell.setCellValue(log.getQuantity());
 
-                Cell remarkCell = row.createCell(10);
+                Cell remarkCell = row.createCell(11);
                 remarkCell.setCellValue(log.getRemarks());
 
             }
@@ -184,7 +191,7 @@ public class WeavingReportServiceImpl implements WeavingReportService {
         }
 
 
-        for (int i = 0; i <= 10; i++) {
+        for (int i = 0; i <= 11; i++) {
             sheet.autoSizeColumn(i);
         }
         exportToExcel(httpServletResponse, workbook);

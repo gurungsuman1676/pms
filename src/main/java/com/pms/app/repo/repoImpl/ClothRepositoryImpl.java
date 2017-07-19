@@ -592,6 +592,12 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
     @Override
     public List<Clothes> findForWeavingShipping(WeavingShippingDTO weavingShippingDTO, Long locationId) {
         QClothes clothes = QClothes.clothes;
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        if (weavingShippingDTO.getExtraField() == null || weavingShippingDTO.getExtraField().isEmpty()) {
+            booleanBuilder.and(clothes.extraField.isEmpty());
+        } else {
+            booleanBuilder.and(clothes.extraField.eq(weavingShippingDTO.getExtraField()));
+        }
         return from(clothes).where(clothes.order_no.eq(weavingShippingDTO.getOrderNo())
                 .and(clothes.customer.id.eq(weavingShippingDTO.getCustomerId())
                         .and(clothes.print.id.eq(weavingShippingDTO.getPrintId()))
@@ -600,7 +606,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                         .and(clothes.status.eq(Status.ACTIVE.toString()))
                         .and(clothes.price.size.id.eq(weavingShippingDTO.getSizeId()))
                         .and(clothes.color.id.eq(weavingShippingDTO.getColorId()))
-                        .and(clothes.extraField.eq(weavingShippingDTO.getExtraField()))
+                        .and(booleanBuilder)
                         .and(clothes.location.id.isNull())))
                 .limit(weavingShippingDTO.getQuantity())
                 .list(clothes);
@@ -610,6 +616,12 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
     @Override
     public List<Clothes> findForEnteredWeavingShipping(WeavingShippingDTO weavingShippingDTO) {
         QClothes clothes = QClothes.clothes;
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+        if (weavingShippingDTO.getExtraField() == null || weavingShippingDTO.getExtraField().isEmpty()) {
+            booleanBuilder.and(clothes.extraField.isEmpty());
+        } else {
+            booleanBuilder.and(clothes.extraField.eq(weavingShippingDTO.getExtraField()));
+        }
         return from(clothes).where(clothes.order_no.eq(weavingShippingDTO.getOrderNo())
                 .and(clothes.customer.id.eq(weavingShippingDTO.getCustomerId())
                         .and(clothes.print.id.eq(weavingShippingDTO.getPrintId()))
@@ -617,9 +629,10 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                         .and(clothes.type.eq(1))
                         .and(clothes.status.eq(Status.ACTIVE.toString()))
                         .and(clothes.price.size.id.eq(weavingShippingDTO.getSizeId()))
-                        .and(clothes.extraField.eq(weavingShippingDTO.getExtraField()))
+                        .and(clothes.color.id.eq(weavingShippingDTO.getColorId()))
                         .and(clothes.shipping.eq(weavingShippingDTO.getShipping()))
                         .and(clothes.boxNumber.eq(weavingShippingDTO.getBoxNumber()))
+                        .and(booleanBuilder)
                         .and(clothes.location.id.isNotNull())))
                 .limit(weavingShippingDTO.getQuantity())
                 .list(clothes);

@@ -191,8 +191,8 @@ abstract class AbstractTemplate {
                            Map<String, Integer> sizeAndNumberMap,
                            String designName, String printName, String... attrs) {
         Locations preKnitting = null;
-        if(clothType == 0) {
-             preKnitting = locationRepository.findByNameAndLocationType(LocationEnum.PRE_KNITTING.getName(), LocationType.KNITTING);
+        if (clothType == 0) {
+            preKnitting = locationRepository.findByNameAndLocationType(LocationEnum.PRE_KNITTING.getName(), LocationType.KNITTING);
         }
         List<Clothes> clothesList = new ArrayList<>();
         for (String sizeName : sizeAndNumberMap.keySet()) {
@@ -207,7 +207,7 @@ abstract class AbstractTemplate {
                 clothes.setDeliver_date(deliveryDate);
                 clothes.setOrder_no(orderNumber);
                 clothes.setCustomer(entityManager.getReference(Customers.class, customerId));
-                clothes.setExtraField(String.join("-", attrs));
+                clothes.setExtraField(attrs.length > 0 ? String.join("-", attrs) : "");
                 clothes.setType(clothType);
                 clothes.setOrderType(OrderType.valueOf(orderType));
                 clothes.setStatus(Status.ACTIVE.toString());
@@ -234,7 +234,7 @@ abstract class AbstractTemplate {
                 }
                 Prices price = getPrices(designName, sizeName, color, designId, sizeId);
 
-                if(clothType == 1) {
+                if (clothType == 1) {
                     if (printName != null && !printName.toUpperCase().equalsIgnoreCase("PRINTLESS")) {
                         printName = printName.trim();
                         List<Long> printId = printRepository.findByNameAndSizeId(printName, sizeId);
@@ -252,13 +252,13 @@ abstract class AbstractTemplate {
                         }
                         clothes.setPrint(entityManager.getReference(Prints.class, printId.get(0)));
 
-                    }else {
+                    } else {
                         clothes.setPrint(entityManager.getReference(Prints.class, printRepository.getDefaultPrintLessPrint()));
                     }
                 }
 
                 clothes.setPrice(price);
-                if(clothType == 0) {
+                if (clothType == 0) {
                     clothes.setLocation(entityManager.getReference(Locations.class, preKnitting.getId()));
                 }
                 clothesList.add(clothes);

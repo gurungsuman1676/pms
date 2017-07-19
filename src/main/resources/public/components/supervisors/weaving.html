@@ -52,7 +52,7 @@
                     <div class="form-group" >
                         <label>Other Field</label>
                         <selectize ng-model="ctrl.cloth.extraField" config="{maxOptions: 100}"
-                                   options="options.extraFields" style="font-size: 8px" required></selectize>
+                                   options="options.extraFields" style="font-size: 8px" ></selectize>
                     </div>
 
                     <div class="form-group">
@@ -88,24 +88,24 @@
                     <div class="form-group" ng-show="isShippingUser">
                         <label> Shipping Number</label>
                         <input class="form-control" ng-model="ctrl.cloth.shipping" type="text"
-                               autocomplete="off" required>
+                               autocomplete="off" ng-required="isShippingUser">
                     </div>
 
                     <div class="form-group" ng-show="isShippingUser">
                         <label> Box Number:</label>
                         <input class="form-control" ng-model="ctrl.cloth.boxNumber" type="text"
-                               autocomplete="off" required>
+                               autocomplete="off" ng-required="isShippingUser">
                     </div>
 
                     <div class="form-group" ng-show="isShippingUser">
                         <label> Weight:</label>
                         <input id="weight" class="form-control" ng-model="ctrl.cloth.weight" type="text"
-                               autocomplete="off" autofocus>
+                               autocomplete="off" autofocus >
                     </div>
 
                     <div class="form-group">
                         <label> Quantity:</label>
-                        <input id="barcode" class="form-control" ng-model="ctrl.cloth.quantity" type="number" required
+                        <input id="barcode" class="form-control" ng-model="ctrl.cloth.quantity" type="number" ng-required="isShippingUser"
                                autocomplete="off" autofocus>
                     </div>
 

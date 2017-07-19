@@ -167,7 +167,7 @@ public class KnitterHistoryReportServiceImpl implements KnitterHistoryReportServ
                 settingVal.setCellValue(historyReportResource.getSetting());
 
                 Cell reOrderCellVal = row.createCell(11);
-                reOrderCellVal.setCellValue(historyReportResource.getReOrder() == null ? " " : historyReportResource.getReOrder() ? " Re-Order" : "Bulk");
+                reOrderCellVal.setCellValue(historyReportResource.getOrderType() == null ? " " : historyReportResource.getOrderType());
 
 
             }

@@ -213,7 +213,7 @@ public class ClothServiceImpl implements ClothService {
         WeavingWorkLog weavingWorkLog = new WeavingWorkLog();
         weavingWorkLog.setBoxNumber(weavingShippingDTO.getBoxNumber());
         weavingWorkLog.setShipping(weavingShippingDTO.getShipping());
-//        weavingWorkLog.setColor(entityManager.getReference(Colors.class, weavingShippingDTO.getColorId()));
+        weavingWorkLog.setColor(entityManager.getReference(Colors.class, weavingShippingDTO.getColorId()));
         weavingWorkLog.setCustomer(entityManager.getReference(Customers.class, weavingShippingDTO.getCustomerId()));
         weavingWorkLog.setDesign(entityManager.getReference(Designs.class, weavingShippingDTO.getDesignId()));
         weavingWorkLog.setExtraField(weavingShippingDTO.getExtraField());
@@ -310,6 +310,7 @@ public class ClothServiceImpl implements ClothService {
             weavingShippingDTO.setPrintId(weavingWorkLog.getPrint().getId());
             weavingShippingDTO.setSizeId(weavingWorkLog.getSize().getId());
             weavingShippingDTO.setQuantity(weavingWorkLog.getQuantity());
+            weavingShippingDTO.setColorId(weavingWorkLog.getColor().getId());
             List<Clothes> clothes = clothRepository.findForEnteredWeavingShipping(weavingShippingDTO);
             clothes.forEach(c -> {
                 c.setBoxNumber(null);

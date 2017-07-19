@@ -8,8 +8,8 @@
  */
 angular.module('sbAdminApp')
     .controller('SupervisorsWeavingNewCtrl', function ($scope,
-                                                    SupervisorsFactory, Flash, ClothesFactory,
-                                                    $localStorage, $window, LocationsFactory, fileReader,WeavingFactory) {
+                                                       SupervisorsFactory, Flash, ClothesFactory,
+                                                       $localStorage, $window, LocationsFactory, fileReader, WeavingFactory) {
         console.log(fileReader);
 
         var self = this;
@@ -119,12 +119,34 @@ angular.module('sbAdminApp')
                 Flash.create('danger', response.message, 'custom-class');
             })
         }
+        $scope.fetchColors = function () {
+
+            self.cloth.extraField = undefined;
+            $scope.options.extraFields = [];
+
+            self.cloth.colorId = undefined;
+            $scope.options.colors = [];
+
+            ClothesFactory.getColorsForWeaving(self.cloth.orderNo, self.cloth.customerId, self.cloth.designId, self.cloth.sizeId, self.cloth.printId, function (response) {
+                $scope.options.colors = [];
+                angular.forEach(response, function (r) {
+                    $scope.options.colors.push({
+                        id: r.id,
+                        name: r.code
+                    })
+                });
+
+            }, function (response) {
+                Flash.create('danger', response.message, 'custom-class');
+            })
+
+        };
         $scope.fetchExtraFields = function () {
 
             self.cloth.extraField = undefined;
             $scope.options.extraFields = [];
 
-            ClothesFactory.getExtraFieldsForWeaving(self.cloth.orderNo, self.cloth.customerId, self.cloth.designId, self.cloth.sizeId, self.cloth.printId, function (response) {
+            ClothesFactory.getExtraFieldsForWeaving(self.cloth.orderNo, self.cloth.customerId, self.cloth.designId, self.cloth.sizeId, self.cloth.printId, self.cloth.colorId, function (response) {
                 $scope.options.extraFields = [];
                 angular.forEach(response, function (r) {
                     $scope.options.extraFields.push({
@@ -135,13 +157,15 @@ angular.module('sbAdminApp')
             }, function (response) {
                 Flash.create('danger', response.message, 'custom-class');
             })
-        }
+        };
 
         self.submitCloth = function () {
             WeavingFactory.updateWeavingLocation(self.cloth, function (response) {
                 self.cloth.extraField = undefined;
                 self.cloth.quantity = undefined;
-                Flash.create('success', 'Cloth added to shipped ', 'custom-class');
+                self.cloth.colorId = undefined;
+                self.cloth.receiptNumber = undefined;
+                Flash.create('success', 'Cloth entry added successfully ', 'custom-class');
 
             }, function (response) {
                 $window.scrollTo(0, 0);

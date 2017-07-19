@@ -49,11 +49,12 @@ public class WeavingWorkLogRepositoryImpl extends AbstractRepositoryImpl<Weaving
                         weavingWorkLog.customer.name,
                         weavingWorkLog.design.name,
                         weavingWorkLog.print.name,
-                        weavingWorkLog.extraField,
+                        weavingWorkLog.color.code,
                         weavingWorkLog.size.name,
                         weavingWorkLog.quantity,
                         weavingWorkLog.remarks,
-                        weavingWorkLog.created
+                        weavingWorkLog.created,
+                        weavingWorkLog.extraField
                 ));
 
         return new PageResult<>(totalCount, pageable.getPageSize(), pageable.getPageNumber(), batchEntries);
@@ -75,11 +76,12 @@ public class WeavingWorkLogRepositoryImpl extends AbstractRepositoryImpl<Weaving
                         weavingWorkLog.customer.name,
                         weavingWorkLog.design.name,
                         weavingWorkLog.print.name,
-                        weavingWorkLog.extraField,
+                        weavingWorkLog.color.code,
                         weavingWorkLog.size.name,
                         weavingWorkLog.quantity,
                         weavingWorkLog.remarks,
-                        weavingWorkLog.created
+                        weavingWorkLog.created,
+                        weavingWorkLog.extraField
                 ));
 
     }
