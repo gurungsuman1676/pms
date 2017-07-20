@@ -151,8 +151,16 @@ public class ReportingServiceImpl implements ReportingService {
             Long totalCount = 0L;
 
             Double totalPrice = 0D;
+
+            String designName = resources.get(0).getDesignName();
             for (ClothInvoiceResource cloth : resources) {
                 rownum++;
+
+
+                if (!designName.equalsIgnoreCase(cloth.getDesignName())) {
+                    designName = cloth.getDesignName();
+                    rownum++;
+                }
 
 
                 Row row = sheet.createRow(rownum);
@@ -217,7 +225,7 @@ public class ReportingServiceImpl implements ReportingService {
         for (int i = 0; i <= 7; i++) {
             sheet.autoSizeColumn(i);
         }
-        exportToExcel(httpServletResponse, workbook);
+        exportToExcel(httpServletResponse, workbook, "Porforma_Invoice_" + orderNo + "_" + customerId);
     }
 
     private HSSFSheet getWithHeaderImage(HSSFWorkbook workbook, String logo) {
@@ -286,7 +294,7 @@ public class ReportingServiceImpl implements ReportingService {
                     boxNumber,
                     isReject,
                     type,
-                    designId, gauge, locationDate, setting, orderType,week,colorId);
+                    designId, gauge, locationDate, setting, orderType, week, colorId);
         } else {
             clothResources = clothRepository.findClothResourceByLocation(customerId,
                     locationId,
@@ -302,7 +310,7 @@ public class ReportingServiceImpl implements ReportingService {
                     isReject,
                     type,
                     locationDate,
-                    designId, gauge, setting, orderType,week,colorId);
+                    designId, gauge, setting, orderType, week, colorId);
         }
 
 
@@ -501,15 +509,15 @@ public class ReportingServiceImpl implements ReportingService {
             }
 
         }
-        exportToExcel(httpServletResponse, workbook);
+        exportToExcel(httpServletResponse, workbook, "Cloth_Report");
 
     }
 
 
-    private void exportToExcel(HttpServletResponse httpServletResponse, HSSFWorkbook workbook) {
+    private void exportToExcel(HttpServletResponse httpServletResponse, HSSFWorkbook workbook, String fileName) {
         try {
             httpServletResponse.setContentType("application/vnd.ms-excel");
-            httpServletResponse.setHeader("Content-Disposition", "attachment; filename=MyExcel.xls");
+            httpServletResponse.setHeader("Content-Disposition", "attachment; filename=" + fileName + ".xls");
             OutputStream out = httpServletResponse.getOutputStream();
             workbook.write(out);
             Document iText_xls_2_pdf = new Document();
@@ -622,8 +630,15 @@ public class ReportingServiceImpl implements ReportingService {
             Cell emptyHeadCell = headerRow.createCell(7);
             emptyHeadCell.setCellStyle(style);
             Long totalCount = 0L;
+
+            String designName = resources.get(0).getDesignName();
             for (ClothOrderResource cloth : resources) {
                 rownum++;
+
+                if (!designName.equalsIgnoreCase(cloth.getDesignName())) {
+                    designName = cloth.getDesignName();
+                    rownum++;
+                }
                 Boolean isOdd = rownum % 2 != 0;
                 HSSFCellStyle newStyle = workbook.createCellStyle();
                 newStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
@@ -636,7 +651,7 @@ public class ReportingServiceImpl implements ReportingService {
 
                 Row row = sheet.createRow(rownum);
                 Cell snCell = row.createCell(0);
-                snCell.setCellValue(rownum - 3);
+                snCell.setCellValue(resources.indexOf(cloth) + 1);
 
                 snCell.setCellStyle(isOdd ? style : newStyle);
                 Cell designCell = row.createCell(1);
@@ -695,7 +710,7 @@ public class ReportingServiceImpl implements ReportingService {
         for (int i = 0; i <= 7; i++) {
             sheet.autoSizeColumn(i);
         }
-        exportToExcel(httpServletResponse, workbook);
+        exportToExcel(httpServletResponse, workbook, "Order_Sheet_" + orderNo + "_" + customerId);
     }
 
     @Override
@@ -798,8 +813,15 @@ public class ReportingServiceImpl implements ReportingService {
             Cell emptyHeadCell = headerRow.createCell(8);
             emptyHeadCell.setCellStyle(style);
             Long totalCount = 0L;
+
+            String designName = resources.get(0).getDesignName();
             for (ClothOrderPendingResource cloth : resources) {
                 rownum++;
+
+                if (!designName.equalsIgnoreCase(cloth.getDesignName())) {
+                    designName = cloth.getDesignName();
+                    rownum++;
+                }
                 Boolean isOdd = rownum % 2 != 0;
                 HSSFCellStyle newStyle = workbook.createCellStyle();
                 newStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
@@ -812,7 +834,7 @@ public class ReportingServiceImpl implements ReportingService {
 
                 Row row = sheet.createRow(rownum);
                 Cell snCell = row.createCell(0);
-                snCell.setCellValue(rownum - 3);
+                snCell.setCellValue(resources.indexOf(cloth) + 1);
 
                 snCell.setCellStyle(isOdd ? style : newStyle);
                 Cell designCell = row.createCell(1);
@@ -865,7 +887,7 @@ public class ReportingServiceImpl implements ReportingService {
         for (int i = 0; i <= 8; i++) {
             sheet.autoSizeColumn(i);
         }
-        exportToExcel(httpServletResponse, workbook);
+        exportToExcel(httpServletResponse, workbook, "Pending_List_" + orderNo + "_" + customerId);
     }
 
     @Override
@@ -917,18 +939,17 @@ public class ReportingServiceImpl implements ReportingService {
             designNameHeader.setCellStyle(style);
 
 
-            Cell sizeHeader = headerRow.createCell(1);
-            sizeHeader.setCellValue("Size");
-            sizeHeader.setCellStyle(style);
-
-            Cell colorCodeHeader = headerRow.createCell(2);
+            Cell colorCodeHeader = headerRow.createCell(1);
             colorCodeHeader.setCellValue("Color Name");
             colorCodeHeader.setCellStyle(style);
 
-            Cell color = headerRow.createCell(3);
+            Cell color = headerRow.createCell(2);
             color.setCellValue("Color Code");
             color.setCellStyle(style);
 
+            Cell sizeHeader = headerRow.createCell(3);
+            sizeHeader.setCellValue("Size");
+            sizeHeader.setCellStyle(style);
 
             Cell rejectHeader = headerRow.createCell(4);
             rejectHeader.setCellValue("QTY");
@@ -1004,8 +1025,13 @@ public class ReportingServiceImpl implements ReportingService {
                     List<ClothShippingResource> resources = orderNoAndResourceMap.get(orderNo);
 
 
+                    String designName = resources.get(0).getDesignName();
                     for (ClothShippingResource res : resources) {
                         rownum++;
+                        if (!designName.equalsIgnoreCase(res.getDesignName())) {
+                            designName = res.getDesignName();
+                            rownum++;
+                        }
 
                         Row clothRow = sheet.createRow(rownum);
 
@@ -1013,20 +1039,19 @@ public class ReportingServiceImpl implements ReportingService {
                         Cell designCell = clothRow.createCell(0);
                         designCell.setCellValue(res.getDesignName());
 
-
-                        Cell sizeCell = clothRow.createCell(1);
-                        sizeCell.setCellValue(res.getSizeName());
-
-
-                        Cell colorCell = clothRow.createCell(2);
+                        Cell colorCell = clothRow.createCell(1);
                         colorCell.setCellValue(res.getColorName());
 
 
-                        Cell colorCodeCell = clothRow.createCell(3);
+                        Cell colorCodeCell = clothRow.createCell(2);
                         colorCodeCell.setCellValue(res.getColorCode());
+
+                        Cell sizeCell = clothRow.createCell(3);
+                        sizeCell.setCellValue(res.getSizeName());
 
                         Cell snCell = clothRow.createCell(4);
                         snCell.setCellValue(res.getCount());
+
                         subTotal += res.getCount();
 
 
@@ -1077,7 +1102,7 @@ public class ReportingServiceImpl implements ReportingService {
             }
 
         }
-        exportToExcel(httpServletResponse, workbook);
+        exportToExcel(httpServletResponse, workbook, "Shipping_List_" + shippingNumber);
 
     }
 
@@ -1164,152 +1189,80 @@ public class ReportingServiceImpl implements ReportingService {
             Cell designHeadCell = headerRow.createCell(1);
             designHeadCell.setCellValue("Particulars");
             designHeadCell.setCellStyle(style);
+
             Cell sizHeadCell = headerRow.createCell(2);
             sizHeadCell.setCellValue("Size");
             sizHeadCell.setCellStyle(style);
 
-
-            Cell colorHeadCell = headerRow.createCell(3);
-            colorHeadCell.setCellValue("Colour Name");
-            colorHeadCell.setCellStyle(style);
-
-            Cell colorCodeHeadCell = headerRow.createCell(4);
-            colorCodeHeadCell.setCellValue("Colour Code");
-            colorCodeHeadCell.setCellStyle(style);
-
-            Cell quantityHeadCell = headerRow.createCell(5);
+            Cell quantityHeadCell = headerRow.createCell(3);
             quantityHeadCell.setCellValue("Qty");
             quantityHeadCell.setCellStyle(style);
 
 
-            Cell priceHeader = headerRow.createCell(6);
+            Cell priceHeader = headerRow.createCell(4);
             priceHeader.setCellValue("Rate");
             priceHeader.setCellStyle(style);
 
 
-            Cell printAmountHeader = headerRow.createCell(7);
+            Cell printAmountHeader = headerRow.createCell(5);
             printAmountHeader.setCellValue("Print Rate");
             printAmountHeader.setCellStyle(style);
 
 
-            Cell amountHeadCell = headerRow.createCell(8);
+            Cell amountHeadCell = headerRow.createCell(6);
             amountHeadCell.setCellValue("Amount");
             amountHeadCell.setCellStyle(style);
 
 
-            Cell emptyHeadCell = headerRow.createCell(9);
+            Cell emptyHeadCell = headerRow.createCell(7);
             emptyHeadCell.setCellStyle(style);
             Long totalCount = 0L;
 
             Double totalPrice = 0D;
 
+            String designName = resources.get(0).getDesignName();
 
-            Map<String, List<ClothInvoiceResource>> orderAndResourceMap = new HashMap<String, List<ClothInvoiceResource>>();
-            resources.forEach(r -> {
 
-                List<ClothInvoiceResource> clothShippingResources = orderAndResourceMap.get(r.getBoxNumber());
-                if (clothShippingResources == null) {
-                    clothShippingResources = new ArrayList<ClothInvoiceResource>();
-                    clothShippingResources.add(r);
-                    orderAndResourceMap.put(r.getBoxNumber(), clothShippingResources);
-                } else {
-                    clothShippingResources.add(r);
-                }
-
-            });
-
-            for (String boxNumber : orderAndResourceMap.keySet()) {
+            for (ClothInvoiceResource cloth : resources) {
                 rownum++;
 
-                HSSFCellStyle boxNumberStyle = workbook.createCellStyle();
-                boxNumberStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-                boxNumberStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
-                boxNumberStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
-                boxNumberStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-                boxNumberStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
-                boxNumberStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
-
-                Row boxRow = sheet.createRow(rownum);
-                Cell boxCell = boxRow.createCell(1);
-                boxCell.setCellValue("BOX-" + boxNumber);
-                boxCell.setCellStyle(boxNumberStyle);
-
-                Map<Integer, List<ClothInvoiceResource>> orderNoAndResourceMap = new HashMap<Integer, List<ClothInvoiceResource>>();
-                orderAndResourceMap.get(boxNumber).forEach(r -> {
-
-                    List<ClothInvoiceResource> clothShippingResources = orderNoAndResourceMap.get(r.getOrderNo());
-                    if (clothShippingResources == null) {
-                        clothShippingResources = new ArrayList<ClothInvoiceResource>();
-                        clothShippingResources.add(r);
-                        orderNoAndResourceMap.put(r.getOrderNo(), clothShippingResources);
-                    } else {
-                        clothShippingResources.add(r);
-                    }
-
-                });
-
-
-                for (Integer iOrderNo : orderNoAndResourceMap.keySet()) {
-
+                if (!designName.equalsIgnoreCase(cloth.getDesignName())) {
+                    designName = cloth.getDesignName();
                     rownum++;
-
-                    HSSFCellStyle orderNumberStyle = workbook.createCellStyle();
-                    orderNumberStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-                    orderNumberStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
-                    orderNumberStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
-                    orderNumberStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-                    orderNumberStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
-                    orderNumberStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
-
-                    Row orderRow = sheet.createRow(rownum);
-                    Cell orderCell = orderRow.createCell(1);
-                    orderCell.setCellValue("PO-" + iOrderNo);
-                    orderCell.setCellStyle(orderNumberStyle);
-                    for (ClothInvoiceResource cloth : orderNoAndResourceMap.get(iOrderNo)) {
-                        rownum++;
-
-                        Row row = sheet.createRow(rownum);
-                        Cell snCell = row.createCell(0);
-                        snCell.setCellValue("");
-
-                        Cell designCell = row.createCell(1);
-                        designCell.setCellValue(cloth.getDesignName());
-
-
-                        Cell sizeCell = row.createCell(2);
-                        sizeCell.setCellValue(cloth.getSizeName());
-
-                        Cell colorNameCell = row.createCell(3);
-                        colorNameCell.setCellValue(cloth.getColor());
-
-
-                        Cell colorCodeCell = row.createCell(4);
-                        colorCodeCell.setCellValue(cloth.getColorCode());
-
-
-                        Cell quantityCell = row.createCell(5);
-                        quantityCell.setCellValue(cloth.getClothCount());
-
-
-                        Cell priceCell = row.createCell(6);
-                        priceCell.setCellValue(cloth.getCurrency() + cloth.getPrice());
-
-                        Cell printAmount = row.createCell(7);
-                        printAmount.setCellValue(cloth.getPrint() != null && cloth.getPrintAmount() != null ? cloth.getPrintCurrency() + cloth.getPrintAmount() : "");
-
-
-                        Cell amountCell = row.createCell(8);
-                        if (cloth.getPrice() != null) {
-                            amountCell.setCellValue(cloth.getCurrency() + (cloth.getClothCount() * cloth.getPrice()));
-                        }
-
-                        Cell emptyCell = row.createCell(9);
-
-                        totalCount += cloth.getClothCount();
-                        totalPrice += cloth.getPrice() * cloth.getClothCount();
-
-                    }
                 }
+
+                Row row = sheet.createRow(rownum);
+                Cell snCell = row.createCell(0);
+                snCell.setCellValue("");
+
+                Cell designCell = row.createCell(1);
+                designCell.setCellValue(cloth.getDesignName());
+
+
+                Cell sizeCell = row.createCell(2);
+                sizeCell.setCellValue(cloth.getSizeName());
+
+
+                Cell quantityCell = row.createCell(3);
+                quantityCell.setCellValue(cloth.getClothCount());
+
+
+                Cell priceCell = row.createCell(4);
+                priceCell.setCellValue(cloth.getCurrency() + cloth.getPrice());
+
+                Cell printAmount = row.createCell(5);
+                printAmount.setCellValue(cloth.getPrint() != null && cloth.getPrintAmount() != null ? cloth.getPrintCurrency() + cloth.getPrintAmount() : "");
+
+
+                Cell amountCell = row.createCell(6);
+                if (cloth.getPrice() != null) {
+                    amountCell.setCellValue(cloth.getCurrency() + (cloth.getClothCount() * cloth.getPrice()));
+                }
+
+                Cell emptyCell = row.createCell(9);
+
+                totalCount += cloth.getClothCount();
+                totalPrice += cloth.getPrice() * cloth.getClothCount();
 
             }
 
@@ -1329,7 +1282,7 @@ public class ReportingServiceImpl implements ReportingService {
             for (int i = 0; i <= 7; i++) {
                 sheet.autoSizeColumn(i);
             }
-            exportToExcel(httpServletResponse, workbook);
+            exportToExcel(httpServletResponse, workbook, "Invoice_" + shippingNumber + "_" + customerId);
 
         }
     }
@@ -1542,7 +1495,7 @@ public class ReportingServiceImpl implements ReportingService {
         for (int i = 0; i <= 7; i++) {
             sheet.autoSizeColumn(i);
         }
-        exportToExcel(httpServletResponse, workbook);
+        exportToExcel(httpServletResponse, workbook, "Weaving");
     }
 
 }

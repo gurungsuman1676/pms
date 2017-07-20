@@ -1,5 +1,6 @@
 package com.pms.app.controller;
 
+import com.mysema.query.BooleanBuilder;
 import com.pms.app.convert.ClothConvert;
 import com.pms.app.convert.ColorConvert;
 import com.pms.app.convert.CustomerConvert;
@@ -101,9 +102,12 @@ public class ClothController {
                                                 @RequestParam(required = false, value = "orderType") String orderType,
                                                 @RequestParam(required = false, value = "week") String week,
                                                 @RequestParam(required = false, value = "colorId") Long colorId,
+                                                @RequestParam(required = false, value = "onlyMine") Boolean onlyMine,
+
                                                 Pageable pageable) {
         String role = null;
-        if (roles != null && !roles.isEmpty()) {
+        onlyMine = onlyMine != null && onlyMine;
+        if (roles != null && !roles.isEmpty() && onlyMine) {
             for (String userRole : roles) {
                 if (!userRole.equalsIgnoreCase("USER") && !userRole.equalsIgnoreCase("ADMIN")) {
                     role = userRole;
@@ -134,7 +138,7 @@ public class ClothController {
 
     @ResponseStatus(ACCEPTED)
     @RequestMapping(value = "/{id}/delete", method = RequestMethod.PUT)
-    public void updateCloth(@PathVariable Long id) {
+    public void deleteCloth(@PathVariable Long id) {
         clothService.deleteCloth(id);
     }
 
@@ -192,10 +196,12 @@ public class ClothController {
                           @RequestParam(required = false, value = "orderType") String orderType,
                           @RequestParam(required = false, value = "week") String week,
                           @RequestParam(required = false, value = "colorId") Long colorId,
-
+                          @RequestParam(required = false, value = "onlyMine") Boolean onlyMine,
                           HttpServletResponse httpServletResponse) {
         String role = null;
-        if (roles != null && !roles.isEmpty()) {
+        onlyMine = onlyMine != null && onlyMine;
+
+        if (roles != null && !roles.isEmpty() && onlyMine) {
             for (String userRole : roles) {
                 if (!userRole.equalsIgnoreCase("USER") && !userRole.equalsIgnoreCase("ADMIN")) {
                     role = userRole;

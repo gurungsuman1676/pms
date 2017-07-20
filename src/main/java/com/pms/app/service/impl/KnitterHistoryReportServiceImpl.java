@@ -161,10 +161,10 @@ public class KnitterHistoryReportServiceImpl implements KnitterHistoryReportServ
                 sizeCell.setCellValue(historyReportResource.getSizeName());
 
                 Cell gaugeCellVal = row.createCell(9);
-                gaugeCellVal.setCellValue(historyReportResource.getGauge());
+                gaugeCellVal.setCellValue(historyReportResource.getGauge() == null ? "N/A" : historyReportResource.getGauge()+"");
 
                 Cell settingVal = row.createCell(10);
-                settingVal.setCellValue(historyReportResource.getSetting());
+                settingVal.setCellValue(historyReportResource.getSetting() == null ? "N/A" : historyReportResource.getSetting());
 
                 Cell reOrderCellVal = row.createCell(11);
                 reOrderCellVal.setCellValue(historyReportResource.getOrderType() == null ? " " : historyReportResource.getOrderType());
@@ -187,13 +187,13 @@ public class KnitterHistoryReportServiceImpl implements KnitterHistoryReportServ
         for (int i = 0; i <= 11; i++) {
             sheet.autoSizeColumn(i);
         }
-        exportToExcel(httpServletResponse, workbook);
+        exportToExcel(httpServletResponse, workbook, "Knitting_history_" + getDateStringForName(new Date()));
     }
 
-    private void exportToExcel(HttpServletResponse httpServletResponse, HSSFWorkbook workbook) {
+    private void exportToExcel(HttpServletResponse httpServletResponse, HSSFWorkbook workbook, String fileName) {
         try {
             httpServletResponse.setContentType("application/vnd.ms-excel");
-            httpServletResponse.setHeader("Content-Disposition", "attachment; filename=MyExcel.xls");
+            httpServletResponse.setHeader("Content-Disposition", "attachment; filename=" + fileName + ".xls");
             OutputStream out = httpServletResponse.getOutputStream();
             workbook.write(out);
             Document iText_xls_2_pdf = new Document();
@@ -206,6 +206,11 @@ public class KnitterHistoryReportServiceImpl implements KnitterHistoryReportServ
 
     private String getDateString(Date date) {
         return new SimpleDateFormat("MM/dd/yyyy").format(new Date(date.getTime()));
+
+    }
+
+    private String getDateStringForName(Date date) {
+        return new SimpleDateFormat("MM-dd-yyyy").format(new Date(date.getTime()));
 
     }
 

@@ -37,20 +37,20 @@ angular.module('sbAdminApp')
             Flash.create('danger', response.message, 'custom-class');
         });
 
-        $scope.selectedType = 'Order No';
-
-        $scope.typeSelected = function (id) {
-            if (id == 1) {
-                $scope.$apply(function () {
-                    $scope.selectedType = 'Invoice No';
-                });
-            }
-            else {
-                $scope.$apply(function () {
-                    $scope.selectedType = 'Order No';
-                });
-            }
-        }
+        // $scope.selectedType = 'Order No';
+        //
+        // $scope.typeSelected = function (id) {
+        //     if (id == 1) {
+        //         $scope.$apply(function () {
+        //             $scope.selectedType = 'Invoice No';
+        //         });
+        //     }
+        //     else {
+        //         $scope.$apply(function () {
+        //             $scope.selectedType = 'Order No';
+        //         });
+        //     }
+        // }
         $scope.customerSelected = function (customerId) {
             if (customerId) {
                 //self.cloth.designId = {};

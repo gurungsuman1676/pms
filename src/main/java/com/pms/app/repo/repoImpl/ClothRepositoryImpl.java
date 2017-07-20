@@ -309,15 +309,9 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .innerJoin(clothes.price)
                 .where(builder.and(clothes.shipping.eq(shippingNumber))
                         .and(clothes.status.eq(Status.ACTIVE.toString())))
-                .groupBy(clothes.boxNumber)
-                .groupBy(clothes.price)
-                .groupBy(clothes.color)
-                .groupBy(clothes.print)
-                .orderBy(clothes.boxNumber.asc())
-                .orderBy(clothes.order_no.asc())
+                .groupBy(clothes.price.design)
+                .groupBy(clothes.price.size)
                 .orderBy(clothes.price.design.name.asc())
-                .orderBy(clothes.color.code.asc())
-                .orderBy(clothes.price.size.id.asc())
                 .list(new QClothInvoiceResource(
                         clothes.price.design.name,
                         clothes.price.size.name,
@@ -408,11 +402,11 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
             }
         }
 
-        JPQLQuery query = from(activity)
-                .offset(pageable.getOffset());
+        JPQLQuery query = from(activity).where(where);
         Long totalCount = query.count();
         return new PageImpl(query
                 .where(where)
+                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .list(activity.cloth), pageable, totalCount);
     }

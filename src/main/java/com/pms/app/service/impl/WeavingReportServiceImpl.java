@@ -200,7 +200,7 @@ public class WeavingReportServiceImpl implements WeavingReportService {
     private void exportToExcel(HttpServletResponse httpServletResponse, HSSFWorkbook workbook) {
         try {
             httpServletResponse.setContentType("application/vnd.ms-excel");
-            httpServletResponse.setHeader("Content-Disposition", "attachment; filename=MyExcel.xls");
+            httpServletResponse.setHeader("Content-Disposition", "attachment; filename=" + "Weaving_Report_" + getDateStringForName(new Date())+".xls");
             OutputStream out = httpServletResponse.getOutputStream();
             workbook.write(out);
             Document iText_xls_2_pdf = new Document();
@@ -213,6 +213,12 @@ public class WeavingReportServiceImpl implements WeavingReportService {
 
     private String getDateString(Date date) {
         return new SimpleDateFormat("MM/dd/yyyy").format(new Date(date.getTime()));
+
+    }
+
+
+    private String getDateStringForName(Date date) {
+        return new SimpleDateFormat("MM-dd-yyyy").format(new Date(date.getTime()));
 
     }
 
@@ -248,3 +254,4 @@ public class WeavingReportServiceImpl implements WeavingReportService {
         return sheet;
     }
 }
+

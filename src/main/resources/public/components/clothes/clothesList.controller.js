@@ -13,12 +13,13 @@ angular.module('sbAdminApp')
                                              ClothesFactory,
                                              CustomersFactory,
                                              Flash, ngTableParams, LocationsFactory, ngDialog,
-                                             DesignsFactory, $localStorage, ColorsFactory, ClothSearchParamFactory) {
+                                             DesignsFactory, $localStorage, ColorsFactory, ClothSearchParamFactory, RESOURCES) {
 
         var self = this;
-        self.orderNo = ''
+        self.orderNo = '';
         self.clothes = [];
         self.showContents = true;
+
 
         self.orderTypes = [
             {
@@ -40,22 +41,20 @@ angular.module('sbAdminApp')
         ];
 
 
-
-
         $scope.selectedType = 'Order No';
 
-        $scope.typeSelected = function (id) {
-            if (id == 1) {
-                $scope.$apply(function () {
-                    $scope.selectedType = 'Invoice No';
-                });
-            }
-            else {
-                $scope.$apply(function () {
-                    $scope.selectedType = 'Order No';
-                });
-            }
-        }
+        // $scope.typeSelected = function (id) {
+        //     if (id == 1) {
+        //         $scope.$apply(function () {
+        //             $scope.selectedType = 'Invoice No';
+        //         });
+        //     }
+        //     else {
+        //         $scope.$apply(function () {
+        //             $scope.selectedType = 'Order No';
+        //         });
+        //     }
+        // }
 
 
         ColorsFactory.getColors(function (response) {
@@ -120,15 +119,20 @@ angular.module('sbAdminApp')
             shippingNumber: undefined,
             boxNumber: undefined,
             designId: undefined,
-            gauge: undefined
+            gauge: undefined,
+            onlyMine: true
         };
+
+        if (angular.isDefined($localStorage.isAdmin) && !$localStorage.isAdmin) {
+            self.filterParams.typeId = 0;
+        }
 
         DesignsFactory.getDesigns(function (response) {
             self.designs = addAllOptions(response)
         }, function (response) {
             Flash.create('danger', response.message, 'custom-class');
         });
-        LocationsFactory.getLocations({type: 'KNITTING'},function (response) {
+        LocationsFactory.getLocations({type: 'KNITTING'}, function (response) {
             self.locations = addAllOptions(response);
             self.locations.unshift({name: 'Empty', id: '-1'});
 
@@ -195,27 +199,17 @@ angular.module('sbAdminApp')
         }
 
         self.viewDetails = function (cloth) {
-            var url1 = 'http://localhost/customers/' + cloth.customer.name + '/' + cloth.price.designName + '.xls';
-            var url2 = 'http://localhost/customers/' + cloth.customer.name + '/' + cloth.price.designName + '.xlsx';
-
+            var url1 = "http://epms-pc:80" + '/customers/' + cloth.customer.name + '/' + cloth.price.designName + '.xls';
             var request = new XMLHttpRequest();
             request.open('HEAD', url1, false);
             request.send();
             if (request.status == 200) {
                 $window.open(url1);
             } else {
-                $window.open(url2);
+                $window.open(url1 + "x");
             }
-            // Papa.parse(url, {
-            //     download: true,
-            //     complete: function(results, file) {
-            //         console.log(results);
-            //         ngDialog.open({ template: '/components/clothes/details.html', data: results });
-            //     }
-            //     // rest of config ...
-            // })
 
-        }
+        };
 
         self.hideBarcode = function () {
             self.showBarcodec = false;
@@ -255,8 +249,8 @@ angular.module('sbAdminApp')
                 (angular.isDefined(self.filterParams.gauge) ? "&gauge=" + self.filterParams.gauge : "") +
                 (angular.isDefined(self.filterParams.setting) ? "&setting=" + self.filterParams.setting : "") +
                 (angular.isDefined(self.filterParams.week) ? "&week=" + self.filterParams.week : "") +
+                (angular.isDefined(self.filterParams.onlyMine) ? "&onlyMine=" + self.filterParams.onlyMine : "") +
                 (angular.isDefined(self.filterParams.orderType) ? "&orderType=" + self.filterParams.orderType : "") +
-
                 "&roles=" + $localStorage.user.roles);
         }
 
@@ -338,6 +332,7 @@ angular.module('sbAdminApp')
                             sort: 'lastModified,desc',
                             page: page - 1,
                             roles: $localStorage.user.roles,
+                            onlyMine: self.filterParams.onlyMine,
                             size: params.count()
                         },
                         function (response) {
@@ -356,19 +351,18 @@ angular.module('sbAdminApp')
                 }
             }
         );
-        self.isKnitter = function () {
-            return angular.isDefined($localStorage.user) && ($localStorage.user.roles).indexOf("PRE-KNITTING") != -1;
+        self.isKnitter = function (cloth) {
+            return angular.isDefined($localStorage.user) && ($localStorage.user.roles).indexOf("PRE-KNITTING") != -1 && cloth.locationName === 'PRE-KNITTING';
         };
 
-        self.onClothClicked = function (clothId) {
+        self.onClothClicked = function (cloth) {
             if (self.isKnitter()) {
-                $state.go("dashboard.knittingHistory.new", {"clothId": clothId});
+                $state.go("dashboard.knittingHistory.new", {"clothId": cloth.id});
                 ClothSearchParamFactory.params = self.filterParams;
                 ClothSearchParamFactory.page = self.clothTable.$params.page;
                 ClothSearchParamFactory.count = self.clothTable.$params.count;
             }
         };
-
 
 
     });

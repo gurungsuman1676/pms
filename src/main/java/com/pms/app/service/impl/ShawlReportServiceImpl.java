@@ -31,6 +31,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -311,7 +312,7 @@ public class ShawlReportServiceImpl implements ShawlReportService {
     private void exportToExcel(HttpServletResponse httpServletResponse, HSSFWorkbook workbook) {
         try {
             httpServletResponse.setContentType("application/vnd.ms-excel");
-            httpServletResponse.setHeader("Content-Disposition", "attachment; filename=MyExcel.xls");
+            httpServletResponse.setHeader("Content-Disposition", "attachment; filename="+"Shawl_Report_"+getDateStringForName(new Date())+".xls");
             OutputStream out = httpServletResponse.getOutputStream();
             workbook.write(out);
             Document iText_xls_2_pdf = new Document();
@@ -324,7 +325,7 @@ public class ShawlReportServiceImpl implements ShawlReportService {
 
 
     private HSSFSheet getWithHeaderImage(HSSFWorkbook workbook, String logo) {
-        HSSFSheet sheet = workbook.createSheet("Knitter History");
+        HSSFSheet sheet = workbook.createSheet("Shawl Report");
 
         try {
 
@@ -353,5 +354,10 @@ public class ShawlReportServiceImpl implements ShawlReportService {
             System.out.println(aa.getStackTrace());
         }
         return sheet;
+    }
+
+    private String getDateStringForName(Date date) {
+        return new SimpleDateFormat("MM-dd-yyyy").format(new Date(date.getTime()));
+
     }
 }
