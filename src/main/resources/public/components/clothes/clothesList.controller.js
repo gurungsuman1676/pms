@@ -363,6 +363,11 @@ angular.module('sbAdminApp')
                 ClothSearchParamFactory.count = self.clothTable.$params.count;
             }
         };
+        self.onShowMineChange = function (value) {
+            if (value) {
+                self.filterParams.locationId = undefined;
+            }
+        }
 
 
     });

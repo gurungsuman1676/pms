@@ -1,12 +1,12 @@
 <div class="panel panel-default col-sm-12">
     <div class="panel-heading col-sm-12">
-
         Design Properties
-
-
-        <button class="btn btn-success pull-right" data-ng-click="addData()" ng-disabled="!canAddData()">
-            Add
-        </button>
+        <div class="btn-toolbar  pull-right">
+            <div pashmina-excel-export export-data="exportData" file-name="{{fileName}}"></div>
+            <button type="button" class="btn btn-success " data-ng-click="addData()" ng-disabled="!canAddData()">
+                Add
+            </button>
+        </div>
     </div>
     <div class="panel-body  col-sm-12">
         <table ng-table
@@ -36,7 +36,8 @@
                     <button class="btn btn-danger" data-ng-click="deleteData(data)">
                         Delete
                     </button>
-                    <button class="btn btn-info" data-ng-click="data.isEdit = true" ng-if="!(data.isAdd || data.isEdit)">
+                    <button class="btn btn-info" data-ng-click="data.isEdit = true"
+                            ng-if="!(data.isAdd || data.isEdit)">
                         Edit
                     </button>
                 </td>

@@ -40,16 +40,25 @@ angular.module('sbAdminApp')
                         return designId;
                     }
                 },
-                controller: ['$scope', 'DesignsPropertiesFactory', 'designId', '$modalInstance', 'Flash', function ($scope, DesignsPropertiesFactory, designId, $modalInstance, Flash) {
+                controller: ['$scope', 'DesignsPropertiesFactory', 'designId', '$modalInstance', 'Flash',
+                    function ($scope, DesignsPropertiesFactory, designId, $modalInstance, Flash) {
                     $scope.properties = [];
 
                     $scope.isEdit = false;
                     DesignsPropertiesFactory.getProperties(designId, function (response) {
                         $scope.properties = response;
+                        $scope.fileName = "Design Properties";
+                        $scope.exportData = [];
+                        $scope.exportData.push(["Name", "Value"]);
+                        // Data:
+                        angular.forEach($scope.properties, function(p) {
+                            $scope.exportData.push([p.name,p.value]);
+                        });
                     }, function (response) {
                         Flash.create('danger', response.message, 'custom-class');
 
                     });
+
 
                     $scope.submitProperties = function () {
                         DesignsPropertiesFactory.createProperties(designId, $scope.properties,

@@ -23,6 +23,7 @@
                                 'components/designs/designsEdit.controller.js',
                                 'components/designs/designs.factory.js',
                                 'components/designs/property/properties.factory.js',
+                                'components/designs/property/pashmina.excel.export.js',
                                 'components/customers/customers.factory.js',
                                 'components/shared/resources.js'
                             ]

@@ -19,16 +19,24 @@
             </div>
 
             <div class="search-container" ng-show="showFilter">
-
                 <div class="col-sm-3 input-margin">
-                    <input type="text" class="form-control" ng-model="ctrl.filterParams"
-                           placeholder="Yarn Name">
+                    <input type="text" class="form-control" ng-model="ctrl.filterParams.name"
+                           placeholder="Name">
+                </div>
+
+            </div>
+
+
+            <div class="search-btn-wrapper" ng-show="showFilter">
+                <div class="pull-left">
+                    <button class="btn btn btn-primary" ng-click="ctrl.reloadTable()">Search</button>
                 </div>
             </div>
 
             <div class="panel-body">
                 <div class="dataTable_wrapper">
-                    <table class="table table-striped table-bordered table-hover" id="dataTables-example">
+                    <table ng-table="ctrl.yarnListTable" class="table table-striped table-bordered table-hover table-condensed"
+                           id="dataTables-example">
                         <thead>
                         <tr>
                             <th>S.N.</th>
@@ -37,16 +45,14 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr class="odd gradeX" ng-repeat="yarn in ctrl.yarns | filter:ctrl.filterParams">
+                        <tr class="odd gradeX" ng-repeat="yarn in $data">
                             <td class="center">{{$index + 1}}</td>
                             <td>{{yarn.name}}</td>
                             <td>
-                                <button type="button" class="btn btn-xs btn-primary" ui-sref="dashboard.yarns.edit({yarnId: yarn.id})">
+                                <button type="button" class="btn btn-primary"
+                                        ui-sref="dashboard.yarns.edit({yarnId: yarn.id})">
                                     Edit
                                 </button>
-                                <!--<button type="button" class="btn btn-primary" ng-click = "ctrl.deleteYarn(yarn)">-->
-                                    <!--Delete-->
-                                <!--</button>-->
                             </td>
                         </tr>
                         </tbody>

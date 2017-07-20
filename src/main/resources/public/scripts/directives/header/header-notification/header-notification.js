@@ -17,7 +17,16 @@ angular.module('sbAdminApp')
                     delete $localStorage.user;
                     $state.go('login');
 
+                };
+
+                $scope.getUserName = function () {
+                    if (angular.isDefined($localStorage.user)) {
+                        return $localStorage.user.username;
+                    } else {
+                        return "N/A";
+                    }
                 }
+
 
             },
         }
