@@ -4,11 +4,13 @@ package com.pms.app.controller;
 import com.pms.app.convert.DesignConvert;
 import com.pms.app.schema.DesignDto;
 import com.pms.app.schema.DesignResource;
-import com.pms.app.schema.PrintDto;
-import com.pms.app.schema.PrintResource;
 import com.pms.app.service.DesignService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 

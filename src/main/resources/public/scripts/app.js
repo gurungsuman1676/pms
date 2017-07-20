@@ -26,8 +26,8 @@ angular
     .config(['$stateProvider', '$urlRouterProvider', '$ocLazyLoadProvider', '$httpProvider',
         function ($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, $httpProvider) {
 
-            $httpProvider.interceptors.push(['$rootScope', '$localStorage',
-                function ($rootScope, $localStorage) {
+            $httpProvider.interceptors.push(['$rootScope', '$localStorage','$q',
+                function ($rootScope, $localStorage,$q) {
 
                     return {
                         'request': function (config) {
@@ -35,6 +35,12 @@ angular
                                 config.headers['x-auth-token'] = $localStorage.user.token;
                             }
                             return config;
+                        },
+                        'responseError': function (response) {
+                            if (response.status === 403) {
+                                $rootScope.logOut();
+                            }
+                            return $q.reject(response);
                         }
                     }
                 }]);
@@ -73,6 +79,11 @@ angular
             }
             return false;
         }
+
+        $rootScope.logOut = function () {
+            delete $localStorage.user;
+            $state.go('login');
+        };
 
         $rootScope.loginSuccess = function () {
             $localStorage.isShawlUser = $localStorage.user.type === 'WEAVING';
