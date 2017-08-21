@@ -38,7 +38,7 @@
                 controllerAs: 'ctrl'
             })
             .state('dashboard.locations.edit', {
-                url: '/locations/edit/{sizeId:string}',
+                url: '/locations/edit/{locationId:string}',
                 templateUrl: 'components/locations/new.html',
                 controller: 'LocationsEditCtrl',
                 controllerAs: 'ctrl'

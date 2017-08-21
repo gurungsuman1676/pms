@@ -3,6 +3,7 @@ package com.pms.app.service.impl;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.pms.app.repo.ClothRepository;
+import com.pms.app.repo.LocationRepository;
 import com.pms.app.schema.*;
 import com.pms.app.service.ReportingService;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -20,15 +21,18 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ReportingServiceImpl implements ReportingService {
 
     private final ClothRepository clothRepository;
+    private final LocationRepository locationRepository;
 
     @Autowired
-    public ReportingServiceImpl(ClothRepository clothRepository) {
+    public ReportingServiceImpl(ClothRepository clothRepository, LocationRepository locationRepository) {
         this.clothRepository = clothRepository;
+        this.locationRepository = locationRepository;
     }
 
     @Override
@@ -326,6 +330,8 @@ public class ReportingServiceImpl implements ReportingService {
         } else {
             int rownum = 0;
 
+            List<String> locationNames = locationRepository.findAllKnittingLocationOrderByIdAsc();
+
             HSSFCellStyle style = workbook.createCellStyle();
             style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
             style.setBorderTop(HSSFCellStyle.BORDER_THIN);
@@ -411,94 +417,86 @@ public class ReportingServiceImpl implements ReportingService {
             rejectHeader.setCellValue("Reject");
             rejectHeader.setCellStyle(style);
 
+            int headerCellLocationNumber = 15;
+            for (String location : locationNames) {
+                Cell locationHistoryHeader = headerRow.createCell(++headerCellLocationNumber);
+                locationHistoryHeader.setCellValue(location);
+                locationHistoryHeader.setCellStyle(style);
+            }
+
 
             for (ClothResource cloth : clothResources) {
                 rownum++;
-                Boolean isOdd = rownum % 2 != 0;
-                HSSFCellStyle newStyle = workbook.createCellStyle();
-                newStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-                newStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
-                newStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
-                newStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-                newStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
-                newStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
 
 
                 Row row = sheet.createRow(rownum);
                 Cell barcodeCell = row.createCell(0);
                 barcodeCell.setCellValue(cloth.getId());
-                barcodeCell.setCellStyle(isOdd ? style : newStyle);
 
                 Cell locationCell = row.createCell(1);
                 locationCell.setCellValue(cloth.getLocationName() == null ? "N/A" : cloth.getLocationName());
-                locationCell.setCellStyle(isOdd ? style : newStyle);
 
 
                 Cell priceCell = row.createCell(2);
                 priceCell.setCellValue(cloth.getPrice().getCustomer().getCurrencyName() + cloth.getPrice().getAmount());
-                priceCell.setCellStyle(isOdd ? style : newStyle);
 
                 Cell orderCell = row.createCell(3);
                 orderCell.setCellValue(cloth.getOrder_no());
-                orderCell.setCellStyle(isOdd ? style : newStyle);
 
 
                 Cell designNameCell = row.createCell(4);
                 designNameCell.setCellValue(cloth.getPrice().getDesignName());
-                designNameCell.setCellStyle(isOdd ? style : newStyle);
 
 
                 Cell yarnName = row.createCell(5);
                 yarnName.setCellValue(cloth.getPrice().getYarnName());
-                yarnName.setCellStyle(isOdd ? style : newStyle);
 
 
                 Cell colorCodeCell = row.createCell(6);
                 colorCodeCell.setCellValue(cloth.getColorCode());
-                colorCodeCell.setCellStyle(isOdd ? style : newStyle);
 
 
                 Cell sizeCell = row.createCell(7);
                 sizeCell.setCellValue(cloth.getPrice().getSizeName());
-                sizeCell.setCellStyle(isOdd ? style : newStyle);
 
 
                 Cell customerCell = row.createCell(8);
                 customerCell.setCellValue(cloth.getPrice().getCustomer().getName());
-                customerCell.setCellStyle(isOdd ? style : newStyle);
 
 
                 Cell deliveryCell = row.createCell(9);
                 deliveryCell.setCellValue(getDateString(cloth.getDelivery_date()));
-                deliveryCell.setCellStyle(isOdd ? style : newStyle);
 
 
                 Cell printCell = row.createCell(10);
                 printCell.setCellValue(cloth.getPrint().getName() == null ? "N/A" : cloth.getPrint().getName());
-                printCell.setCellStyle(isOdd ? style : newStyle);
 
 
                 Cell printAmountCell = row.createCell(11);
                 printAmountCell.setCellValue(cloth.getPrint().getCurrencyName() == null ? "N/A" : (cloth.getPrint().getCurrencyName() + cloth.getPrint().getAmount()));
-                printAmountCell.setCellStyle(isOdd ? style : newStyle);
 
 
                 Cell shippingNumberCell = row.createCell(12);
                 shippingNumberCell.setCellValue(cloth.getShippingNumber() == null ? "N/A" : (cloth.getShippingNumber()));
-                shippingNumberCell.setCellStyle(isOdd ? style : newStyle);
 
 
                 Cell boxNumberCell = row.createCell(13);
                 boxNumberCell.setCellValue(cloth.getBoxNumber() == null ? "N/A" : cloth.getBoxNumber());
-                boxNumberCell.setCellStyle(isOdd ? style : newStyle);
 
                 Cell weightCell = row.createCell(14);
                 weightCell.setCellValue(cloth.getWeight() == null ? "N/A" : cloth.getWeight());
-                weightCell.setCellStyle(isOdd ? style : newStyle);
 
                 Cell isRejectCell = row.createCell(15);
                 isRejectCell.setCellValue(cloth.getIsReturn() == null ? "N/A" : cloth.getIsReturn().toString());
-                isRejectCell.setCellStyle(isOdd ? style : newStyle);
+
+                int cellLocationNumber = 15;
+                Map<String, List<Date>> locationDates = clothRepository.findLocationHistoryMapByCloth(cloth.getId());
+                for (String location : locationNames) {
+                    Cell locationHistoryCell = row.createCell(++cellLocationNumber);
+                    locationHistoryCell.setCellValue(
+                         locationDates.get(location) == null ? "N/A":   locationDates.get(location).stream().map(this::getDateString).collect(Collectors.joining(","))
+                    );
+                }
 
 
             }
@@ -639,61 +637,32 @@ public class ReportingServiceImpl implements ReportingService {
                     designName = cloth.getDesignName();
                     rownum++;
                 }
-                Boolean isOdd = rownum % 2 != 0;
-                HSSFCellStyle newStyle = workbook.createCellStyle();
-                newStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-                newStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
-                newStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
-                newStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-                newStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
-                newStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
-
 
                 Row row = sheet.createRow(rownum);
                 Cell snCell = row.createCell(0);
                 snCell.setCellValue(resources.indexOf(cloth) + 1);
 
-                snCell.setCellStyle(isOdd ? style : newStyle);
                 Cell designCell = row.createCell(1);
                 designCell.setCellValue(cloth.getDesignName());
 
-                designCell.setCellStyle(isOdd ? style : newStyle);
 
                 Cell sizeCell = row.createCell(2);
                 sizeCell.setCellValue(cloth.getSizeName());
-
-                sizeCell.setCellStyle(isOdd ? style : newStyle);
-
 
                 Cell colorCell = row.createCell(3);
                 colorCell.setCellValue(cloth.getColor());
 
 
-                colorCell.setCellStyle(isOdd ? style : newStyle);
-
-
                 Cell colorCodeCell = row.createCell(4);
                 colorCodeCell.setCellValue(cloth.getColorCode());
-
-
-                colorCodeCell.setCellStyle(isOdd ? style : newStyle);
-
 
                 Cell quantityCell = row.createCell(5);
                 quantityCell.setCellValue(cloth.getClothCount());
 
-
-                quantityCell.setCellStyle(isOdd ? style : newStyle);
-
-
                 Cell printCell = row.createCell(6);
                 printCell.setCellValue(cloth.getPrint());
 
-
-                printCell.setCellStyle(isOdd ? style : newStyle);
-
                 Cell emptyCell = row.createCell(7);
-                emptyCell.setCellStyle(isOdd ? style : newStyle);
 
                 totalCount += cloth.getClothCount();
 
@@ -728,7 +697,6 @@ public class ReportingServiceImpl implements ReportingService {
             snHeadCell.setCellValue("No cloth available");
         } else {
             int rownum = 0;
-
             HSSFCellStyle style = workbook.createCellStyle();
             style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
             style.setBorderTop(HSSFCellStyle.BORDER_THIN);
@@ -822,63 +790,39 @@ public class ReportingServiceImpl implements ReportingService {
                     designName = cloth.getDesignName();
                     rownum++;
                 }
-                Boolean isOdd = rownum % 2 != 0;
-                HSSFCellStyle newStyle = workbook.createCellStyle();
-                newStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-                newStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
-                newStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
-                newStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-                newStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
-                newStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
-
 
                 Row row = sheet.createRow(rownum);
                 Cell snCell = row.createCell(0);
                 snCell.setCellValue(resources.indexOf(cloth) + 1);
 
-                snCell.setCellStyle(isOdd ? style : newStyle);
                 Cell designCell = row.createCell(1);
                 designCell.setCellValue(cloth.getDesignName());
 
-                designCell.setCellStyle(isOdd ? style : newStyle);
 
                 Cell sizeCell = row.createCell(2);
                 sizeCell.setCellValue(cloth.getSizeName());
-
-                sizeCell.setCellStyle(isOdd ? style : newStyle);
 
 
                 Cell colorCell = row.createCell(3);
                 colorCell.setCellValue(cloth.getColor());
 
 
-                colorCell.setCellStyle(isOdd ? style : newStyle);
-
-
                 Cell colorCodeCell = row.createCell(4);
                 colorCodeCell.setCellValue(cloth.getColorCode());
 
 
-                colorCodeCell.setCellStyle(isOdd ? style : newStyle);
-
-
                 Cell printCell = row.createCell(5);
                 printCell.setCellValue(cloth.getPrint());
-                printCell.setCellStyle(isOdd ? style : newStyle);
-
 
                 Cell qtyCell = row.createCell(6);
                 qtyCell.setCellValue(cloth.getCount());
-                qtyCell.setCellStyle(isOdd ? style : newStyle);
 
 
                 Cell locationCell = row.createCell(7);
                 locationCell.setCellValue(cloth.getLocation() == null ? "N/A" : cloth.getLocation());
-                locationCell.setCellStyle(isOdd ? style : newStyle);
 
 
                 Cell emptyCell = row.createCell(8);
-                emptyCell.setCellStyle(isOdd ? style : newStyle);
                 totalCount++;
 
             }
@@ -1407,71 +1351,38 @@ public class ReportingServiceImpl implements ReportingService {
             Double totalPrice = 0D;
             for (ClothWeavingResource cloth : resources) {
                 rownum++;
-                Boolean isOdd = rownum % 2 != 0;
-                HSSFCellStyle newStyle = workbook.createCellStyle();
-                newStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-                newStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
-                newStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
-                newStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-                newStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
-                newStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
-
 
                 Row row = sheet.createRow(rownum);
                 Cell snCell = row.createCell(0);
                 snCell.setCellValue(rownum - 11);
 
-                snCell.setCellStyle(isOdd ? style : newStyle);
                 Cell designCell = row.createCell(1);
                 designCell.setCellValue(cloth.getDesignName());
 
-                designCell.setCellStyle(isOdd ? style : newStyle);
 
                 Cell sizeCell = row.createCell(2);
                 sizeCell.setCellValue(cloth.getSizeName());
-
-                sizeCell.setCellStyle(isOdd ? style : newStyle);
 
 
                 Cell colorCell = row.createCell(3);
                 colorCell.setCellValue(cloth.getColor());
 
-
-                colorCell.setCellStyle(isOdd ? style : newStyle);
-
-
                 Cell colorCodeCell = row.createCell(4);
                 colorCodeCell.setCellValue(cloth.getColorCode());
-
-
-                colorCodeCell.setCellStyle(isOdd ? style : newStyle);
-
 
                 Cell quantityCell = row.createCell(5);
                 quantityCell.setCellValue(cloth.getClothCount());
 
-
-                quantityCell.setCellStyle(isOdd ? style : newStyle);
-
-
                 Cell printCell = row.createCell(6);
                 printCell.setCellValue(cloth.getPrint());
-
-
-                printCell.setCellStyle(isOdd ? style : newStyle);
-
 
                 Cell printAmountCell = row.createCell(7);
                 if (cloth.getPrint() != null && cloth.getPrintAmount() != null) {
                     printAmountCell.setCellValue(cloth.getPrintAmount());
                 }
 
-                printAmountCell.setCellStyle(isOdd ? style : newStyle);
-
                 Cell priceCell = row.createCell(8);
                 priceCell.setCellValue(cloth.getAmount());
-                priceCell.setCellStyle(isOdd ? style : newStyle);
-
 
                 totalCount += cloth.getClothCount();
                 totalPrice += cloth.getAmount() * cloth.getClothCount();

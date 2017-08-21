@@ -34,7 +34,7 @@ public class KnitterMachineHistoryRepositoryImpl extends AbstractRepositoryImpl<
     }
 
     @Override
-    public Page<KnitterMachineHistory> getAll(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, Pageable pageable) {
+    public Page<KnitterMachineHistory> getAll(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, Integer orderNo, Pageable pageable) {
         QKnitterMachineHistory machineHistory = QKnitterMachineHistory.knitterMachineHistory;
         BooleanBuilder where = new BooleanBuilder();
         if (knitterId != null) {
@@ -43,6 +43,9 @@ public class KnitterMachineHistoryRepositoryImpl extends AbstractRepositoryImpl<
 
         if (machineId != null) {
             where.and(machineHistory.machine.id.eq(machineId));
+        }
+        if(orderNo != null){
+            where.and(machineHistory.cloth.order_no.eq(orderNo));
         }
 
         if (dateFrom != null) {
@@ -70,7 +73,7 @@ public class KnitterMachineHistoryRepositoryImpl extends AbstractRepositoryImpl<
     }
 
     @Override
-    public List<KnitterHistoryReportResource> getAllResource(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo) {
+    public List<KnitterHistoryReportResource> getAllResource(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, Integer orderNo) {
         QKnitterMachineHistory machineHistory = QKnitterMachineHistory.knitterMachineHistory;
         BooleanBuilder where = new BooleanBuilder();
         if (knitterId != null) {
@@ -86,6 +89,9 @@ public class KnitterMachineHistoryRepositoryImpl extends AbstractRepositoryImpl<
         }
         if (dateTo != null) {
             where.and(machineHistory.created.loe(DateUtils.addDays(dateTo,1)));
+        }
+        if(orderNo != null){
+            where.and(machineHistory.cloth.order_no.eq(orderNo));
         }
         if (completedDate != null) {
             Calendar gval = Calendar.getInstance();

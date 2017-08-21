@@ -19,6 +19,7 @@ import javax.persistence.Table;
 public class ClothActivity extends AbstractEntity{
 
     @ManyToOne
+    @QueryInit({"price.design", "price.size", "price.yarn", "customer","color"})
     private Clothes cloth;
 
     @ManyToOne

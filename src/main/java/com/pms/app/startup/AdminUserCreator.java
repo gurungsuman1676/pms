@@ -79,8 +79,8 @@ public class AdminUserCreator {
         for (LocationEnum location : LocationEnum.values()) {
             switch (location) {
                 case SHIPPING:
-                case PRE_KNITTING:
-                case PRE_KNITTING_COMPLETED: {
+                case NO_LOCATION:
+                case PRE_KNITTING: {
                     Locations locations = new Locations();
                     locations.setName(location.getName());
                     locations.setLocationType(LocationType.KNITTING);

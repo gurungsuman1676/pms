@@ -14,4 +14,9 @@ public interface UserLocationRepository extends AbstractRepository<UserLocations
 
     @Query("SELECT u.location FROM UserLocations u WHERE u.user =:user ORDER BY u.location.name ASC")
     List<Locations> findLocationByUser(@Param("user")Users user);
+
+    @Query("SELECT u FROM UserLocations u WHERE u.user =:user ORDER BY u.location.name ASC")
+    List<UserLocations> findUserLocationByUser(@Param("user")Users user);
+
+
 }

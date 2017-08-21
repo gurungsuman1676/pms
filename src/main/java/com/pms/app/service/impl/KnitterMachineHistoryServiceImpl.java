@@ -56,8 +56,8 @@ public class KnitterMachineHistoryServiceImpl implements KnitterMachineHistorySe
     }
 
     @Override
-    public Page<KnitterMachineHistory> getAll(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, Pageable pageable) {
-        return knitterMachineHistoryRepository.getAll(knitterId, machineId, completedDate, dateFrom, dateTo, pageable);
+    public Page<KnitterMachineHistory> getAll(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, Integer orderNo, Pageable pageable) {
+        return knitterMachineHistoryRepository.getAll(knitterId, machineId, completedDate, dateFrom, dateTo,orderNo, pageable);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class KnitterMachineHistoryServiceImpl implements KnitterMachineHistorySe
             throw new RuntimeException("No such cloth available");
         }
 
-        Locations preKnitting = locationRepository.findByNameAndLocationType(LocationEnum.PRE_KNITTING.getName(),LocationType.KNITTING);
+        Locations preKnitting = locationRepository.findByNameAndLocationType(LocationEnum.NO_LOCATION.getName(), LocationType.KNITTING);
 
         List<Clothes> clothes = clothRepository.findByOrderNoAndCustomerAndPriceAndColorAndTypeAndStatusAndLocation(providedCloth.getOrder_no(),
                 providedCloth.getCustomer().getId(),
@@ -100,14 +100,12 @@ public class KnitterMachineHistoryServiceImpl implements KnitterMachineHistorySe
             throw new RuntimeException("Total available cloth for given values in pre knitting is " + clothes.size());
         }
 
-        Locations locations = locationRepository.findByNameAndLocationType(LocationEnum.PRE_KNITTING_COMPLETED.getName(), LocationType.KNITTING);
+        Locations locations = locationRepository.findByNameAndLocationType(LocationEnum.PRE_KNITTING.getName(), LocationType.KNITTING);
 
         clothes.forEach(
                 cloth -> {
-                    if (cloth.getLocation().getName().equalsIgnoreCase(LocationEnum.PRE_KNITTING.getName())) {
-                        cloth.setLocation(locations);
-                        cloth = clothRepository.save(cloth);
-                    }
+                    cloth.setLocation(locations);
+                    cloth = clothRepository.save(cloth);
                     KnitterMachineHistory knitterMachineHistory = new KnitterMachineHistory();
                     knitterMachineHistory.setCloth(cloth);
                     knitterMachineHistory.setKnitter(knitter);
@@ -132,9 +130,9 @@ public class KnitterMachineHistoryServiceImpl implements KnitterMachineHistorySe
         if (knitterMachineHistory == null) {
             throw new RuntimeException("No history available");
         }
-        if (Objects.equals(knitterMachineHistory.getCloth().getLocation().getName(), LocationEnum.PRE_KNITTING_COMPLETED.getName())) {
+        if (Objects.equals(knitterMachineHistory.getCloth().getLocation().getName(), LocationEnum.PRE_KNITTING.getName())) {
             Clothes clothes = knitterMachineHistory.getCloth();
-            clothes.setLocation(locationRepository.findByNameAndLocationType(LocationEnum.PRE_KNITTING.getName(),LocationType.KNITTING));
+            clothes.setLocation(locationRepository.findByNameAndLocationType(LocationEnum.NO_LOCATION.getName(), LocationType.KNITTING));
             clothes = clothRepository.save(clothes);
             ClothActivity activity = new ClothActivity();
             activity.setCloth(clothes);
@@ -178,7 +176,7 @@ public class KnitterMachineHistoryServiceImpl implements KnitterMachineHistorySe
     }
 
     @Override
-    public void getHistoryReport(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, HttpServletResponse httpServletResponse) {
-        knitterHistoryReportService.getHistoryReport(knitterId,machineId,completedDate,dateFrom,dateTo,httpServletResponse);
+    public void getHistoryReport(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, Integer orderNo, HttpServletResponse httpServletResponse) {
+        knitterHistoryReportService.getHistoryReport(knitterId, machineId, completedDate, dateFrom, dateTo, orderNo,httpServletResponse);
     }
 }

@@ -11,8 +11,11 @@ import javax.persistence.Entity;
 @Entity
 public class Locations extends AbstractEntity {
 
-    @Column(nullable = false,unique = true)
+    @Column(nullable = false, unique = true)
     private String name;
 
     private LocationType locationType;
+
+    @Column(nullable = false, name = "location_order")
+    private int order;
 }

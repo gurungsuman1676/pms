@@ -2,9 +2,11 @@ package com.pms.app.service.impl;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.pms.app.repo.KnitterMachineHistoryRepository;
+import com.pms.app.repo.ClothActivityRepository;
 import com.pms.app.schema.KnitterHistoryReportResource;
-import com.pms.app.service.KnitterHistoryReportService;
+import com.pms.app.schema.PageResult;
+import com.pms.app.schema.UserHistoryResource;
+import com.pms.app.service.HistoryService;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -19,6 +21,7 @@ import org.apache.poi.util.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
@@ -32,27 +35,32 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by arjun on 6/30/2017.
+ * Created by arjun on 8/21/2017.
  */
 
 @Service
-public class KnitterHistoryReportServiceImpl implements KnitterHistoryReportService {
-
-    private final KnitterMachineHistoryRepository knitterMachineHistoryRepository;
+public class HistoryServiceImpl implements HistoryService {
+    private final ClothActivityRepository clothActivityRepository;
 
     @Autowired
-    public KnitterHistoryReportServiceImpl(KnitterMachineHistoryRepository knitterMachineHistoryRepository) {
-        this.knitterMachineHistoryRepository = knitterMachineHistoryRepository;
+    public HistoryServiceImpl(ClothActivityRepository clothActivityRepository) {
+        this.clothActivityRepository = clothActivityRepository;
     }
 
     @Override
-    public void getHistoryReport(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, Integer orderNo, HttpServletResponse httpServletResponse) {
-        List<KnitterHistoryReportResource> historyReportResources = knitterMachineHistoryRepository.getAllResource(knitterId, machineId, completedDate, dateFrom, dateTo,orderNo);
+    public PageResult<UserHistoryResource> getAll(Date completedDate, Date dateFrom, Date dateTo, String role, Integer orderNo, Pageable pageable) {
+        return clothActivityRepository.findActivities(completedDate,dateFrom,dateTo,role,orderNo,pageable);
+    }
+
+    @Override
+    public void getReport(Date completedDate, Date dateFrom, Date dateTo, String role, Integer orderNo, HttpServletResponse httpServletResponse) {
+      List<UserHistoryResource> activities = clothActivityRepository.findActivitiesReport(completedDate,dateFrom,dateTo,role,orderNo);
+
         HSSFWorkbook workbook = new HSSFWorkbook();
 
         HSSFSheet sheet = getWithHeaderImage(workbook, "/images/pms-logo.png");
 
-        if (historyReportResources == null || historyReportResources.isEmpty()) {
+        if (activities == null || activities.isEmpty()) {
             Row headerRow = sheet.createRow(8);
             Cell snHeadCell = headerRow.createCell(8);
             snHeadCell.setCellValue("No History available");
@@ -86,49 +94,40 @@ public class KnitterHistoryReportServiceImpl implements KnitterHistoryReportServ
             startDeliveryDate.setCellValue("Delivery Date");
             startDeliveryDate.setCellStyle(style);
 
-            Cell startKnitterName = startRow.createCell(2);
-            startKnitterName.setCellValue("Knitter");
-            startKnitterName.setCellStyle(style);
-
-            Cell startMachineName = startRow.createCell(3);
-            startMachineName.setCellValue("Machine");
-            startMachineName.setCellStyle(style);
-
-
-            Cell startOrderNo = startRow.createCell(4);
+            Cell startOrderNo = startRow.createCell(2);
             startOrderNo.setCellValue("Order No");
             startOrderNo.setCellStyle(style);
 
 
-            Cell startValueCustomerName = startRow.createCell(5);
+            Cell startValueCustomerName = startRow.createCell(3);
             startValueCustomerName.setCellValue("Customer");
             startValueCustomerName.setCellStyle(style);
 
 
-            Cell designCell = startRow.createCell(6);
+            Cell designCell = startRow.createCell(4);
             designCell.setCellValue("Design");
             designCell.setCellStyle(style);
 
-            Cell yarnCell = startRow.createCell(7);
+            Cell yarnCell = startRow.createCell(5);
             yarnCell.setCellValue("Yarn");
             yarnCell.setCellStyle(style);
 
 
-            Cell sizeHeadCell = startRow.createCell(8);
+            Cell sizeHeadCell = startRow.createCell(6);
             sizeHeadCell.setCellValue("Size");
             sizeHeadCell.setCellStyle(style);
-            Cell gaugeCell = startRow.createCell(9);
+            Cell gaugeCell = startRow.createCell(7);
             gaugeCell.setCellValue("Gauge");
             gaugeCell.setCellStyle(style);
-            Cell settingHead = startRow.createCell(10);
+            Cell settingHead = startRow.createCell(8);
             settingHead.setCellValue("Setting");
             settingHead.setCellStyle(style);
-            Cell reOrderCell = startRow.createCell(11);
+            Cell reOrderCell = startRow.createCell(9);
             reOrderCell.setCellValue("Re-Order");
             reOrderCell.setCellStyle(style);
 
 
-            for (KnitterHistoryReportResource historyReportResource : historyReportResources) {
+            for (UserHistoryResource historyReportResource : activities) {
                 rownum++;
 
 
@@ -139,34 +138,28 @@ public class KnitterHistoryReportServiceImpl implements KnitterHistoryReportServ
                 Cell deliveryCell = row.createCell(1);
                 deliveryCell.setCellValue(getDateString(historyReportResource.getDeliveryDate()));
 
-                Cell knitterCell = row.createCell(2);
-                knitterCell.setCellValue(historyReportResource.getKnitterName());
-
-                Cell machineCell = row.createCell(3);
-                machineCell.setCellValue(historyReportResource.getMachineName());
-
-                Cell orderNoCell = row.createCell(4);
+                Cell orderNoCell = row.createCell(2);
                 orderNoCell.setCellValue(historyReportResource.getOrderNo());
 
-                Cell customerCell = row.createCell(5);
+                Cell customerCell = row.createCell(3);
                 customerCell.setCellValue(historyReportResource.getCustomerName());
 
-                Cell designCellVal = row.createCell(6);
+                Cell designCellVal = row.createCell(4);
                 designCellVal.setCellValue(historyReportResource.getDesignName());
 
-                Cell yarnCellVal = row.createCell(7);
+                Cell yarnCellVal = row.createCell(5);
                 yarnCellVal.setCellValue(historyReportResource.getYarnName());
 
-                Cell sizeCell = row.createCell(8);
+                Cell sizeCell = row.createCell(6);
                 sizeCell.setCellValue(historyReportResource.getSizeName());
 
-                Cell gaugeCellVal = row.createCell(9);
+                Cell gaugeCellVal = row.createCell(7);
                 gaugeCellVal.setCellValue(historyReportResource.getGauge() == null ? "N/A" : historyReportResource.getGauge()+"");
 
-                Cell settingVal = row.createCell(10);
+                Cell settingVal = row.createCell(8);
                 settingVal.setCellValue(historyReportResource.getSetting() == null ? "N/A" : historyReportResource.getSetting());
 
-                Cell reOrderCellVal = row.createCell(11);
+                Cell reOrderCellVal = row.createCell(9);
                 reOrderCellVal.setCellValue(historyReportResource.getOrderType() == null ? " " : historyReportResource.getOrderType());
 
 
@@ -180,11 +173,11 @@ public class KnitterHistoryReportServiceImpl implements KnitterHistoryReportServ
             totalValueTextCell.setCellValue("Total");
             Cell totalValueCell = lastRow.createCell(2);
             totalValueCell.setCellStyle(style);
-            totalValueCell.setCellValue(historyReportResources.size());
+            totalValueCell.setCellValue(activities.size());
         }
 
 
-        for (int i = 0; i <= 11; i++) {
+        for (int i = 0; i <= 9; i++) {
             sheet.autoSizeColumn(i);
         }
         exportToExcel(httpServletResponse, workbook, "Knitting_history_" + getDateStringForName(new Date()));

@@ -10,12 +10,18 @@
                     <div class="form-group">
                         <label for="name">Name:</label>
                         <input class="form-control" ng-model="ctrl.location.name" type="text" id="name"
-                               autocomplete="off">
+                               autocomplete="off" >
                     </div>
                     <div class="form-group">
                         <label>Location Type</label>
                         <selectize config="{maxOptions: 100}" options="ctrl.locationTypes"
-                                   ng-model="ctrl.location.locationType"></selectize>
+                                   ng-model="ctrl.location.locationType" ng-disabled="ctrl.edit"></selectize>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="order">Order:</label>
+                        <input class="form-control" ng-model="ctrl.location.order" type="number" id="order"
+                               autocomplete="off">
                     </div>
                     <div>
                         <input type="submit" class="btn btn-primary" value="Submit">

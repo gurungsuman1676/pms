@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface ClothRepositoryCustom extends AbstractRepositoryCustom<Clothes> {
 
@@ -84,4 +85,6 @@ public interface ClothRepositoryCustom extends AbstractRepositoryCustom<Clothes>
     List<Clothes> findForEnteredWeavingShipping(WeavingShippingDTO weavingShippingDTO);
 
     List<Colors> getColorsByOrderNumberAndCustomer(Integer orderNumber, Long customerId, Long designId, Long sizeId, Long printId);
+
+    Map<String, List<Date>> findLocationHistoryMapByCloth(Long id);
 }

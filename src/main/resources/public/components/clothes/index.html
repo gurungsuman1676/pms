@@ -245,7 +245,7 @@
                             ng-repeat="cloth in $data | orderBy:'-id'">
 
 
-                            <td ng-class="{'cloth-warning': cloth.isReturn}">{{cloth.id}}</td>
+                            <td ng-class="{'cloth-post-warning': cloth.isReturn}">{{cloth.id}}</td>
                             <td>{{cloth.locationName}}</td>
                             <td>{{cloth.order_no}}</td>
                             <td>{{cloth.price.designName}}</td>
@@ -253,8 +253,8 @@
                             <td>{{cloth.colorCode}}</td>
                             <td>{{cloth.price.sizeName}}</td>
                             <td>{{cloth.customer.name}}</td>
-                            <td ng-class="{'cloth-warning': cloth.delivery_date < warningDate && cloth.locationName != 'SHIPPING'}">{{cloth.delivery_date |
-                                date: 'dd/MM/yyyy'}}
+                            <td ng-class="isCssForDatePassed(cloth)">
+                                {{cloth.delivery_date |date: 'dd/MM/yyyy'}}
                             </td>
                             <td><span ng-if="!cloth.print.name">N/A</span><span>{{cloth.print.name}}</span></td>
                             <td><span ng-if="!cloth.print.amount && cloth.print.amount != 0">N/A</span>{{cloth.print.amount

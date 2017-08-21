@@ -43,8 +43,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Users addUser(UserDto userDto) {
         Users duplicateUser = userRepository.findByUsername(userDto.getUsername());
-        if(duplicateUser!=null){
-            throw  new RuntimeException("User already exists");
+        if (duplicateUser != null) {
+            throw new RuntimeException("User already exists");
         }
         Users users = new Users();
         users.setPassword(passwordEncoder.encode(userDto.getPassword()));
@@ -52,15 +52,14 @@ public class UserServiceImpl implements UserService {
         users.setRole(userDto.getRole());
         users = userRepository.save(users);
 
-        if(userDto.getLocation() != null && userDto.getLocation() != 0) {
-            Locations locations = locationRepository.findOne(userDto.getLocation());
-
-            UserLocations userLocations = getLocations(locations,users);
-            userLocationRepository.save(userLocations);
-        }else{
-            if(userDto.getRole().equals(Roles.USER)){
+        if (userDto.getRole() != Roles.ADMIN) {
+            if (userDto.getLocation() == null) {
                 throw new RuntimeException("User must have location");
             }
+            Locations locations = locationRepository.findOne(userDto.getLocation());
+
+            UserLocations userLocations = getLocations(locations, users);
+            userLocationRepository.save(userLocations);
         }
         return users;
     }
@@ -75,7 +74,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Users getUser(Long id) {
         Users users = userRepository.findOne(id);
-        if(users == null){
+        if (users == null) {
             throw new RuntimeException("No such user found");
         }
         return users;
@@ -83,7 +82,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Users updateUser(Long id, UserDto userDto) {
-        return null;
+        Users user = getUser(id);
+        if (userDto.getRole() != Roles.ADMIN) {
+            UserLocations userLocations = userLocationRepository.findUserLocationByUser(user).get(0);
+            userLocations.setLocation(locationRepository.findOne(userDto.getLocation()));
+        }
+        return userRepository.save(user);
     }
 
     @Override
@@ -94,7 +98,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void changePassword(Long userId, PasswordDto password) {
         Users users = userRepository.findOne(userId);
-        if(users == null){
+        if (users == null) {
             throw new RuntimeException("No such user found");
         }
         users.setPassword(passwordEncoder.encode(password.getPassword()));

@@ -13,4 +13,5 @@ public class LocationResource {
     private Long id;
     private String name;
     private LocationType locationType;
+    private int order;
 }

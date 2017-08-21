@@ -167,7 +167,7 @@ angular.module('sbAdminApp')
         }
 
         self.deleteCloth = function (cloth) {
-            if (cloth.locationName == "N/A" || cloth.locationName === 'PRE-KNITTING') {
+            if (cloth.locationName == "N/A" || cloth.locationName === 'NO-LOCATION') {
                 var r = confirm("Are you sure you want to delte the cloth?");
                 if (r == true) {
                     ClothesFactory.deleteCloth(cloth, function (response) {
@@ -259,7 +259,29 @@ angular.module('sbAdminApp')
 
         // To check the delivery date
         var currentDate = new Date();
-        $scope.warningDate = currentDate.setDate(currentDate.getDate() + 7);
+        currentDate.setHours(0,0,0,0);
+        $scope.postWarningDate = currentDate.setDate(currentDate.getDate());
+        $scope.preWarningDate = currentDate.setDate(currentDate.getDate() + 7);
+        $scope.isPostDatePassed = function (cloth) {
+            return cloth.delivery_date < $scope.postWarningDate && cloth.locationName != 'SHIPPING';
+        };
+
+        $scope.isPostDatePassedForKnitter = function (cloth) {
+            var classCss = $scope.isCssForDatePassed(cloth);
+            return classCss + (self.isKnitter(cloth) ? ' clickable-td' : '');
+        };
+
+        $scope.isCssForDatePassed = function (cloth) {
+            if ($scope.isPostDatePassed(cloth)) {
+                return 'cloth-post-warning';
+            } else if ($scope.isPreDatePassed(cloth)) {
+                return 'cloth-pre-warning';
+            }
+            return '';
+        };
+        $scope.isPreDatePassed = function (cloth) {
+            return cloth.delivery_date < $scope.preWarningDate && cloth.locationName != 'SHIPPING';
+        };
 
         //opens date picker
         $scope.openOrderDateFrom = function ($event, which) {
@@ -332,7 +354,6 @@ angular.module('sbAdminApp')
                             sort: 'lastModified,desc',
                             page: page - 1,
                             roles: $localStorage.user.roles,
-                            onlyMine: self.filterParams.onlyMine,
                             size: params.count()
                         },
                         function (response) {
@@ -352,11 +373,11 @@ angular.module('sbAdminApp')
             }
         );
         self.isKnitter = function (cloth) {
-            return angular.isDefined($localStorage.user) && ($localStorage.user.roles).indexOf("PRE-KNITTING") != -1 && cloth.locationName === 'PRE-KNITTING';
+            return angular.isDefined($localStorage.user) && ($localStorage.user.roles).indexOf("PRE-KNITTING") != -1 && cloth.locationName === 'NO-LOCATION';
         };
 
         self.onClothClicked = function (cloth) {
-            if (self.isKnitter()) {
+            if (self.isKnitter(cloth)) {
                 $state.go("dashboard.knittingHistory.new", {"clothId": cloth.id});
                 ClothSearchParamFactory.params = self.filterParams;
                 ClothSearchParamFactory.page = self.clothTable.$params.page;

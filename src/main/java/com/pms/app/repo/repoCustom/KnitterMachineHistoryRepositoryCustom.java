@@ -13,9 +13,9 @@ import java.util.List;
  * Created by arjun on 6/21/2017.
  */
 public interface KnitterMachineHistoryRepositoryCustom extends AbstractRepositoryCustom<KnitterMachineHistory> {
-    Page<KnitterMachineHistory> getAll(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, Pageable pageable);
+    Page<KnitterMachineHistory> getAll(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, Integer orderNo, Pageable pageable);
 
-    List<KnitterHistoryReportResource> getAllResource(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo);
+    List<KnitterHistoryReportResource> getAllResource(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, Integer orderNo);
 
     KnitterMachineHistoryDto getById(Long id);
 }

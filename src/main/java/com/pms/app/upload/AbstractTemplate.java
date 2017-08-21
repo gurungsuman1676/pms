@@ -192,7 +192,7 @@ abstract class AbstractTemplate {
                            String designName, String printName, String... attrs) {
         Locations preKnitting = null;
         if (clothType == 0) {
-            preKnitting = locationRepository.findByNameAndLocationType(LocationEnum.PRE_KNITTING.getName(), LocationType.KNITTING);
+            preKnitting = locationRepository.findByNameAndLocationType(LocationEnum.NO_LOCATION.getName(), LocationType.KNITTING);
         }
         List<Clothes> clothesList = new ArrayList<>();
         for (String sizeName : sizeAndNumberMap.keySet()) {

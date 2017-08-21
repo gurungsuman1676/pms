@@ -248,7 +248,7 @@ public class RukelTemplate extends AbstractTemplate implements TemplateService {
         while (cellIterator.hasNext()) {
             Cell cell = cellIterator.next();
             cell.setCellType(Cell.CELL_TYPE_STRING);
-            if (cell.getStringCellValue().toUpperCase().equals(TOTAL_ALIAS)) {
+            if (cell.getStringCellValue().toUpperCase().trim().equals(TOTAL_ALIAS)) {
                 return true;
             }
         }

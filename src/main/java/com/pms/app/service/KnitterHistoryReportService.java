@@ -7,5 +7,5 @@ import java.util.Date;
  * Created by arjun on 6/30/2017.
  */
 public interface KnitterHistoryReportService {
-    void getHistoryReport(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, HttpServletResponse httpServletResponse);
+    void getHistoryReport(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, Integer orderNo, HttpServletResponse httpServletResponse);
 }

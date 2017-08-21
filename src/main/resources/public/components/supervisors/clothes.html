@@ -9,11 +9,11 @@
 
             <div class="action-buttons">
 
-                <div class="checkbox col-sm-3 input-margin">
-                    <label><input type="checkbox" data-ng-model="ctrl.filterParams.onlyMine" value=""
-                                  ng-change="ctrl.onShowMineChange(ctrl.filterParams.onlyMine)">Show Only
-                        Mine</label>
-                </div>
+                <!--<div class="checkbox col-sm-3 input-margin">-->
+                    <!--<label><input type="checkbox" data-ng-model="ctrl.filterParams.onlyMine" value=""-->
+                                  <!--ng-change="ctrl.onShowMineChange(ctrl.filterParams.onlyMine)">Show Only-->
+                        <!--Mine</label>-->
+                <!--</div>-->
 
                 <div class="col-sm-3 input-margin">
                     <selectize placeholder="Type"
@@ -75,7 +75,7 @@
                     </selectize>
                 </div>
 
-                <div class="col-sm-3 input-margin" ng-if="!ctrl.filterParams.onlyMine">
+                <div class="col-sm-3 input-margin">
                     <selectize placeholder="Locations" ng-model="ctrl.filterParams.locationId"
                                options="ctrl.locations">
                     </selectize>
@@ -109,12 +109,13 @@
             <div class="panel-body">
                 <div class="dataTable_wrapper no-padding" ng-show="ctrl.clothes">
                     <table ng-table="ctrl.clothTable"
-                           class="table table-striped table-bordered table-hover table-condensed"
+                           class="table table-striped table-bordered table-hover table-condensed table-responsive"
                            id="dataTables-example">
                         <thead>
                         <tr>
                             <th>S N</th>
                             <th>Barcode</th>
+                            <th>Location</th>
                             <th>Order No</th>
                             <th>Design Name</th>
                             <th>Customer</th>
@@ -139,9 +140,11 @@
                             <td class="center" ng-class="{'clickable-td': ctrl.isKnitter(cloth)}"
                                 data-ng-click="ctrl.onClothClicked(cloth)">{{$index + 1}}
                             </td>
-                            <td ng-class="{'cloth-warning': cloth.isReturn ,'clickable-td': ctrl.isKnitter(cloth)}"
+                            <td ng-class="{'cloth-post-warning': cloth.isReturn ,'clickable-td': ctrl.isKnitter(cloth)}"
                                 data-ng-click="ctrl.onClothClicked(cloth)">{{cloth.id}}
                             </td>
+                            <td ng-class="{'clickable-td': ctrl.isKnitter(cloth)}"
+                                data-ng-click="ctrl.onClothClicked(cloth)">{{cloth.locationName}}</td>
                             <td ng-class="{'clickable-td': ctrl.isKnitter(cloth)}"
                                 data-ng-click="ctrl.onClothClicked(cloth)">{{cloth.order_no}}
                             </td>
@@ -152,7 +155,7 @@
                             <td ng-class="{'clickable-td': ctrl.isKnitter(cloth)}"
                                 data-ng-click="ctrl.onClothClicked(cloth)">{{cloth.price.customer.name}}
                             </td>
-                            <td ng-class="{  'cloth-warning':cloth.delivery_date < warningDate && cloth.locationName != 'SHIPPING' ,'clickable-td': ctrl.isKnitter(cloth)} "
+                            <td ng-class="isPostDatePassedForKnitter(cloth) "
                                 data-ng-click="ctrl.onClothClicked(cloth)">{{cloth.delivery_date |
                                 date: 'dd/MM/yyyy'}}
                             </td>

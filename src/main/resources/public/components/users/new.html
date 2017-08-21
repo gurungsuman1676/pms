@@ -10,18 +10,18 @@
                     <div class="form-group">
                         <label for="name">Name:</label>
                         <input class="form-control" ng-model="ctrl.user.username" type="text" id="name"
-                               autocomplete="off" required>
+                               autocomplete="off" required ng-disabled="ctrl.isEdit">
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" ng-hide="ctrl.isEdit">
                         <label for="password">Password:</label>
                         <input class="form-control" ng-model="ctrl.user.password" type="password" id="password"
-                               autocomplete="off" required>
+                               autocomplete="off" ng-required="!ctrl.isEdit">
                     </div>
 
                     <div class="form-group">
                         <label>Role:</label>
-                        <selectize options="ctrl.roles" ng-model="ctrl.user.role"></selectize>
+                        <selectize options="ctrl.roles" ng-model="ctrl.user.role" ng-disabled="ctrl.isEdit"></selectize>
                     </div>
 
                     <div class="form-group">

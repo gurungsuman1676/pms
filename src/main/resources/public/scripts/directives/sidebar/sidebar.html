@@ -26,10 +26,13 @@
             <li ui-sref-active="active" ng-show="isShawlUser">
                 <a ui-sref="dashboard.supervisors.weavingIndex"> Entry</a>
             </li>
-            <li ui-sref-active="active" ng-show="isKnitter || isAdmin">
+            <li ui-sref-active="active" ng-show="!isShawlUser && !isAdmin && !isKnitter">
+                <a ui-sref="dashboard.histories.index"> History</a>
+            </li>
+            <li ui-sref-active="active" ng-show="isAdmin">
                 <a ui-sref="dashboard.knitters.index">Knitter</a>
             </li>
-            <li ui-sref-active="active" ng-show="isKnitter || isAdmin">
+            <li ui-sref-active="active" ng-show="isAdmin">
                 <a ui-sref="dashboard.machines.index">Machine</a>
             </li>
             <li ui-sref-active="active" ng-show="isKnitter || isAdmin">

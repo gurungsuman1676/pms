@@ -15,4 +15,6 @@ public class LocationDto {
 
     @NotNull
     private LocationType locationType;
+
+    private int order;
 }

@@ -51,10 +51,10 @@
             });
         }
 
-        factory.updateSize = function (size, successCallback, errorCallback) {
+        factory.updateSize = function (location, successCallback, errorCallback) {
             $http({
                 method: 'PUT',
-                url: RESOURCES.apiURL + '/sizes/' + size.id,
+                url: RESOURCES.apiURL + '/locations/' + location.id,
                 data: size
             }).success(function (response) {
                 successCallback(response);

@@ -23,8 +23,8 @@
                             <th>S.N.</th>
                             <th>Name</th>
                             <th>Type</th>
-
-                            <!--<th>Actions</th>-->
+                            <th>Order</th>
+                            <th>Actions</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -32,15 +32,16 @@
                             <td class="center">{{$index + 1}}</td>
                             <td>{{location.name}}</td>
                             <td>{{location.locationType}}</td>
+                            <td>{{location.order}}</td>
 
-                            <!--<td>-->
-                                <!--<button type="button" class="btn btn-primary" ui-sref="dashboard.locations.edit({locationId: location.id})">-->
-                                    <!--Edit-->
-                                <!--</button>-->
+                            <td>
+                                <button type="button" class="btn btn-primary" ui-sref="dashboard.locations.edit({locationId: location.id})">
+                                    Edit
+                                </button>
                                 <!--<button type="button" class="btn btn-primary" ng-click = "ctrl.deleteLocation(size)">-->
                                     <!--Delete-->
                                 <!--</button>-->
-                            <!--</td>-->
+                            </td>
                         </tr>
                         </tbody>
                     </table>

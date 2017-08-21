@@ -22,6 +22,7 @@ public class LocationConvertImpl implements LocationConvert {
         return LocationResource.builder()
                 .name(location.getName())
                 .id(location.getId())
+                .order(location.getOrder())
                 .locationType(location.getLocationType())
                 .build();
     }

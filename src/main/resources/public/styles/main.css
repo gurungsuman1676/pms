@@ -224,8 +224,12 @@ input[type=checkbox] {
     text-indent: 0.7em;
 }
 
-.cloth-warning {
+.cloth-post-warning {
     background-color: rgba(139, 0, 0, 0.5);
+}
+
+.cloth-pre-warning{
+    background-color: rgba(255, 204, 0, 0.5);
 }
 
 #dataTables-example > tbody > .shipped {

@@ -11,6 +11,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -48,6 +49,7 @@ public class LocationServiceImpl implements LocationService {
         }
         Locations newLocations = new Locations();
         newLocations.setName(locationDto.getName());
+        newLocations.setOrder(locationDto.getOrder());
         newLocations.setLocationType(locationDto.getLocationType());
         return locationRepository.save(newLocations);
     }
@@ -67,7 +69,7 @@ public class LocationServiceImpl implements LocationService {
     @CacheEvict(cacheNames = "locations",allEntries = true)
     public Locations editLocation(Long id, LocationDto locationDto) {
         Locations locations = locationRepository.findByNameAndLocationType(locationDto.getName(),locationDto.getLocationType());
-        if (locations != null) {
+        if (locations != null && !Objects.equals(locations.getId(), id)) {
             throw new RuntimeException("Location already exists");
         }
         Locations oldLocations = locationRepository.findOne(id);
@@ -76,6 +78,7 @@ public class LocationServiceImpl implements LocationService {
         }
         oldLocations.setName(locationDto.getName());
         oldLocations.setLocationType(locationDto.getLocationType());
+        oldLocations.setOrder(locationDto.getOrder());
         return locationRepository.save(oldLocations);
     }
 }

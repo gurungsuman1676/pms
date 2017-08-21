@@ -7,11 +7,12 @@
  * Controller of the sbAdminApp
  */
 angular.module('sbAdminApp')
-    .controller('DesignsListCtrl', function ($scope, DesignsFactory, ngTableParams, CustomersFactory, $filter, $modal, DesignsPropertiesFactory) {
+    .controller('DesignsListCtrl', function ($scope, DesignsFactory, ngTableParams, CustomersFactory, $filter, $modal, DesignsPropertiesFactory,$localStorage) {
 
         var self = this;
         self.designs = [];
         self.options = {};
+        self.isAdmin = $localStorage.isAdmin;
 
         self.reloadTable = function () {
             self.designListTable.$params.page = 1;

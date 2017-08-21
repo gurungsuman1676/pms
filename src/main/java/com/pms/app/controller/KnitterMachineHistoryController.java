@@ -43,9 +43,9 @@ public class KnitterMachineHistoryController {
             @RequestParam(required = false) Date completedDate,
             @RequestParam(required = false) Date dateFrom,
             @RequestParam(required = false) Date dateTo,
-
+            @RequestParam(required = false) Integer orderNo,
             Pageable pageable) {
-        Page<KnitterMachineHistory> page = knitterMachineHistoryService.getAll(knitterId, machineId, completedDate,dateFrom,dateTo, pageable);
+        Page<KnitterMachineHistory> page = knitterMachineHistoryService.getAll(knitterId, machineId, completedDate,dateFrom,dateTo,orderNo, pageable);
         return new PageResult<>(page.getTotalElements(), page.getSize(), page.getNumber(), knitterMachineHistoryConvert.convert(page.getContent()));
 
     }
@@ -78,8 +78,9 @@ public class KnitterMachineHistoryController {
             @RequestParam(required = false) Date completedDate,
             @RequestParam(required = false) Date dateFrom,
             @RequestParam(required = false) Date dateTo,
+            @RequestParam(required = false) Integer orderNo,
             HttpServletResponse httpServletResponse) {
-        knitterMachineHistoryService.getHistoryReport(knitterId, machineId, completedDate, dateFrom,dateTo,httpServletResponse);
+        knitterMachineHistoryService.getHistoryReport(knitterId, machineId, completedDate, dateFrom,dateTo,orderNo,httpServletResponse);
 
     }
 }

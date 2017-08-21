@@ -106,8 +106,7 @@ public class ClothController {
 
                                                 Pageable pageable) {
         String role = null;
-        onlyMine = onlyMine != null && onlyMine;
-        if (roles != null && !roles.isEmpty() && onlyMine) {
+        if (roles != null && !roles.isEmpty()) {
             for (String userRole : roles) {
                 if (!userRole.equalsIgnoreCase("USER") && !userRole.equalsIgnoreCase("ADMIN")) {
                     role = userRole;
@@ -199,9 +198,7 @@ public class ClothController {
                           @RequestParam(required = false, value = "onlyMine") Boolean onlyMine,
                           HttpServletResponse httpServletResponse) {
         String role = null;
-        onlyMine = onlyMine != null && onlyMine;
-
-        if (roles != null && !roles.isEmpty() && onlyMine) {
+        if (roles != null && !roles.isEmpty()) {
             for (String userRole : roles) {
                 if (!userRole.equalsIgnoreCase("USER") && !userRole.equalsIgnoreCase("ADMIN")) {
                     role = userRole;

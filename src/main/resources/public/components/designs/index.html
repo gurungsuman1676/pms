@@ -60,7 +60,7 @@
                             <th>Parent Name</th>
                             <th>Gauge</th>
                             <th>Setting</th>
-                            <th>Actions</th>
+                            <th ng-if="ctrl.isAdmin">Actions</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -71,7 +71,7 @@
                             <td>{{design.parentName}}</td>
                             <td>{{design.gauge}}</td>
                             <td>{{design.setting}}</td>
-                            <td>
+                            <td  ng-if="ctrl.isAdmin">
                                 <button type="button" class="btn btn-xs btn-primary" ui-sref="dashboard.designs.edit({designId: design.id})">
                                     Edit
                                 </button>

@@ -1,6 +1,7 @@
 package com.pms.app.repo.repoImpl;
 
 import com.mysema.query.BooleanBuilder;
+import com.mysema.query.group.GroupBy;
 import com.mysema.query.jpa.JPQLQuery;
 import com.pms.app.domain.*;
 import com.pms.app.repo.ClothRepository;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRepository> implements ClothRepositoryCustom {
     public ClothRepositoryImpl() {
@@ -416,9 +418,12 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                                              Date orderDateTo, String role, String shippingNumber,
                                              String boxNumber, Boolean isReject, QClothes clothes, Integer type, Long designId, Double gauge,
                                              String setting, String orderType, String week, Long colorId) {
+
+        QLocations locations = QLocations.locations;
         BooleanBuilder where = new BooleanBuilder();
         if (role != null) {
-            where.and(clothes.location.name.eq(role));
+            int order = from(locations).where(locations.name.eq(role)).singleResult(locations.order);
+            where.and(clothes.location.order.lt(order));
         }
 
         if (barcode != null && barcode != 0L) {
@@ -543,7 +548,7 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
         if (locationId != null) {
             if (locationId != -1) {
                 locationWhere.and(activity.location.id.eq(locationId));
-                locationWhere.and(activity.created.between(startDate, DateUtils.addDays(endTime, 1)));
+                locationWhere.and(activity.created.between(startDate, endTime));
             }
         }
         return from(activity, clothes)
@@ -722,6 +727,14 @@ public class ClothRepositoryImpl extends AbstractRepositoryImpl<Clothes, ClothRe
                 .and(clothes.status.eq(Status.ACTIVE.toString()))
                 .and(clothes.print.id.eq(printId)))
                 .list(clothes.color);
+    }
+
+    @Override
+    public Map<String, List<Date>> findLocationHistoryMapByCloth(Long id) {
+        QClothActivity clothActivity = QClothActivity.clothActivity;
+        return from(clothActivity)
+                .where(clothActivity.cloth.id.eq(id))
+                .transform(GroupBy.groupBy(clothActivity.location.name).as(GroupBy.list(clothActivity.created)));
     }
 
 

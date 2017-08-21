@@ -14,11 +14,6 @@
                             Show Filter</p>
                             <p ng-if="showFilter">Hide Filter</p></button>
                     </div>
-                    <div class="pull-left">
-                        <button type="button" class="btn btn-primary" ng-click="ctrl.generateBarcode()">Generate Barcode
-                        </button>
-                    </div>
-
                 </div>
 
                 <div class="search-container" ng-show="showFilter">
@@ -28,14 +23,6 @@
                                placeholder='Order No'>
                     </div>
 
-                    <div class="col-sm-3 input-margin">
-                        <selectize placeholder="Knitter" ng-model="ctrl.filterParams.knitterId"
-                                   config="{maxOptions: 100}" options="ctrl.filterOptions.knitters"></selectize>
-                    </div>
-                    <div class="col-sm-3 input-margin">
-                        <selectize placeholder="Machine" ng-model="ctrl.filterParams.machineId"
-                                   config="{maxOptions: 100}" options="ctrl.filterOptions.machines"></selectize>
-                    </div>
                     <div class="col-sm-3 input-margin">
                         <input placeholder="Completed Date" type="text" id='completedDate'
                                class="form-control date-picker-new datepopup" name="completedDate"
@@ -85,8 +72,6 @@
                                 <th>S.N.</th>
                                 <th>Completed On</th>
                                 <th>Delivery Date</th>
-                                <th>Knitter</th>
-                                <th>Machine</th>
                                 <th>Order No</th>
                                 <th>Customer</th>
                                 <th>Design</th>
@@ -96,44 +81,26 @@
                                 <th>Gauge</th>
                                 <th>Setting</th>
                                 <th>Order Type</th>
-                                <th>Action</th>
-                                <th>Select <input type="checkbox" ng-model="ctrl.selectAll"
-                                                  ng-change="ctrl.allSelected()"></th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr class="odd gradeX" ng-repeat="history in $data">
                                 <td class="center">{{$index + 1}}</td>
-                                <td>{{history.created |
+                                <td>{{history.completedOn |
                                     date: 'dd/MM/yyyy'}}
                                 </td>
-                                <td>{{history.cloth.delivery_date |
+                                <td>{{history.deliveryDate |
                                     date: 'dd/MM/yyyy'}}
                                 </td>
-                                <td>{{history.knitter.name}}</td>
-                                <td>{{history.machine.name}}</td>
-                                <td>{{history.cloth.order_no}}</td>
-                                <td>{{history.cloth.price.customer.name}}</td>
-                                <td>{{history.cloth.price.designName}}</td>
-                                <td>{{history.cloth.colorCode}}</td>
-                                <td>{{history.cloth.price.yarnName}}</td>
-                                <td>{{history.cloth.price.sizeName}}</td>
-                                <td>{{history.cloth.price.gauge}}</td>
-                                <td>{{history.cloth.price.setting}}</td>
+                                <td>{{history.orderNo}}</td>
+                                <td>{{history.customerName}}</td>
+                                <td>{{history.designName}}</td>
+                                <td>{{history.colorCode}}</td>
+                                <td>{{history.yarnName}}</td>
+                                <td>{{history.sizeName}}</td>
+                                <td>{{history.gauge}}</td>
+                                <td>{{history.setting}}</td>
                                 <td>{{history.orderType}}
-                                </td>
-                                <td style="width: 100px">
-                                    <button type="button" class="btn btn-xs btn-danger pull-left"
-                                            ng-click="ctrl.deleteHistory(history.id)">
-                                        Delete
-                                    </button>
-                                    <button type="button" class="btn btn-xs btn-info pull-right"
-                                            ui-sref="dashboard.knittingHistory.edit({historyId: history.id})">
-                                        Edit
-                                    </button>
-                                </td>
-                                <td>
-                                    <input type="checkbox" ng-model="history.isChecked">
                                 </td>
                             </tr>
                             </tbody>

@@ -119,7 +119,7 @@ public class ClothServiceImpl implements ClothService {
         List<Clothes> clothes = new ArrayList<>();
         Locations locations = null;
         if (clothDto.getTypeId() == 0) {
-            locations = locationRepository.findByNameAndLocationType(LocationEnum.PRE_KNITTING.getName(), LocationType.KNITTING);
+            locations = locationRepository.findByNameAndLocationType(LocationEnum.NO_LOCATION.getName(), LocationType.KNITTING);
         }
 
         for (int i = 0; i < clothDto.getQuantity(); i++) {

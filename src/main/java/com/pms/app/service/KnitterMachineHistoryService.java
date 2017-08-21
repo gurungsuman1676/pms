@@ -12,11 +12,11 @@ import java.util.Date;
  * Created by arjun on 6/21/2017.
  */
 public interface KnitterMachineHistoryService {
-    Page<KnitterMachineHistory> getAll(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, Pageable pageable);
+    Page<KnitterMachineHistory> getAll(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, Integer orderNo, Pageable pageable);
 
     void add(KnitterMachineHistoryDto knitterMachineHistoryDto);
 
-    void getHistoryReport(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, HttpServletResponse httpServletResponse);
+    void getHistoryReport(Long knitterId, Long machineId, Date completedDate, Date dateFrom, Date dateTo, Integer orderNo, HttpServletResponse httpServletResponse);
 
     void delete(Long id);
 

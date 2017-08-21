@@ -58,8 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/" + Routes.AUTHENTICATE).permitAll()
-                .antMatchers("/api/v1/**").authenticated();
+                .antMatchers(Routes.AUTHENTICATE).permitAll();
 
 //        @formatter:on
         SecurityConfigurer<DefaultSecurityFilterChain, HttpSecurity> securityConfigurerAdapter = new XAuthTokenConfigurer(userDetailsServiceBean());
